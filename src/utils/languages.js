@@ -51,6 +51,8 @@ const appLanguage = {
         dataImportButton: 'Import danych',
         deleteDataText: 'Usuwanie danych aplikacji',
         deleteDataButton: 'Usuń wszystkie dane',
+        userSection: 'Użytkownik',
+        logoutButton: 'Wyloguj się',
 
 
         // ADD SUBJECT SCREEN
@@ -150,6 +152,8 @@ const appLanguage = {
         dataImportButton: 'Data import',
         deleteDataText: 'Delete app data',
         deleteDataButton: 'Delete all data',
+        userSection: 'User',
+        logoutButton: 'Log out',
 
 
 

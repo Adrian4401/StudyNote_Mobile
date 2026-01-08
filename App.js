@@ -4,10 +4,11 @@ import { Create } from './src/database/queries';
 
 import { LanguageProvider } from './src/context/LanguageContext';
 import { DarkModeProvider } from './src/context/DarkModeContext';
+import { AuthProvider } from './src/context/AuthContext';
 
 import { enableScreens } from 'react-native-screens';
 
-import { loadEvents } from './database/queries';
+// import { loadEvents } from './database/queries';
 
 
 export default function App() {
@@ -18,12 +19,12 @@ export default function App() {
   // loadEvents()
 
   return (
-    <LanguageProvider>
-      <DarkModeProvider>
-
-        <StackNavigation />
-        
-      </DarkModeProvider>
-    </LanguageProvider>
+    <AuthProvider>
+      <LanguageProvider>
+        <DarkModeProvider>
+          <StackNavigation />
+        </DarkModeProvider>
+      </LanguageProvider>
+    </AuthProvider>
   )
 }

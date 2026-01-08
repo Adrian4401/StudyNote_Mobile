@@ -12,6 +12,7 @@ import { alertDeleteAllData } from '../components/Alerts';
 import appLanguage from "../utils/languages";
 import { useLanguage } from '../context/LanguageContext';
 import { useDarkMode } from '../context/DarkModeContext';
+import { useAuth } from '../context/AuthContext';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -20,6 +21,7 @@ import { Safearea } from '../components/SafeArea';
 
 
 export default function SettingsScreen() {
+  const { setUserToken } = useAuth();
   const [openLanguages, setOpenLanguages] = useState(false);
   // const [valueLanguages, setValueLanguages] = useState('pl');
   const { language, changeLanguage } = useLanguage();
@@ -30,6 +32,9 @@ export default function SettingsScreen() {
   const { darkMode, changeDarkMode, theme } = useDarkMode()
   const styles = createStyles(theme)
 
+  const onLogout = async () => {
+    await setUserToken(null)
+  }
 
   const getTranslatedText = (key) => {
     return appLanguage[language][key];
@@ -110,6 +115,11 @@ export default function SettingsScreen() {
             <Text style={styles.sectionText}>{getTranslatedText('deleteDataText')}</Text>
           </View>
           <SettingsScreenButton onPress={handleDeleteAllData} icon={"delete"} text={getTranslatedText('deleteDataButton')}/>
+
+          <View style={styles.headlineView}>
+            <Text style={styles.sectionText}>{getTranslatedText('userSection')}</Text>
+          </View>
+          <SettingsScreenButton onPress={onLogout} icon={"logout"} text={getTranslatedText('logoutButton')}/>
         </>
       )
     }
