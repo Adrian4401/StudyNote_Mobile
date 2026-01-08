@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Image, Switch, Platform, FlatList } from 'react
 
 import DropDownPicker from 'react-native-dropdown-picker';
 
-import { createStyles } from '../assets/styles/index';
+import { createStyles } from '../../assets/styles/index';
 
 import { SettingsScreenButton } from '../components/Buttons';
 
@@ -24,8 +24,8 @@ export default function SettingsScreen() {
   // const [valueLanguages, setValueLanguages] = useState('pl');
   const { language, changeLanguage } = useLanguage();
   const [languages, setLanguages] = useState([
-    {label: 'Polski', value: 'pl', icon: () => <Image source={require('../assets/pl_flag.png')} style={{borderRadius: 20, marginHorizontal: 5}}/>},
-    {label: 'English', value: 'en', icon: () => <Image source={require('../assets/uk_flag.png')} style={{borderRadius: 20, marginHorizontal: 5}}/>}
+    {label: 'Polski', value: 'pl', icon: () => <Image source={require('../../assets/pl_flag.png')} style={{borderRadius: 20, marginHorizontal: 5}}/>},
+    {label: 'English', value: 'en', icon: () => <Image source={require('../../assets/uk_flag.png')} style={{borderRadius: 20, marginHorizontal: 5}}/>}
   ]);
   const { darkMode, changeDarkMode, theme } = useDarkMode()
   const styles = createStyles(theme)

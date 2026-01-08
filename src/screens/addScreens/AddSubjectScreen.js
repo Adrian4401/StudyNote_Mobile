@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, TextInput } from 'react-native';
+import { Text, View, ScrollView, TextInput } from 'react-native';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -11,7 +11,7 @@ import appLanguage from '../../utils/languages';
 import { useLanguage } from '../../context/LanguageContext';
 
 import { useDarkMode } from '../../context/DarkModeContext.js';
-import { createStyles } from '../../assets/styles/index.js';
+import { createStyles } from '../../../assets/styles/index.js';
 
 import { SafeareaNoNav } from '../../components/SafeArea.js';
 

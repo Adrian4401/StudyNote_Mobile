@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Ionicons, FontAwesome } from '@expo/vector-icons'
 
-import { MyColors } from '../assets/styles/colors'
+import { MyColors } from '../../assets/styles/colors'
 import { useDarkMode } from '../context/DarkModeContext'
 import { 
     CalendarScreen, 

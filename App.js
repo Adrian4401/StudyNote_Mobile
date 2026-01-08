@@ -1,11 +1,9 @@
-import { React } from 'react';
+import { StackNavigation } from './src/navigation/StackNavigation';
 
-import { StackNavigation } from './navigation/StackNavigation';
+import { Create } from './src/database/queries';
 
-import { Create } from './database/queries';
-
-import { LanguageProvider } from './context/LanguageContext';
-import { DarkModeProvider } from './context/DarkModeContext';
+import { LanguageProvider } from './src/context/LanguageContext';
+import { DarkModeProvider } from './src/context/DarkModeContext';
 
 import { enableScreens } from 'react-native-screens';
 
@@ -13,6 +11,7 @@ import { loadEvents } from './database/queries';
 
 
 export default function App() {
+  console.log(DarkModeProvider);
 
   Create();
   enableScreens();

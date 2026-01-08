@@ -1,44 +1,41 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, FlatList } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-
 import DropDownPicker from 'react-native-dropdown-picker';
+import { useNavigation } from '@react-navigation/native';
 
-import { EditButton, GoBackButton } from '../../components/Buttons.js';
+import { GoBackButton, MakeButton } from '../../components/Buttons.js';
 
-import { selectEditedNote, editNote } from '../../database/queries.js';
+import { loadClasses, loadSubjects, addNote } from '../../database/queries.js';
 
-import Moment from 'moment';
-import 'moment/locale/pl'
+import { createDate } from '../../utils/date.js';
 
 import appLanguage from "../../utils/languages";
 import { useLanguage } from '../../context/LanguageContext';
 
 import { useDarkMode } from '../../context/DarkModeContext.js';
-import { createStyles } from '../../assets/styles/index.js';
+import { createStyles } from '../../../assets/styles/index.js';
 
 import { SafeareaNoNav } from '../../components/SafeArea.js';
 
 
 
 
-
-export default function EditNoteScreen() {
+export default function AddNoteScreen() {
 
     const navigation = useNavigation();
 
-    const route = useRoute();
+    const [openSubjects, setOpenSubjects] = useState(false);
+    const [openClasses, setOpenClasses] = useState(false);
 
     const [currentTitle, setCurrentTitle] = useState('');
     const [currentNote, setCurrentNote] = useState('');
-
-    const [openSubjects, setOpenSubjects] = useState(false);
-    const [openClasses, setOpenClasses] = useState(false);
     const [currentClass, setCurrentClass] = useState(null);
     const [currentSubject, setCurrentSubject] = useState(null);
+
     const [subjects, setSubjects] = useState([]);
     const [classes, setClasses] = useState([]);
-    const [noteID, setNoteID] = useState(null);
+
+    const todayDate = createDate()
 
     const { theme } = useDarkMode()
     const styles = createStyles(theme)
@@ -46,41 +43,39 @@ export default function EditNoteScreen() {
     const { language } = useLanguage();
 
     const getTranslatedText = (key) => {
-        return appLanguage[language][key];
+      return appLanguage[language][key];
     }
 
+    const [completeFieldsInfo, setCompleteFieldsInfo] = useState(false)
+
+
     
-
     useEffect(() => {
-        const { noteID } = route.params;
-        setNoteID(noteID)
-
         const loadData = navigation.addListener('focus', () => {
-            selectEditedNote(setSubjects, setClasses, noteID, setCurrentTitle, setCurrentNote, setCurrentSubject, setCurrentClass)
+            loadSubjects(setSubjects),
+            loadClasses(setClasses)
         })
-
-        console.log('ID przedmiotu: ' + currentSubject);
-
+        
         return loadData;
-    }, [navigation, currentSubject])
+    }, [navigation])
 
 
 
-    const subjectItems = subjects.map(subject => ({
-        label: subject.subject_name,
-        value: subject.subject_id,
-    }));
+    const subjectItems = subjects.map(subject => {
+        return { label: subject.subject_name, value: subject.subject_id.toString() };
+    });
 
-    const classesItems = classes.map(myclass => ({
-        label: myclass.class_name,
-        value: myclass.class_id,
-    }));
+    const classesItems = classes.map(myclass => {
+        return { label: myclass.class_name, value: myclass.class_id.toString() };
+    })
 
-
-
-    Moment.locale('pl');
-    var noteDate = new Date().toLocaleString();
-    var formattedNoteDate = Moment(formattedNoteDate).format('DD.MM.yyyy');
+    const handleAddNote = () => {
+        if(currentTitle.length > 0 && currentNote.length > 0 && currentSubject !== null && currentClass !== null) {
+            addNote(currentTitle, currentNote, currentSubject, currentClass, todayDate, navigation)
+        } else {
+            setCompleteFieldsInfo(true)
+        }
+    }
 
 
 
@@ -93,9 +88,10 @@ export default function EditNoteScreen() {
             )
         } else if(item.type === 'titleTextInput') {
             return(
-                <TextInput
-                    value={currentTitle.toString()}
+                <TextInput 
+                    value={currentTitle}
                     onChangeText={setCurrentTitle}
+                    placeholder={getTranslatedText('noteTitlePlaceholder')}
                     placeholderTextColor={theme.textSecondary}
                     maxLength={100}
                     multiline
@@ -115,6 +111,7 @@ export default function EditNoteScreen() {
         } else if(item.type === 'subjectsDropDownPicker') {
             return(
                 <DropDownPicker
+                    placeholder={getTranslatedText('chooseSubject')}
                     open={openSubjects}
                     value={currentSubject}
                     items={subjectItems}
@@ -131,6 +128,7 @@ export default function EditNoteScreen() {
         } else if(item.type === 'classesDropDownPicker') {
             return(
                 <DropDownPicker
+                    placeholder={getTranslatedText('chooseClasses')}
                     open={openClasses}
                     value={currentClass}
                     items={classesItems}
@@ -147,8 +145,9 @@ export default function EditNoteScreen() {
         } else if(item.type === 'noteTextInput') {
             return(
                 <TextInput 
-                    value={currentNote.toString()}
+                    value={currentNote}
                     onChangeText={setCurrentNote}
+                    placeholder={getTranslatedText('addNotePlaceholder')}
                     placeholderTextColor={theme.textSecondary}
                     multiline={true}
                     style={{
@@ -168,12 +167,18 @@ export default function EditNoteScreen() {
                     }}
                 />
             )
-        } else if(item.type === 'editButton') {
+        } else if(item.type === 'addButton') {
             return(
-                <EditButton onPress={() => editNote(currentTitle, currentNote, currentSubject, currentClass, noteID, navigation)} />
+                <>
+                    {completeFieldsInfo && (
+                        <Text style={{color: 'red', textAlign: 'center'}}>Wszystkie pola muszą być uzupełnione!</Text>
+                    )}
+                    <MakeButton onPress={handleAddNote}/>
+                </>
             )
         }
     }
+
 
 
     const noteStyles = StyleSheet.create({
@@ -202,13 +207,13 @@ export default function EditNoteScreen() {
 
             {/* HEADER */}
             <View style={styles.headerBackground}>
-                <Text style={styles.headerText}>{getTranslatedText('edit')} {getTranslatedText('note_2')}</Text>
+                <Text style={styles.headerText}>{getTranslatedText('add')} {getTranslatedText('notes')}</Text>
             </View>
 
             <View style={styles.flatlistContainer}>
                 <FlatList 
                     data={[
-                        { type: 'editButton' },
+                        { type: 'addButton' },
                         { type: 'noteTextInput' },
                         { type: 'classesDropDownPicker' },
                         { type: 'subjectsDropDownPicker' },
@@ -225,4 +230,3 @@ export default function EditNoteScreen() {
         </SafeareaNoNav>
     )
 }
-

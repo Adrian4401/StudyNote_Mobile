@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, TextInput, FlatList, TouchableOpacity, Platform } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity, Platform } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import DropDownPicker from 'react-native-dropdown-picker';
 
 import { FontAwesome5 } from '@expo/vector-icons';
 
-import { GoBackButton, MakeButton } from '../../components/Buttons.js';
+import { EditButton, GoBackButton } from '../../components/Buttons.js';
 
-import { loadClasses, loadSubjects, selectChosenNotes, addEvent } from '../../database/queries.js';
+import { selectChosenNotes, selectEditedEvent, editEvent } from '../../database/queries.js';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -18,19 +18,20 @@ import appLanguage from "../../utils/languages";
 import { useLanguage } from '../../context/LanguageContext';
 
 import { useDarkMode } from '../../context/DarkModeContext.js';
-import { createStyles } from '../../assets/styles/index.js';
+import { createStyles } from '../../../assets/styles/index.js';
 
 import { SafeareaNoNav } from '../../components/SafeArea.js';
 
-import { formatDate } from '../../utils/date.js'
+import { formatDate } from '../../utils/date.js';
 
 
 
 
 
-export default function AddEventScreen() {
+export default function EditEventScreen() {
 
     const navigation = useNavigation();
+    const route = useRoute();
 
     const [openSubjects, setOpenSubjects] = useState(false);
     const [openClasses, setOpenClasses] = useState(false);
@@ -52,6 +53,10 @@ export default function AddEventScreen() {
 
     const [checkedNoteIDs, setCheckedNoteIDs] = useState([]);
 
+    const noteIndexes = [];
+
+    const [eventID, setEventID] = useState(null);
+
     const { theme } = useDarkMode()
     const styles = createStyles(theme)
 
@@ -61,35 +66,54 @@ export default function AddEventScreen() {
         return appLanguage[language][key];
     }
 
-    const [completeFieldsInfo, setCompleteFieldsInfo] = useState(false)
+    
 
 
 
     useEffect(() => {
+        const { eventID } = route.params;
+        setEventID(eventID)
+
+        console.log('ID wydarzenia: ', eventID)
+
         const loadData = navigation.addListener('focus', () => {
-            loadSubjects(setSubjects),
-            loadClasses(setClasses)
+            selectEditedEvent(eventID, setCurrentTitle, setCurrentDescription, setValueSubjects, setCurrentClass, setDate, setSubjects, setClasses, setCheckedNoteIDs)    
         })
 
         selectChosenNotes(valueSubjects, setData);
-
-        setCheckedNotes(new Array(data.length).fill(false))
         
         return loadData;
-    }, [navigation, valueSubjects, setData, data.length])
+    }, [navigation, valueSubjects, setData])
+
+
+    useEffect(() => {
+        const newCheckedNotes = data.map(element => checkedNoteIDs.includes(element.note_id));
+        setCheckedNotes(newCheckedNotes);
+    }, [checkedNoteIDs, data]);
+    
 
     const subjectItems = subjects.map(subject => {
-        return { label: subject.subject_name, value: subject.subject_id.toString() };
+        return { 
+            label: subject.subject_name, 
+            value: subject.subject_id
+        };
     });
 
     const classesItems = classes.map(myclass => {
-        return { label: myclass.class_name, value: myclass.class_id.toString() };
+        return { 
+            label: myclass.class_name, 
+            value: myclass.class_id
+        };
     })
+
+
 
     const showMode = (currentMode) => {
         setShow(true);
         setMode(currentMode);
     }
+
+
 
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate || date;
@@ -101,6 +125,8 @@ export default function AddEventScreen() {
 
         console.log(tempDate.toLocaleString());
     }
+
+
 
     const handleNoteCheckboxChange = (index) => {
         const newCheckedNotes = [...checkedNotes];
@@ -118,16 +144,9 @@ export default function AddEventScreen() {
         }
         setCheckedNoteIDs(newCheckedNoteIDs);
     }
+
     
     const selectedDate = formatDate(date);
-
-    const handleAddEvent = () => {
-        if(currentTitle.length > 0 && currentDescription.length > 0 && date !== null && currentClass !== null && valueSubjects !== null) {
-            addEvent(navigation, currentTitle, currentDescription, date, valueSubjects, currentClass, checkedNoteIDs)
-        } else {
-            setCompleteFieldsInfo(true)
-        }
-    }
 
 
 
@@ -143,7 +162,6 @@ export default function AddEventScreen() {
                 <TextInput 
                     value={currentTitle}
                     onChangeText={setCurrentTitle}
-                    placeholder={getTranslatedText('eventTitlePlaceholder')}
                     placeholderTextColor={theme.textSecondary}
                     maxLength={100}
                     multiline
@@ -153,8 +171,7 @@ export default function AddEventScreen() {
                         borderWidth: 1,
                         borderColor: theme.primary,
                         borderRadius: 10,
-                        paddingVertical: 5,
-                        paddingHorizontal: 10,
+                        padding: 10,
                         marginTop: 30,
                         backgroundColor: theme.secondary
                     }}
@@ -163,7 +180,6 @@ export default function AddEventScreen() {
         } else if(item.type === 'subjectsPicker') {
             return(
                 <DropDownPicker
-                    placeholder={getTranslatedText('chooseSubject')}
                     open={openSubjects}
                     value={valueSubjects}
                     items={subjectItems}
@@ -180,7 +196,6 @@ export default function AddEventScreen() {
         } else if(item.type === 'classesPicker') {
             return(
                 <DropDownPicker
-                    placeholder={getTranslatedText('chooseClasses')}
                     open={openClasses}
                     value={currentClass}
                     items={classesItems}
@@ -188,7 +203,7 @@ export default function AddEventScreen() {
                     setValue={setCurrentClass}
                     setItems={setClasses}
                     ScrollView={false}
-                    style={{...eventStyles.style, marginTop: 10}}
+                    style={{...eventStyles.style, marginTop: 20}}
                     dropDownContainerStyle={eventStyles.dropDownContainerStyle}
                     textStyle={eventStyles.textStyle}
                     arrowIconContainerStyle={eventStyles.arrowIconContainerStyle}
@@ -199,7 +214,6 @@ export default function AddEventScreen() {
                 <TextInput 
                     value={currentDescription}
                     onChangeText={setCurrentDescription}
-                    placeholder={getTranslatedText('addDescriptionPlaceholder')}
                     placeholderTextColor={theme.textSecondary}
                     multiline={true}
                     style={{
@@ -226,17 +240,18 @@ export default function AddEventScreen() {
                         <Text style={{...styles.littleText, marginBottom: 5}}>{getTranslatedText('chooseDeadline')}</Text>
 
                         <TouchableOpacity onPress={() => showMode('date')} style={eventStyles.dateTimeButtons}>
-                            <Text style={{fontSize: 20, color: 'white'}}>{getTranslatedText('day')}</Text>
+                            <Text style={{fontSize: 20, color: 'white'}}>Dzień</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={() => showMode('time')} style={eventStyles.dateTimeButtons}>
-                            <Text style={{fontSize: 20, color: 'white'}}>{getTranslatedText('hour')}</Text>
+                            <Text style={{fontSize: 20, color: 'white'}}>Godzina</Text>
                         </TouchableOpacity>
 
                         <View style={{width: '100%', flexDirection: 'row', justifyContent: 'space-between', marginVertical: 10}}>
-                            <Text style={{flex: 1, flexWrap: 'wrap', fontSize: 20, color: 'white'}}>{getTranslatedText('choosenDeadline')}:</Text>
-                            <Text style={{fontSize: 20, color: 'white'}}>{selectedDate}</Text>
+                            <Text style={{fontSize: 20, color: theme.textPrimary}}>{getTranslatedText('choosenDeadline')}:</Text>
+                            <Text style={{fontSize: 20, color: theme.textPrimary}}>{selectedDate}</Text>
                         </View>
+
     
                         {show && (
                             <DateTimePicker
@@ -253,8 +268,20 @@ export default function AddEventScreen() {
                 )
             } else if(Platform.OS === 'ios') {
                 return (
-                    <View style={{alignItems: 'center'}}>
-                        <Text style={{fontSize: 20, color: theme.textSecondary, textTransform: 'uppercase',marginVertical: 10}}>{getTranslatedText('chooseDeadline')}</Text>
+                    <View style={{
+                        alignItems: 'center'
+                    }}>
+
+                        <Text 
+                            style={{
+                                fontSize: 20,
+                                color: theme.textSecondary,
+                                textTransform: 'uppercase',
+                                marginVertical: 10
+                            }}>
+                            Wybierz termin
+                        </Text>
+
                         <DateTimePicker
                             mode='datetime'
                             value={date}
@@ -263,15 +290,21 @@ export default function AddEventScreen() {
                             minuteInterval={5}
                             locale='pl-PL'
                             themeVariant='dark'
-                            display='spinner'
+                            display='inline'
                             timeZoneName={'Europe/Warsaw'}
-                            style={{marginBottom: 40, borderRadius: 20,  borderColor: theme.primary}}
-                            textColor={theme.textPrimary}
+                            style={{marginBottom: 40}}
                         />
+
                     </View>
                 )
             }
+            
+            
         } else if(item.type === 'notes') {
+            data.forEach((element, index) => {
+                noteIndexes.push(element.note_id);
+            });
+
             return data.map((element, index) => {
                 return (
                   <TouchableOpacity key={index} onPress={() => navigation.navigate('ReadNoteScreen', { noteID: element.note_id })} style={eventStyles.noteStyle}>
@@ -289,15 +322,15 @@ export default function AddEventScreen() {
                         <Text style={styles.headlineText}>{element.title}</Text>
                         </View>
             
-                        <View style={{flex: 1, backgroundColor: theme.textSecondary, height: 1, marginBottom: 7}} />
+                        <View style={{flex: 1, backgroundColor: theme.textSecondary, height: 1, marginBottom: 10}} />
             
                         <View style={eventStyles.infoView}>
-                        <FontAwesome5 name="book" size={18} color={theme.textSecondary} style={{flex: 1}}/>
+                        <FontAwesome5 name="book" size={18} color="#fff" style={{flex: 1}}/>
                         <Text style={eventStyles.infoText}>{element.subject_name}</Text>
                         </View>
             
                         <View style={eventStyles.infoView}>
-                        <FontAwesome5 name="info-circle" size={18} color={theme.textSecondary} style={{flex: 1}} />
+                        <FontAwesome5 name="info-circle" size={18} color="#fff" style={{flex: 1}} />
                         <Text style={eventStyles.infoText}>{element.class_name}</Text>
                         </View>
             
@@ -311,18 +344,12 @@ export default function AddEventScreen() {
               })
         } else if(item.type === 'addButton') {
             return(
-                <>
-                    {completeFieldsInfo && (
-                        <Text style={{color: 'red', textAlign: 'center'}}>Wszystkie pola muszą być uzupełnione!</Text>
-                    )}
-                    <MakeButton onPress={handleAddEvent}/>
-                </>
+                <EditButton onPress={() => editEvent(navigation, currentTitle, currentDescription, date, valueSubjects, currentClass, checkedNoteIDs, eventID)}/>
             )
         }
     }
 
 
-    
     const eventStyles = StyleSheet.create({
         style: {
             backgroundColor: theme.secondary,
@@ -369,7 +396,7 @@ export default function AddEventScreen() {
         },
         infoText: {
             fontSize: 16,
-            color: theme.textSecondary,
+            color: '#fff',
             flex: 10
         },
         noteDataView: {
@@ -386,13 +413,12 @@ export default function AddEventScreen() {
     });
 
 
-
     return (
         <SafeareaNoNav>
 
             {/* HEADER */}
             <View style={styles.headerBackground}>
-                <Text style={styles.headerText}>{getTranslatedText('add')} {getTranslatedText('events')}</Text>
+                <Text style={styles.headerText}>{getTranslatedText('edit')} {getTranslatedText('event')}</Text>
             </View>
 
             <View style={styles.flatlistContainer}>

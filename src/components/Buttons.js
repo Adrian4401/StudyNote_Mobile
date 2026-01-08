@@ -7,7 +7,7 @@ import appLanguage from '../utils/languages'
 import { useLanguage } from '../context/LanguageContext'
 
 import { useDarkMode } from '../context/DarkModeContext';
-import { createStyles } from '../assets/styles/index';
+import { createStyles } from '../../assets/styles/index.js';
 
 
 
