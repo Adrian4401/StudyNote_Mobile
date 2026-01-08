@@ -10,7 +10,7 @@ import { useLanguage } from '../context/LanguageContext';
 import appLanguage from "../utils/languages";
 
 import { useDarkMode } from '../context/DarkModeContext';
-import { createStyles } from '../../assets/styles/index';
+import { createStyles } from '../styles/index';
 
 import { Safearea } from '../components/SafeArea.js';
 

@@ -11,7 +11,7 @@ import appLanguage from '../../utils/languages';
 import { useLanguage } from '../../context/LanguageContext';
 
 import { useDarkMode } from '../../context/DarkModeContext.js';
-import { createStyles } from '../../../assets/styles/index.js';
+import { createStyles } from '../../styles/index.js';
 
 import { SafeareaNoNav } from '../../components/SafeArea.js';
 

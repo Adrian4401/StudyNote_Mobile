@@ -6,7 +6,7 @@ import appLanguage from "../utils/languages";
 import valueLanguages from "../screens/SettingsScreen";
 
 import { useDarkMode } from '../context/DarkModeContext';
-import { createStyles } from '../../assets/styles/index';
+import { createStyles } from '../styles/index';
 
 
 

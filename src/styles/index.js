@@ -1,5 +1,6 @@
 import { MyColors } from './colors'
 import { StyleSheet } from 'react-native'
+import { fontSizes } from './typography'
 
 
 export const createStyles = (theme) => {
@@ -36,37 +37,37 @@ export const createStyles = (theme) => {
         headerText: {
             color: theme.primary,
             textAlign: 'center',
-            fontSize: 30,
+            fontSize: fontSizes.xlarge,
             textTransform: 'uppercase',
             fontWeight: '500'
         },
 
         // TEXT
         eventNameText: {
-            fontSize: 25,
+            fontSize: fontSizes.medium + 2,
             textTransform: 'uppercase',
             color: theme.textPrimary
         },
         subjectText: {
-            fontSize: 20,
+            fontSize: fontSizes.medium,
             color: theme.textPrimary,
             paddingHorizontal: 10
         },
         headlineText: {
-            fontSize: 22,
+            fontSize: fontSizes.medium,
             textTransform: 'uppercase',
             color: theme.textPrimary,
             marginBottom: 7
         },
         sectionText: {
-            fontSize: 20,
+            fontSize: fontSizes.medium,
             textTransform: 'uppercase',
             color: theme.textPrimary,
             marginBottom: 5,
             marginTop: 10
         },
         littleText: {
-            fontSize: 15,
+            fontSize: fontSizes.small,
             color: theme.textSecondary,
             textTransform: 'uppercase'
         },
@@ -123,7 +124,7 @@ export const createStyles = (theme) => {
         },
         goBackText: {
             color: theme.textPrimary,
-            fontSize: 25,
+            fontSize: fontSizes.large,
             paddingRight: 5
         },
         makeButton: {
@@ -137,7 +138,7 @@ export const createStyles = (theme) => {
         },
         makeText: {
             color: '#fff',
-            fontSize: 25,
+            fontSize: fontSizes.large,
             paddingRight: 5
         }
     })
@@ -177,20 +178,20 @@ export const globalStyles = {
         alignItems: 'center'
     },
     headlineText: {
-        fontSize: 22,
+        fontSize: fontSizes.medium,
         textTransform: 'uppercase',
         color: '#fff',
         marginBottom: 10
     },
     sectionText: {
-        fontSize: 20,
+        fontSize: fontSizes.medium,
         textTransform: 'uppercase',
         color: MyColors.textPrimary,
         marginBottom: 5,
         marginTop: 10
     },
     littleText: {
-        fontSize: 15,
+        fontSize: fontSizes.small,
         color: MyColors.appLightGray,
         textTransform: 'uppercase'
     },
@@ -213,7 +214,7 @@ export const globalStyles = {
         alignItems: 'center'
     },
     subjectText: {
-        fontSize: 20,
+        fontSize: fontSizes.medium,
         color: '#fff',
         paddingHorizontal: 10
     },

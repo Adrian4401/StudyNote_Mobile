@@ -12,7 +12,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { alertDeleteSubject } from '../../components/Alerts.js';
 
 import { useDarkMode } from '../../context/DarkModeContext.js';
-import { createStyles } from '../../../assets/styles/index.js';
+import { createStyles } from '../../styles/index.js';
 
 import { SafeareaNoNav } from '../../components/SafeArea.js';
 
