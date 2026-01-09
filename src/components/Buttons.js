@@ -1,7 +1,7 @@
-import { Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { Text, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 
-import { MaterialIcons, MaterialCommunityIcons, FontAwesome5, AntDesign } from '@expo/vector-icons'
+import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'
 
 import appLanguage from '../utils/languages'
 import { useLanguage } from '../context/LanguageContext'
@@ -9,6 +9,7 @@ import { useLanguage } from '../context/LanguageContext'
 import { useDarkMode } from '../context/DarkModeContext';
 import { createStyles } from '../styles/index.js';
 
+import { fontSizes } from '../styles/typography.js'
 
 
 export const GoBackButton = () => {
@@ -72,6 +73,17 @@ export const SettingsScreenButton = ({onPress, icon, text}) => {
         <TouchableOpacity onPress={onPress} style={{...styles.eventView, flexDirection: 'row', paddingHorizontal: 20}}>
             <MaterialCommunityIcons name={icon} size={24} color={theme.primary} style={{paddingHorizontal: 5}}/>
             <Text style={styles.subjectText}>{text}</Text>
+        </TouchableOpacity>
+    )
+}
+
+export const AuthButton = ({onPress, text}) => {
+    const { theme } = useDarkMode()
+    const styles = createStyles(theme)
+
+    return (
+        <TouchableOpacity style={{...styles.makeButton, borderRadius: 10}} onPress={onPress} >
+            <Text style={{fontSize: fontSizes.medium, paddingVertical: 6, color: theme.textPrimary, fontWeight: '500'}}>{text}</Text>
         </TouchableOpacity>
     )
 }
