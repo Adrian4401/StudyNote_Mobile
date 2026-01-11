@@ -51,6 +51,7 @@ export const lightTheme = {
     ],
 }
 export const darkTheme = {
+    newBackground: '#181818',
     background: '#3F3D4C',
     navigation: '#000000',
     primary: '#0b84ff',

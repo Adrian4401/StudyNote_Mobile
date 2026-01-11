@@ -22,6 +22,8 @@
     "expo-asset": "^10.0.10",
     "expo-checkbox": "^3.0.0",
     "expo-file-system": "^17.0.1",
+    "expo-linear-gradient": "~13.0.2",
+    "expo-splash-screen": "~0.27.7",
     "expo-sqlite": "^14.0.6",
     "expo-status-bar": "^1.12.1",
     "expo-updates": "^0.25.27",
@@ -31,6 +33,7 @@
     "react": "18.2.0",
     "react-native": "^0.74.5",
     "react-native-date-picker": "^5.0.0",
+    "react-native-dotenv": "^3.4.11",
     "react-native-dropdown-picker": "^5.4.6",
     "react-native-element-dropdown": "^2.10.1",
     "react-native-inverted-flat-list": "^1.0.3",
@@ -40,7 +43,7 @@
     "react-native-screens": "^3.31.1",
     "react-native-textinput-effects": "^0.6.3",
     "react-test-renderer": "^18.2.0",
-    "expo-linear-gradient": "~13.0.2"
+    "typescript": "~5.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0"

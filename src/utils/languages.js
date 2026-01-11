@@ -19,7 +19,16 @@ const appLanguage = {
         day: 'Dzień',
         hour: 'Godzina',
 
-
+        // AUTH SCREEN
+        loginTitle: 'Logowanie',
+        registerTitle: 'Rejestracja',
+        usernamePlaceholder: 'Nazwa użytkownika',
+        passwordPlaceholder: 'Hasło',
+        repeatPasswordPlaceholder: 'Powtórz hasło',
+        loginButton: 'Zaloguj się',
+        registerButton: 'Zarejestruj się',
+        haveAccountText: 'Masz już konto?',
+        noAccountText: 'Nie masz konta?',
 
         // CALENDAR SCREEN
         calendarScreenTitle: 'Terminarz',
@@ -120,7 +129,16 @@ const appLanguage = {
         day: 'Day',
         hour: 'Hour',
 
-
+        // AUTH SCREEN
+        loginTitle: 'Login',
+        registerTitle: 'Register',
+        usernamePlaceholder: 'Username',
+        passwordPlaceholder: 'Password',
+        repeatPasswordPlaceholder: 'Repeat password',
+        loginButton: 'Login',
+        registerButton: 'Register',
+        haveAccountText: 'Already have an account?',
+        noAccountText: "Don't have an account?",
 
         // CALENDAR SCREEN
         calendarScreenTitle: 'Calendar',

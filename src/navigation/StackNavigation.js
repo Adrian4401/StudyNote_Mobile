@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { MainTabNavigator } from './BottomNavigation';
 import { useAuth } from '../context/AuthContext';
-import LoginScreen from '../screens/auth/LoginScreen';
+import AuthScreen from '../screens/auth/AuthScreen';
 import { 
     AddEventScreen, 
     AddNoteScreen, 
@@ -34,8 +34,8 @@ export function StackNavigation() {
 
                 {userToken == null ? (
                     <Stack.Screen
-                        name='Login'
-                        component={LoginScreen}
+                        name='Auth'
+                        component={AuthScreen}
                         options={{ headerShown: false }}
                     />
                 ) : (

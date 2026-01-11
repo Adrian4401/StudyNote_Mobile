@@ -1,22 +1,16 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View, Image, Switch, Platform, FlatList } from 'react-native';
-
 import DropDownPicker from 'react-native-dropdown-picker';
-
 import { createStyles } from '../styles/index';
-
 import { SettingsScreenButton } from '../components/Buttons';
-
 import { alertDeleteAllData } from '../components/Alerts';
-
 import appLanguage from "../utils/languages";
 import { useLanguage } from '../context/LanguageContext';
 import { useDarkMode } from '../context/DarkModeContext';
 import { useAuth } from '../context/AuthContext';
-
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-
 import { Safearea } from '../components/SafeArea';
+import { deleteUserToken } from '../context/AuthContext';
 
 
 

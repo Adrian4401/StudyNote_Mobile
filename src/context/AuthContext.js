@@ -35,7 +35,18 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
-    const value = useMemo(() => ({ userToken, setUserToken }), [userToken])
+    const deleteUserToken = async (token) => {
+        try {
+            if (token !== null) {
+                await AsyncStorage.removeItem('userToken')
+            }
+            console.log('Token usunięty')
+        } catch (err) {
+            console.log('Błąd zapisu tokenu: ', err)
+        }
+    }
+
+    const value = useMemo(() => ({ userToken, setUserToken, deleteUserToken }), [userToken])
 
     return (
         <AuthContext.Provider value={value}>

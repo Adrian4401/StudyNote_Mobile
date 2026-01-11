@@ -85,7 +85,7 @@ export const AuthButton = ({onPress, text, outlined}) => {
 
     return (
         outlined ? 
-            <TouchableOpacity style={{backgroundColor: theme.navigation, height: 50, width: '98.5%', alignItems: 'center', borderRadius: 10, borderWidth: 1, borderColor: theme.textPrimary}} onPress={onPress} >
+            <TouchableOpacity style={{width: '100%', backgroundColor: theme.newBackground, height: 50, width: '98.5%', alignItems: 'center', borderRadius: 10, borderWidth: 1, borderColor: theme.textPrimary}} onPress={onPress} >
                 <Text style={{fontSize: fontSizes.medium, paddingVertical: 10, color: theme.textPrimary, fontWeight: '500'}}>{text}</Text>
             </TouchableOpacity> 
             : 
