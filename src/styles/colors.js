@@ -10,7 +10,21 @@ export const MyColors = {
     // appGray
     inputBackground: '#26282A',
     // eventBlue
-    eventBackground: '#2F3051'
+    eventBackground: '#2F3051',
+    gradientMain: [
+        '#09c7fb',
+        '#11bdff',
+        '#41b0ff',
+        '#6ca2ff',
+        '#9390ff',
+        '#b381f3',
+        '#ce70e2',
+        '#e55dcb',
+        '#f450af',
+        '#fb4991',
+        '#fc4975',
+        '#f64f59',
+    ],
 }
 export const lightTheme = {
     background: '#E0E0E0',
@@ -20,7 +34,21 @@ export const lightTheme = {
     textPrimary: '#2C2C2C', 
     textSecondary: '#4B4B4B', 
     inputBackground: '#B0B0B0', 
-    eventBackground: '#C4D3DF' 
+    eventBackground: '#C4D3DF',
+    gradientMain: [
+        '#09c7fb',
+        '#11bdff',
+        '#41b0ff',
+        '#6ca2ff',
+        '#9390ff',
+        '#b381f3',
+        '#ce70e2',
+        '#e55dcb',
+        '#f450af',
+        '#fb4991',
+        '#fc4975',
+        '#f64f59',
+    ],
 }
 export const darkTheme = {
     background: '#3F3D4C',
@@ -30,5 +58,19 @@ export const darkTheme = {
     textPrimary: '#fff',
     textSecondary: '#D1D0D0',
     inputBackground: '#26282A',
-    eventBackground: '#2F3051'
+    eventBackground: '#2F3051',
+    gradientMain: [
+        '#09c7fb',
+        '#11bdff',
+        '#41b0ff',
+        '#6ca2ff',
+        '#9390ff',
+        '#b381f3',
+        '#ce70e2',
+        '#e55dcb',
+        '#f450af',
+        '#fb4991',
+        '#fc4975',
+        '#f64f59',
+    ],
 }

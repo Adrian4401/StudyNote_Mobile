@@ -11,6 +11,8 @@ import { createStyles } from '../styles/index.js';
 
 import { fontSizes } from '../styles/typography.js'
 
+import { LinearGradient } from 'expo-linear-gradient';
+
 
 export const GoBackButton = () => {
     const navigation = useNavigation();
@@ -77,14 +79,26 @@ export const SettingsScreenButton = ({onPress, icon, text}) => {
     )
 }
 
-export const AuthButton = ({onPress, text}) => {
+export const AuthButton = ({onPress, text, outlined}) => {
     const { theme } = useDarkMode()
     const styles = createStyles(theme)
 
     return (
-        <TouchableOpacity style={{...styles.makeButton, borderRadius: 10}} onPress={onPress} >
-            <Text style={{fontSize: fontSizes.medium, paddingVertical: 6, color: theme.textPrimary, fontWeight: '500'}}>{text}</Text>
-        </TouchableOpacity>
+        outlined ? 
+            <TouchableOpacity style={{backgroundColor: theme.navigation, height: 50, width: '98.5%', alignItems: 'center', borderRadius: 10, borderWidth: 1, borderColor: theme.textPrimary}} onPress={onPress} >
+                <Text style={{fontSize: fontSizes.medium, paddingVertical: 10, color: theme.textPrimary, fontWeight: '500'}}>{text}</Text>
+            </TouchableOpacity> 
+            : 
+            <LinearGradient
+                colors={theme.gradientMain}
+                style={{borderRadius: 10, width: '100%', height: 50, alignItems: 'center', justifyContent: 'center'}}
+                start={{x: 0, y: 0.75}}
+                end={{x: 1, y: 0.25}}
+            >
+                <TouchableOpacity style={{width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center'}} onPress={onPress} >
+                    <Text style={{fontSize: fontSizes.medium, paddingVertical: 10, color: theme.textPrimary, fontWeight: '500'}}>{text}</Text>
+                </TouchableOpacity> 
+            </LinearGradient>
     )
 }
 
