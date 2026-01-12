@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useContext, useMemo } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import * as SecureStore from 'expo-secure-store';
 
 const AuthContext = createContext({ userToken: null, setUserToken: () => {} })
 
@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const loadUserToken = async () => {
             try {
-                const token = await AsyncStorage.getItem('userToken')
+                const token = await SecureStore.getItemAsync('userToken')
                 if (token !== null) {
                     setUserTokenState(token)
                     console.log('User token z local storage: ', token)
@@ -25,9 +25,9 @@ export const AuthProvider = ({ children }) => {
     const setUserToken = async (token) => {
         try {
             if (token == null) {
-                await AsyncStorage.removeItem('userToken')
+                await SecureStore.deleteItemAsync('userToken')
             } else {
-                await AsyncStorage.setItem('userToken', token)
+                await SecureStore.setItemAsync('userToken', token)
             }
             setUserTokenState(token)
         } catch (err) {
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
     const deleteUserToken = async (token) => {
         try {
             if (token !== null) {
-                await AsyncStorage.removeItem('userToken')
+                await SecureStore.deleteItemAsync('userToken')
             }
             console.log('Token usunięty')
         } catch (err) {
