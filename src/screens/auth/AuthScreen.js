@@ -12,7 +12,7 @@ import { RegisterForm } from './RegisterForm'
 import { useState } from 'react'
 import appLanguage from '../../utils/languages'
 import { useLanguage } from '../../context/LanguageContext'
-import { login } from '../../api/auth';
+import { login, register } from '../../api/auth';
 import { KeyboardAvoidingWrapper } from '../../components/KeyboardAvoidingWrapper'
 
 
@@ -21,8 +21,10 @@ export default function AuthScreen() {
   const { theme } = useDarkMode()
   const styles = createStyles(theme)
   const [isRegistering, setIsRegistering] = useState(false)
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [repeatedPassword, setRepeatedPassword] = useState('');
 
 
   const { language } = useLanguage();
@@ -31,8 +33,6 @@ export default function AuthScreen() {
   }
 
   const onLogin = async () => {
-    // await setUserToken('dummy-token')
-
     try {
       const response = await login({ email, password });
       setUserToken(response.token);
@@ -42,8 +42,19 @@ export default function AuthScreen() {
     }
   }
 
-  onRegister = () => {
-    console.log('Register pressed')
+  const onRegister = async () => {
+    if (password !== repeatedPassword) {
+      console.error('Passwords do not match');
+      return;
+    }
+
+    try {
+      const response = await register({ username, email, password });
+      console.log('Registration successful:', response);
+      setIsRegistering(false)
+    } catch (error) {
+      console.error('Registration failed:', error);
+    }
   }
 
   const changeForm = () => {
@@ -68,11 +79,16 @@ export default function AuthScreen() {
               {isRegistering 
                 ? <RegisterForm 
                     usernamePlaceholder={getTranslatedText('usernamePlaceholder')} 
+                    emailPlaceholder={getTranslatedText('emailPlaceholder')}
                     passwordPlaceholder={getTranslatedText('passwordPlaceholder')} 
-                    repeatPasswordPlaceholder={getTranslatedText('repeatPasswordPlaceholder')} 
+                    repeatPasswordPlaceholder={getTranslatedText('repeatPasswordPlaceholder')}
+                    onChangeUsername={setUsername}
+                    onChangeEmail={setEmail} 
+                    onChangePassword={setPassword} 
+                    onChangeRepeatedPassword={setRepeatedPassword}
                   /> 
                 : <LoginForm 
-                    usernamePlaceholder={getTranslatedText('usernamePlaceholder')} 
+                    emailPlaceholder={getTranslatedText('emailPlaceholder')} 
                     passwordPlaceholder={getTranslatedText('passwordPlaceholder')} 
                     onChangeEmail={setEmail} 
                     onChangePassword={setPassword} 

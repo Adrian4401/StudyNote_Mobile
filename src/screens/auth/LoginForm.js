@@ -4,7 +4,7 @@ import { Fumi } from 'react-native-textinput-effects';
 import { FontAwesome6 } from '@expo/vector-icons'
 import { useDarkMode } from '../../context/DarkModeContext'
 
-export const LoginForm = ({ usernamePlaceholder, passwordPlaceholder, onChangeEmail, onChangePassword }) => {
+export const LoginForm = ({ emailPlaceholder, passwordPlaceholder, onChangeEmail, onChangePassword }) => {
     const { theme } = useDarkMode()
 
     const [email, setEmail] = useState('')
@@ -23,7 +23,7 @@ export const LoginForm = ({ usernamePlaceholder, passwordPlaceholder, onChangeEm
     return (
         <View>
             <Fumi
-                label={usernamePlaceholder}
+                label={emailPlaceholder}
                 iconClass={FontAwesome6}
                 iconName={'envelope-circle-check'}
                 iconColor={theme.primary}
@@ -38,7 +38,7 @@ export const LoginForm = ({ usernamePlaceholder, passwordPlaceholder, onChangeEm
             <Fumi
                 label={passwordPlaceholder}
                 iconClass={FontAwesome6}
-                iconName={'user-large'}
+                iconName={'lock'}
                 iconColor={theme.primary}
                 iconSize={20}
                 iconWidth={46}
