@@ -51,7 +51,7 @@ export default function AuthScreen() {
     try {
       const response = await register({ username, email, password });
       console.log('Registration successful:', response);
-      setIsRegistering(false)
+      setUserToken(response.token);
     } catch (error) {
       console.error('Registration failed:', error);
     }
