@@ -91,7 +91,7 @@ export const AuthButton = ({onPress, text, outlined}) => {
             : 
             <LinearGradient
                 colors={theme.gradientMain}
-                style={{borderRadius: 10, width: '100%', height: 50, alignItems: 'center', justifyContent: 'center'}}
+                style={{borderRadius: 10, width: '100%', height: 50, alignItems: 'center', justifyContent: 'center', marginTop: 10}}
                 start={{x: 0, y: 0.75}}
                 end={{x: 1, y: 0.25}}
             >

@@ -12,8 +12,6 @@ import { RegisterForm } from './RegisterForm'
 import { useState } from 'react'
 import appLanguage from '../../utils/languages'
 import { useLanguage } from '../../context/LanguageContext'
-import { login, register } from '../../api/auth';
-import { KeyboardAvoidingWrapper } from '../../components/KeyboardAvoidingWrapper'
 
 
 export default function AuthScreen() {
@@ -26,35 +24,9 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
   const [repeatedPassword, setRepeatedPassword] = useState('');
 
-
   const { language } = useLanguage();
   const getTranslatedText = (key) => {
     return appLanguage[language][key];
-  }
-
-  const onLogin = async () => {
-    try {
-      const response = await login({ email, password });
-      setUserToken(response.token);
-      console.log('Token: ', response.token);
-    } catch (error) {
-      console.error('Login failed:', error);
-    }
-  }
-
-  const onRegister = async () => {
-    if (password !== repeatedPassword) {
-      console.error('Passwords do not match');
-      return;
-    }
-
-    try {
-      const response = await register({ username, email, password });
-      console.log('Registration successful:', response);
-      setUserToken(response.token);
-    } catch (error) {
-      console.error('Registration failed:', error);
-    }
   }
 
   const changeForm = () => {
@@ -62,62 +34,44 @@ export default function AuthScreen() {
   }
 
   return (
-  <SafeareaAuth>
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-          <Logo />
-          <View style={{ flex: 3, justifyContent: 'space-between', backgroundColor: theme.newBackground, width: '100%', padding: 20, borderTopLeftRadius: 40, borderTopRightRadius: 40, marginTop: 20 }}>
-            <View style={{ flex: 1 }}>
-              <Header title={isRegistering ? getTranslatedText('registerTitle') : getTranslatedText('loginTitle')} />
-            </View>
-
-            <View style={{ flex: 3, justifyContent: 'center' }}>
-              {isRegistering 
-                ? <RegisterForm 
-                    usernamePlaceholder={getTranslatedText('usernamePlaceholder')} 
-                    emailPlaceholder={getTranslatedText('emailPlaceholder')}
-                    passwordPlaceholder={getTranslatedText('passwordPlaceholder')} 
-                    repeatPasswordPlaceholder={getTranslatedText('repeatPasswordPlaceholder')}
-                    onChangeUsername={setUsername}
-                    onChangeEmail={setEmail} 
-                    onChangePassword={setPassword} 
-                    onChangeRepeatedPassword={setRepeatedPassword}
-                  /> 
-                : <LoginForm 
-                    emailPlaceholder={getTranslatedText('emailPlaceholder')} 
-                    passwordPlaceholder={getTranslatedText('passwordPlaceholder')} 
-                    onChangeEmail={setEmail} 
-                    onChangePassword={setPassword} 
-                  />
-              }
-              <AuthButton 
-                text={isRegistering ? getTranslatedText('registerButton') : getTranslatedText('loginButton')} 
-                onPress={isRegistering ? onRegister : onLogin} 
-              />
-            </View>
-
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
-              <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginVertical: 20 }}>
-                <Text style={{ color: theme.textSecondary }}>
-                  {isRegistering ? getTranslatedText('haveAccountText') : getTranslatedText('noAccountText')}
-                </Text>
+    <SafeareaAuth>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+            <Logo />
+            <View style={{ flex: 3, justifyContent: 'space-between', backgroundColor: theme.newBackground, width: '100%', padding: 20, borderTopLeftRadius: 40, borderTopRightRadius: 40, marginTop: 20 }}>
+              <View style={{ flex: 1 }}>
+                <Header title={isRegistering ? getTranslatedText('registerTitle') : getTranslatedText('loginTitle')} />
               </View>
-              <AuthButton 
-                text={isRegistering ? getTranslatedText('loginButton') : getTranslatedText('registerButton')} 
-                onPress={changeForm} 
-                outlined 
-              />
+
+              <View style={{ flex: 3, justifyContent: 'center' }}>
+                {isRegistering 
+                  ? <RegisterForm /> 
+                  : <LoginForm />
+                }
+              </View>
+
+              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
+                <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginVertical: 20 }}>
+                  <Text style={{ color: theme.textSecondary }}>
+                    {isRegistering ? getTranslatedText('haveAccountText') : getTranslatedText('noAccountText')}
+                  </Text>
+                </View>
+                <AuthButton 
+                  text={isRegistering ? getTranslatedText('loginButton') : getTranslatedText('registerButton')} 
+                  onPress={changeForm} 
+                  outlined 
+                />
+              </View>
             </View>
-          </View>
-        </ScrollView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
-  </SafeareaAuth>
-)
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </SafeareaAuth>
+  )
 
 }
 

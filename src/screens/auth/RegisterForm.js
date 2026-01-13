@@ -1,92 +1,87 @@
 import { useState } from 'react'
 import { View } from 'react-native'
-import { Fumi } from 'react-native-textinput-effects';
-import { FontAwesome6 } from '@expo/vector-icons'
 import { useDarkMode } from '../../context/DarkModeContext'
+import { register } from '../../api/auth';
+import { AuthButton } from '../../components/Buttons'
+import appLanguage from '../../utils/languages'
+import { useLanguage } from '../../context/LanguageContext'
+import { TextField } from '../../components/TextField';
+import { useAuth } from '../../context/AuthContext'
 
 export const RegisterForm = ({ usernamePlaceholder, emailPlaceholder, passwordPlaceholder, repeatPasswordPlaceholder, onChangeUsername, onChangeEmail, onChangePassword, onChangeRepeatedPassword }) => {
     const { theme } = useDarkMode()
+    const { setUserToken } = useAuth()
 
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [repeatedPassword, setRepeatedPassword] = useState('')
 
+    const { language } = useLanguage();
+    const getTranslatedText = (key) => {
+        return appLanguage[language][key];
+    }
+
     const handleUsernameChange = (value) => {
         setUsername(value)
-        onChangeUsername(value)
     }
 
     const handleEmailChange = (value) => {
         setEmail(value)
-        onChangeEmail(value)
     }
 
     const handlePasswordChange = (value) => {
         setPassword(value)
-        onChangePassword(value)
     }
 
     const handleRepeatedPasswordChange = (value) => {
         setRepeatedPassword(value)
-        onChangeRepeatedPassword(value)
+    }
+
+    const onRegister = async () => {
+        if (password !== repeatedPassword) {
+            console.error('Passwords do not match');
+            return;
+        }
+
+        try {
+            const response = await register({ username, email, password });
+            console.log('Registration successful:', response);
+            setUserToken(response.token);
+        } catch (error) {
+            console.error('Registration failed:', error);
+        }
     }
 
     return (
         <View>
-            <Fumi
-                label={usernamePlaceholder}
-                iconClass={FontAwesome6}
-                iconName={'user-large'}
-                iconColor={theme.primary}
-                iconSize={20}
-                iconWidth={46}
-                inputPadding={16}
-                inputStyle={{ color: theme.textPrimary, paddingLeft: 8 }}
+            <TextField
+                placeholder={getTranslatedText('usernamePlaceholder')}
                 onChangeText={handleUsernameChange}
-                style={{ backgroundColor: theme.background, marginBottom: 20, borderRadius: 10 }}
-                labelStyle={{ color: theme.textSecondary, paddingLeft: 8 }}
+                secureTextEntry={false}
+                icon={'user-large'}
             />
-            <Fumi
-                label={emailPlaceholder}
-                iconClass={FontAwesome6}
-                iconName={'envelope-circle-check'}
-                iconColor={theme.primary}
-                iconSize={20}
-                iconWidth={46}
-                inputPadding={16}
-                inputStyle={{ color: theme.textPrimary, paddingLeft: 8 }}
+            <TextField
+                placeholder={getTranslatedText('emailPlaceholder')}
                 onChangeText={handleEmailChange}
-                style={{ backgroundColor: theme.background, marginBottom: 20, borderRadius: 10 }}
-                labelStyle={{ color: theme.textSecondary, paddingLeft: 8 }}
+                secureTextEntry={false}
+                icon={'envelope-circle-check'}
             />
-            <Fumi
-                label={passwordPlaceholder}
-                iconClass={FontAwesome6}
-                iconName={'lock'}
-                iconColor={theme.primary}
-                iconSize={20}
-                iconWidth={46}
-                inputPadding={16}
-                secureTextEntry={true}
-                inputStyle={{ color: theme.textPrimary, paddingLeft: 8 }}
+            <TextField
+                placeholder={getTranslatedText('passwordPlaceholder')}
                 onChangeText={handlePasswordChange}
-                style={{ backgroundColor: theme.background, marginBottom: 20, borderRadius: 10 }}
-                labelStyle={{ color: theme.textSecondary, paddingLeft: 8 }}
-            />
-            <Fumi
-                label={repeatPasswordPlaceholder}
-                iconClass={FontAwesome6}
-                iconName={'lock'}
-                iconColor={theme.primary}
-                iconSize={20}
-                iconWidth={46}
-                inputPadding={16}
                 secureTextEntry={true}
-                inputStyle={{ color: theme.textPrimary, paddingLeft: 8 }}
+                icon={'lock'}
+            />
+            <TextField
+                placeholder={getTranslatedText('repeatPasswordPlaceholder')}
                 onChangeText={handleRepeatedPasswordChange}
-                style={{ backgroundColor: theme.background, marginBottom: 30, borderRadius: 10 }}
-                labelStyle={{ color: theme.textSecondary, paddingLeft: 8 }}
+                secureTextEntry={true}
+                icon={'lock'}
+            />
+            <AuthButton 
+                text={getTranslatedText('registerButton')} 
+                onPress={onRegister} 
             />
         </View>
     )
