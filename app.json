@@ -4,7 +4,7 @@
     "slug": "StudyNote",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icons/newicon.png",
+    "icon": "./assets/icons/new-logo-black.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/icons/new_splash.png",
