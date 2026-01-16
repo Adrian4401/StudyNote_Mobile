@@ -2,8 +2,10 @@ import { View, TextInput, StyleSheet } from 'react-native'
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useDarkMode } from '../context/DarkModeContext'
 
-export const TextField = ({ placeholder, secureTextEntry, onChangeText, icon }) => {
+export const TextField = ({ value, placeholder, secureTextEntry, onChangeText, icon, variant }) => {
     const { theme } = useDarkMode()
+
+    const backgroundColor = variant === 'light' ? theme.background : theme.navigation;
 
     const styles = StyleSheet.create({
         searchSection: {
@@ -19,17 +21,16 @@ export const TextField = ({ placeholder, secureTextEntry, onChangeText, icon }) 
         },
         searchIcon: {
             paddingVertical: 10,
-            paddingHorizontal: 20,
+            paddingLeft: 20,
             flex: 1,
             textAlign: 'center',
         },
         input: {
             flex: 1,
-            paddingTop: 10,
+            paddingVertical: 10,
             paddingRight: 10,
-            paddingBottom: 10,
-            paddingLeft: 0,
-            backgroundColor: theme.background,
+            paddingLeft: 20,
+            // backgroundColor: theme.background,
             color: theme.textPrimary,
             borderRadius: 10,
             flex: 9
@@ -37,9 +38,11 @@ export const TextField = ({ placeholder, secureTextEntry, onChangeText, icon }) 
     })
 
     return (
-        <View style={styles.searchSection}>
-            <FontAwesome6 style={styles.searchIcon} name={icon} size={20} color={theme.textPrimary} />
+        <View style={[styles.searchSection, { backgroundColor }]}>
+            {icon && <FontAwesome6 style={styles.searchIcon} name={icon} size={20} color={theme.textPrimary} />}
+            {/* <FontAwesome6 style={styles.searchIcon} name={icon} size={20} color={theme.textPrimary} /> */}
             <TextInput
+                value={value}
                 style={styles.input}
                 placeholder={placeholder}
                 onChangeText={onChangeText}

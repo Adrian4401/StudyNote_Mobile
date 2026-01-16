@@ -45,12 +45,14 @@ export const LoginForm = () => {
                 onChangeText={handleEmailChange}
                 secureTextEntry={false}
                 icon={'envelope-circle-check'}
+                variant={'light'}
             />
             <TextField
                 placeholder={getTranslatedText('passwordPlaceholder')}
                 onChangeText={handlePasswordChange}
                 secureTextEntry={true}
                 icon={'lock'}
+                variant={'light'}
             />
             <AuthButton 
                 text={getTranslatedText('loginButton')} 

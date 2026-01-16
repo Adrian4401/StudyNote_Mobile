@@ -1,26 +1,17 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, FlatList } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-
 import DropDownPicker from 'react-native-dropdown-picker';
-
 import { EditButton, GoBackButton } from '../../components/Buttons.js';
-
 import { selectEditedNote, editNote } from '../../database/queries.js';
-
 import Moment from 'moment';
 import 'moment/locale/pl'
-
 import appLanguage from "../../utils/languages";
 import { useLanguage } from '../../context/LanguageContext';
-
 import { useDarkMode } from '../../context/DarkModeContext.js';
 import { createStyles } from '../../styles/index.js';
-
 import { SafeareaNoNav } from '../../components/SafeArea.js';
-
-
-
+import { TextField } from '../../components/TextField.js';
 
 
 export default function EditNoteScreen() {
@@ -49,7 +40,9 @@ export default function EditNoteScreen() {
         return appLanguage[language][key];
     }
 
-    
+    const handleChangeTitle = (value) => {
+        setCurrentTitle(value)
+    }
 
     useEffect(() => {
         const { noteID } = route.params;
@@ -93,23 +86,10 @@ export default function EditNoteScreen() {
             )
         } else if(item.type === 'titleTextInput') {
             return(
-                <TextInput
-                    value={currentTitle.toString()}
-                    onChangeText={setCurrentTitle}
-                    placeholderTextColor={theme.textSecondary}
-                    maxLength={100}
-                    multiline
-                    style={{
-                        color: theme.textPrimary,
-                        fontSize: 25,
-                        borderWidth: 1,
-                        borderColor: theme.primary,
-                        borderRadius: 10,
-                        padding: 10,
-                        marginVertical: 10,
-                        marginTop: 30,
-                        backgroundColor: theme.secondary
-                    }}
+                <TextField
+                    value={currentTitle}
+                    onChangeText={handleChangeTitle}
+                    secureTextEntry={false}
                 />
             )
         } else if(item.type === 'subjectsDropDownPicker') {

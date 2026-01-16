@@ -60,24 +60,28 @@ export const RegisterForm = ({ usernamePlaceholder, emailPlaceholder, passwordPl
                 onChangeText={handleUsernameChange}
                 secureTextEntry={false}
                 icon={'user-large'}
+                variant={'light'}
             />
             <TextField
                 placeholder={getTranslatedText('emailPlaceholder')}
                 onChangeText={handleEmailChange}
                 secureTextEntry={false}
                 icon={'envelope-circle-check'}
+                variant={'light'}
             />
             <TextField
                 placeholder={getTranslatedText('passwordPlaceholder')}
                 onChangeText={handlePasswordChange}
                 secureTextEntry={true}
                 icon={'lock'}
+                variant={'light'}
             />
             <TextField
                 placeholder={getTranslatedText('repeatPasswordPlaceholder')}
                 onChangeText={handleRepeatedPasswordChange}
                 secureTextEntry={true}
                 icon={'lock'}
+                variant={'light'}
             />
             <AuthButton 
                 text={getTranslatedText('registerButton')} 

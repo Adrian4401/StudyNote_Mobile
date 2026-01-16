@@ -1,21 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Text, View, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-
 import { MaterialIcons } from '@expo/vector-icons';
 import { editClass } from '../../database/queries.js';
-
 import { EditButton, GoBackButton } from '../../components/Buttons.js';
-
 import appLanguage from "../../utils/languages";
 import { useLanguage } from '../../context/LanguageContext';
 import { alertDeleteClass } from '../../components/Alerts.js';
-
 import { useDarkMode } from '../../context/DarkModeContext.js';
 import { createStyles } from '../../styles/index.js';
-
 import { SafeareaNoNav } from '../../components/SafeArea.js';
-
+import { TextField } from '../../components/TextField.js';
 
 
 export default function EditClassScreen() {
@@ -34,6 +29,10 @@ export default function EditClassScreen() {
 
     const getTranslatedText = (key) => {
         return appLanguage[language][key];
+    }
+
+    const handleChangeClass = (value) => {
+        setCurrentClass(value)
     }
 
 
@@ -76,26 +75,11 @@ export default function EditClassScreen() {
                             <MaterialIcons name="delete" size={30} color={theme.textPrimary}/>
                         </TouchableOpacity>
                     </View>
-                    
 
-                    <TextInput 
+                    <TextField
                         value={currentClass}
-                        onChangeText={setCurrentClass}
-                        placeholder='Edytuj zajęcia...'
-                        placeholderTextColor={theme.textSecondary}
-                        maxLength={50}
-                        style={{
-                            color: theme.textSecondary,
-                            width: '100%',
-                            fontSize: 25,
-                            borderWidth: 2,
-                            borderColor: theme.primary,
-                            borderRadius: 10,
-                            padding: 10,
-                            marginVertical: 10,
-                            marginTop: 30,
-                            backgroundColor: theme.secondary
-                        }}
+                        onChangeText={handleChangeClass}
+                        secureTextEntry={false}
                     />
                     
                     <EditButton onPress={handleEditClass}/>

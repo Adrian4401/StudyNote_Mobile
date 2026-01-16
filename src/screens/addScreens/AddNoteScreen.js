@@ -2,22 +2,15 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, FlatList } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useNavigation } from '@react-navigation/native';
-
 import { GoBackButton, MakeButton } from '../../components/Buttons.js';
-
 import { loadClasses, loadSubjects, addNote } from '../../database/queries.js';
-
 import { createDate } from '../../utils/date.js';
-
 import appLanguage from "../../utils/languages";
 import { useLanguage } from '../../context/LanguageContext';
-
 import { useDarkMode } from '../../context/DarkModeContext.js';
 import { createStyles } from '../../styles/index.js';
-
 import { SafeareaNoNav } from '../../components/SafeArea.js';
-
-
+import { TextField } from '../../components/TextField.js';
 
 
 export default function AddNoteScreen() {
@@ -69,6 +62,10 @@ export default function AddNoteScreen() {
         return { label: myclass.class_name, value: myclass.class_id.toString() };
     })
 
+    handleChangeTitle = (value) => {
+        setCurrentTitle(value)
+    }
+
     const handleAddNote = () => {
         if(currentTitle.length > 0 && currentNote.length > 0 && currentSubject !== null && currentClass !== null) {
             addNote(currentTitle, currentNote, currentSubject, currentClass, todayDate, navigation)
@@ -88,24 +85,10 @@ export default function AddNoteScreen() {
             )
         } else if(item.type === 'titleTextInput') {
             return(
-                <TextInput 
-                    value={currentTitle}
-                    onChangeText={setCurrentTitle}
+                <TextField
                     placeholder={getTranslatedText('noteTitlePlaceholder')}
-                    placeholderTextColor={theme.textSecondary}
-                    maxLength={100}
-                    multiline
-                    style={{
-                        color: theme.textPrimary,
-                        fontSize: 25,
-                        borderWidth: 1,
-                        borderColor: theme.primary,
-                        borderRadius: 10,
-                        padding: 10,
-                        marginVertical: 10,
-                        marginTop: 30,
-                        backgroundColor: theme.secondary
-                    }}
+                    onChangeText={handleChangeTitle}
+                    secureTextEntry={false}
                 />
             )
         } else if(item.type === 'subjectsDropDownPicker') {

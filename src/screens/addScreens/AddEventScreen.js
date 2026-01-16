@@ -1,31 +1,19 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
 import DropDownPicker from 'react-native-dropdown-picker';
-
 import { FontAwesome5 } from '@expo/vector-icons';
-
 import { GoBackButton, MakeButton } from '../../components/Buttons.js';
-
 import { loadClasses, loadSubjects, selectChosenNotes, addEvent } from '../../database/queries.js';
-
 import DateTimePicker from '@react-native-community/datetimepicker';
-
 import Checkbox from 'expo-checkbox';
-
 import appLanguage from "../../utils/languages";
 import { useLanguage } from '../../context/LanguageContext';
-
 import { useDarkMode } from '../../context/DarkModeContext.js';
 import { createStyles } from '../../styles/index.js';
-
 import { SafeareaNoNav } from '../../components/SafeArea.js';
-
 import { formatDate } from '../../utils/date.js'
-
-
-
+import { TextField } from '../../components/TextField.js';
 
 
 export default function AddEventScreen() {
@@ -102,6 +90,10 @@ export default function AddEventScreen() {
         console.log(tempDate.toLocaleString());
     }
 
+    const handleChangeTitle = (value) => {
+        setCurrentTitle(value)
+    }
+
     const handleNoteCheckboxChange = (index) => {
         const newCheckedNotes = [...checkedNotes];
         newCheckedNotes[index] = !newCheckedNotes[index];
@@ -140,24 +132,10 @@ export default function AddEventScreen() {
             )
         } else if(item.type === 'titleTextInput') {
             return(
-                <TextInput 
-                    value={currentTitle}
-                    onChangeText={setCurrentTitle}
+                <TextField
                     placeholder={getTranslatedText('eventTitlePlaceholder')}
-                    placeholderTextColor={theme.textSecondary}
-                    maxLength={100}
-                    multiline
-                    style={{
-                        color: theme.textPrimary,
-                        fontSize: 25,
-                        borderWidth: 1,
-                        borderColor: theme.primary,
-                        borderRadius: 10,
-                        paddingVertical: 5,
-                        paddingHorizontal: 10,
-                        marginTop: 30,
-                        backgroundColor: theme.secondary
-                    }}
+                    onChangeText={handleChangeTitle}
+                    secureTextEntry={false}
                 />
             )
         } else if(item.type === 'subjectsPicker') {

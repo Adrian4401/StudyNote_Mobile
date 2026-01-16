@@ -1,20 +1,14 @@
-import { Text, View, ScrollView, TextInput } from 'react-native';
+import { Text, View, ScrollView } from 'react-native';
 import { useEffect, useState } from 'react';
-
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-
 import { GoBackButton, MakeButton } from '../../components/Buttons.js';
-
 import { addClass, loadClasses } from '../../database/queries.js';
-
 import appLanguage from "../../utils/languages";
 import { useLanguage } from '../../context/LanguageContext';
-
 import { useDarkMode } from '../../context/DarkModeContext.js';
 import { createStyles } from '../../styles/index.js';
-
 import { SafeareaNoNav } from '../../components/SafeArea.js';
-
+import { TextField } from '../../components/TextField.js';
 
 
 export default function AddClassScreen() {
@@ -31,6 +25,9 @@ export default function AddClassScreen() {
         return appLanguage[language][key];
     }
 
+    const handleClassChange = (value) => {
+        setCurrentClass(value)
+    }
 
     useEffect(() => {
         loadClasses(setClasses);
@@ -88,40 +85,20 @@ export default function AddClassScreen() {
                         <GoBackButton />
                     </View>
                     
-
-                    <TextInput 
-                        value={currentClass}
-                        onChangeText={setCurrentClass}
+                    <TextField
                         placeholder={getTranslatedText('addClassesPlaceholder')}
-                        placeholderTextColor={theme.textSecondary}
-                        maxLength={50}
-                        style={{
-                            color: theme.textPrimary,
-                            width: '100%',
-                            fontSize: 25,
-                            borderWidth: 2,
-                            borderColor: theme.primary,
-                            borderRadius: 10,
-                            padding: 10,
-                            marginVertical: 10,
-                            marginTop: 30,
-                            backgroundColor: theme.secondary
-                        }}
+                        onChangeText={handleClassChange}
+                        secureTextEntry={false}
                     />
                     
                     <MakeButton onPress={handleAddClass}/>
 
                     {showBottomClassesInfo()}
                     
-
                     {showClasses()}
 
                 </View>
             </ScrollView>
-
-            {/* <View style={globalStyles.bottomButtonsView}>
-                <Button title='Usun tabele' onPress={deleteSubjects} />
-            </View> */}
 
         </SafeareaNoNav>
     )
