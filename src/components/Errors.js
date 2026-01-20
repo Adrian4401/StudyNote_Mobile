@@ -1,19 +1,12 @@
-import { View, Text, StyleSheet } from "react-native"
+import { View, Text } from "react-native"
+import { componentsStyles } from "./styles"
 
 export const Error = ({ message, getTranslatedText }) => {
+    const styles = componentsStyles()
+    
     return (
         <View style={styles.errorContainer}>
             <Text style={styles.errorText}>{getTranslatedText(message)}</Text>
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    errorContainer: {
-        padding: 10,
-        backgroundColor: '#F59099',
-        borderRadius: 5,
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-    }
-})

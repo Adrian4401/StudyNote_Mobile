@@ -1,4 +1,3 @@
-import { MyColors } from "../../styles/colors";
 import { StyleSheet } from "react-native";
 import { fontSizes } from "../../styles/typography";
 

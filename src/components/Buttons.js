@@ -1,24 +1,17 @@
 import { Text, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-
 import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'
-
 import appLanguage from '../utils/languages'
 import { useLanguage } from '../context/LanguageContext'
-
 import { useDarkMode } from '../context/DarkModeContext';
-import { createStyles } from '../styles/index.js';
-
-import { fontSizes } from '../styles/typography.js'
-
+import { componentsStyles } from './styles'
 import { LinearGradient } from 'expo-linear-gradient';
 
 
 export const GoBackButton = () => {
     const navigation = useNavigation();
-
     const { theme } = useDarkMode()
-    const styles = createStyles(theme)
+    const styles = componentsStyles(theme).buttons
 
     const { language } = useLanguage();
     const getTranslatedText = (key) => {
@@ -35,7 +28,7 @@ export const GoBackButton = () => {
 
 export const MakeButton = ({onPress}) => {
     const { theme } = useDarkMode()
-    const styles = createStyles(theme)
+    const styles = componentsStyles(theme).buttons
 
     const { language } = useLanguage();
     const getTranslatedText = (key) => {
@@ -44,7 +37,6 @@ export const MakeButton = ({onPress}) => {
 
     return (
         <TouchableOpacity style={styles.makeButton} onPress={onPress} >
-            {/* <FontAwesome5 name="plus" size={40} color="#fff" /> */}
             <Text style={{fontSize: 22, paddingVertical: 2, color: theme.textPrimary, textTransform: 'uppercase', fontWeight: '500'}}>{getTranslatedText('add')}</Text>
         </TouchableOpacity>
     )
@@ -52,7 +44,7 @@ export const MakeButton = ({onPress}) => {
 
 export const EditButton = ({onPress}) => {
     const { theme } = useDarkMode()
-    const styles = createStyles(theme)
+    const styles = componentsStyles(theme).buttons
 
     const { language } = useLanguage();
     const getTranslatedText = (key) => {
@@ -61,7 +53,6 @@ export const EditButton = ({onPress}) => {
 
     return (
         <TouchableOpacity style={styles.makeButton} onPress={onPress} >
-            {/* <MaterialIcons name="edit" size={40} color='white'/> */}
             <Text style={{fontSize: 22, paddingVertical: 2, color: theme.textPrimary, textTransform: 'uppercase', fontWeight: '500'}}>{getTranslatedText('edit')}</Text>
         </TouchableOpacity>
     )
@@ -69,62 +60,35 @@ export const EditButton = ({onPress}) => {
 
 export const SettingsScreenButton = ({onPress, icon, text}) => {
     const { theme } = useDarkMode()
-    const styles = createStyles(theme)
+    const styles = componentsStyles(theme).buttons
 
     return (
-        <TouchableOpacity onPress={onPress} style={{...styles.eventView, flexDirection: 'row', paddingHorizontal: 20}}>
+        <TouchableOpacity onPress={onPress} style={styles.settingsScreenButton}>
             <MaterialCommunityIcons name={icon} size={24} color={theme.primary} style={{paddingHorizontal: 5}}/>
-            <Text style={styles.subjectText}>{text}</Text>
+            <Text style={styles.settingsScreenButtonText}>{text}</Text>
         </TouchableOpacity>
     )
 }
 
 export const AuthButton = ({onPress, text, outlined}) => {
     const { theme } = useDarkMode()
-    const styles = createStyles(theme)
+    const styles = componentsStyles(theme).buttons
 
     return (
         outlined ? 
-            <TouchableOpacity style={{width: '100%', backgroundColor: theme.newBackground, height: 50, width: '98.5%', alignItems: 'center', borderRadius: 10, borderWidth: 1, borderColor: theme.textPrimary}} onPress={onPress} >
-                <Text style={{fontSize: fontSizes.medium, paddingVertical: 10, color: theme.textPrimary, fontWeight: '500'}}>{text}</Text>
+            <TouchableOpacity style={styles.authButtonOutlined.container} onPress={onPress} >
+                <Text style={styles.authButtonOutlined.text}>{text}</Text>
             </TouchableOpacity> 
             : 
             <LinearGradient
                 colors={theme.gradientMain}
-                style={{borderRadius: 10, width: '100%', height: 50, alignItems: 'center', justifyContent: 'center', marginTop: 10}}
+                style={styles.authButton.gradient}
                 start={{x: 0, y: 0.75}}
                 end={{x: 1, y: 0.25}}
             >
-                <TouchableOpacity style={{width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center'}} onPress={onPress} >
-                    <Text style={{fontSize: fontSizes.medium, paddingVertical: 10, color: theme.textPrimary, fontWeight: '500'}}>{text}</Text>
+                <TouchableOpacity style={styles.authButton.container} onPress={onPress} >
+                    <Text style={styles.authButton.text}>{text}</Text>
                 </TouchableOpacity> 
             </LinearGradient>
     )
 }
-
-// const styles = StyleSheet.create ({
-//     goBackButton: {
-//         flexDirection: 'row',
-//         alignItems: 'center',
-//         paddingVertical: 10
-//     },
-//     goBackText: {
-//         color: '#fff',
-//         fontSize: 25,
-//         paddingRight: 5
-//     },
-//     makeButton: {
-//         width: '100%',
-//         flexDirection: 'row',
-//         backgroundColor: MyColors.appBlue,
-//         paddingVertical: 5,
-//         borderRadius: 20,
-//         justifyContent: 'center',
-//         marginTop: 20
-//     },
-//     makeText: {
-//         color: '#fff',
-//         fontSize: 25,
-//         paddingRight: 5
-//     }
-// });

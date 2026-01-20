@@ -1,13 +1,8 @@
 import { Alert } from "react-native";
-
 import { deleteAllData, deleteSubject, deleteClass, deleteEvent, deleteNote } from '../database/queries.js'
 
 
-
-
-
 export const alertDeleteAllData = (getTranslatedText) => {
-
     return (
         Alert.alert(getTranslatedText('deletingData'), getTranslatedText('deleteDataQuestion'), [
             {
@@ -23,9 +18,7 @@ export const alertDeleteAllData = (getTranslatedText) => {
     )
 }
 
-
 export const alertDeleteSubject = (subjectID, setSubjects, navigation, getTranslatedText) => {
-
     Alert.alert(getTranslatedText('deletingSubject'), getTranslatedText('deleteSubjectQuestion'), [
         {
             text: getTranslatedText('cancel'),
@@ -38,7 +31,6 @@ export const alertDeleteSubject = (subjectID, setSubjects, navigation, getTransl
         }
     ])
 }
-
 
 export const alertDeleteClass = (classID, setClasses, navigation, getTranslatedText) => {
     Alert.alert(getTranslatedText('deletingClass'), getTranslatedText('deleteClassQuestion'), [
@@ -54,7 +46,6 @@ export const alertDeleteClass = (classID, setClasses, navigation, getTranslatedT
     ])
 }
 
-
 export const alertDeleteEvent = (eventID, navigation, getTranslatedText) => {
     Alert.alert(getTranslatedText('deletingEvent'), getTranslatedText('deleteEventQuestion'), [
         {
@@ -68,7 +59,6 @@ export const alertDeleteEvent = (eventID, navigation, getTranslatedText) => {
         }
     ])
 }
-
 
 export const alertDeleteNote = (noteID, navigation, getTranslatedText) => {
     Alert.alert(getTranslatedText('deletingNote'), getTranslatedText('deleteNoteQuestion'), [

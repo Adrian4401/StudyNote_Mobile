@@ -115,32 +115,6 @@ export const createStyles = (theme) => {
             flexDirection: 'row',
             justifyContent: 'space-between'
         },
-
-        // 'GO BACK' BUTTON 
-        goBackButton: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingVertical: 10
-        },
-        goBackText: {
-            color: theme.textPrimary,
-            fontSize: fontSizes.large,
-            paddingRight: 5
-        },
-        makeButton: {
-            width: '100%',
-            flexDirection: 'row',
-            backgroundColor: theme.primary,
-            paddingVertical: 5,
-            borderRadius: 20,
-            justifyContent: 'center',
-            marginTop: 20
-        },
-        makeText: {
-            color: '#fff',
-            fontSize: fontSizes.large,
-            paddingRight: 5
-        }
     })
 }
 
