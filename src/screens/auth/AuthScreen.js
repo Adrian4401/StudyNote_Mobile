@@ -26,14 +26,10 @@ export default function AuthScreen() {
   const { setUserToken } = useAuth();
   const { theme } = useDarkMode();
   const styles = authStyles(theme);
-  const [isRegistering, setIsRegistering] = useState(false);
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [repeatedPassword, setRepeatedPassword] =
-    useState("");
 
+  const [isRegistering, setIsRegistering] = useState(false);
   const { language } = useLanguage();
+  
   const getTranslatedText = (key) => {
     return appLanguage[language][key];
   };

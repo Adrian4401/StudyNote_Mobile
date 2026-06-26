@@ -35,10 +35,17 @@ export const componentsStyles = (theme) =>
     // ERROR
     errorContainer: {
       padding: 10,
-      backgroundColor: '#F59099',
-      borderRadius: 5,
+      backgroundColor: 'rgba(255, 160, 168, 0.8)',
+      borderRadius: 8,
       alignItems: 'center',
       justifyContent: 'flex-start',
+      marginTop: 40,
+      borderWidth: 1,
+      borderColor: 'red',
+    },
+    errorText: {
+      color: 'red',
+      fontSize: 14
     },
     // BUTTONS
     buttons: {

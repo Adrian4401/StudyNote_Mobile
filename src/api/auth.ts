@@ -1,7 +1,7 @@
 import { API_URLS } from './urls';
 
 interface LoginParams {
-    email: string;
+    emailOrUsername: string;
     password: string;
 }
 
@@ -11,20 +11,22 @@ interface RegisterParams {
     password: string;
 }
 
-export async function login({ email, password }: LoginParams) {
+export async function login({ emailOrUsername, password }: LoginParams) {
     const response = await fetch(API_URLS.AUTH.LOGIN, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ emailOrUsername, password }),
     });
 
-    console.log('status:', response.status);
     const text = await response.text();
-    console.log('response text:', text);
+    const data = text ? JSON.parse(text) : null;
 
-    if (!response.ok) throw new Error(`Login failed: ${response.status}`);
+    console.log('response text:', text);
+    console.log('status:', response.status);
+
+    if (!response.ok) throw new Error(data?.errorCode || `Login failed: ${response.status}`);
     
-    return JSON.parse(text);
+    return data;
 }
 
 export async function register({ username, email, password }: RegisterParams) {

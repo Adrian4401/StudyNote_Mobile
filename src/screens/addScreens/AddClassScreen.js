@@ -89,6 +89,7 @@ export default function AddClassScreen() {
                         placeholder={getTranslatedText('addClassesPlaceholder')}
                         onChangeText={handleClassChange}
                         secureTextEntry={false}
+                        value={currentClass}
                     />
                     
                     <MakeButton onPress={handleAddClass}/>

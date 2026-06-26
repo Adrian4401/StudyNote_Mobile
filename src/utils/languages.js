@@ -109,6 +109,16 @@ const appLanguage = {
         deletingData: 'Usuwanie danych',
         deleteDataQuestion: 'Czy na pewno chcesz usunąć wszystkie dane?',
 
+
+
+        // ERRORS
+
+        // AUTH
+        USER_NOT_FOUND: 'Nie znaleziono użytkownika',
+        INVALID_PASSWORD: 'Nieprawidłowe hasło',
+        MISSING_LOGIN_FIELDS: 'Podaj email lub nazwę użytkownika oraz hasło',
+        UNKNOWN_ERROR: 'Wystąpił nieznany błąd'
+
     },
     en: {
         // GENERAL
@@ -221,6 +231,15 @@ const appLanguage = {
         deletingData: 'Deleting data',
         deleteDataQuestion: 'Are you sure you want to delete all data?',
 
+        
+
+        // ERRORS
+
+        // AUTH
+        USER_NOT_FOUND: 'User not found',
+        INVALID_PASSWORD: 'Invalid password',
+        MISSING_LOGIN_FIELDS: 'Enter email or username and password',
+        UNKNOWN_ERROR: 'Unknown error occurred'
     }
 }
 

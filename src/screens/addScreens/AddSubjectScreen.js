@@ -83,6 +83,7 @@ export default function AddSubjectScreen() {
                         placeholder={getTranslatedText('addSubjectsPlaceholder')}
                         onChangeText={handleSubjectChange}
                         secureTextEntry={false}
+                        value={currentSubject}
                     />
                     
                     <MakeButton onPress={() => addSubject(currentSubject, setCurrentSubject, subjects, setSubjects)}/>

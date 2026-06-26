@@ -604,7 +604,7 @@ export const addSubject = async (currentSubject, setCurrentSubject, subjects, se
                     let existingSubjects = [...subjects];
                     existingSubjects.push({subject_id: resultSet.insertId, subject_name: currentSubject});
                     setSubjects(existingSubjects);
-                    setCurrentSubject(undefined);
+                    setCurrentSubject("");
                     console.log('DATA -- Subject added successfully');
                 },
                 (error) => console.log('ERROR -- Adding subject failed -> ' + error)
