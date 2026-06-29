@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 
@@ -14,11 +14,15 @@ import { createStyles } from '../styles/index';
 
 import { Safearea } from '../components/SafeArea.js';
 
+import { getAllSubjects } from '../api/subjects';
+
+import { useAuth } from '../context/AuthContext.js';
+
 
 
 
 export default function ManageScreen() {
-
+  const { userToken } = useAuth()
   const navigation = useNavigation();
 
   const [subjects, setSubjects] = useState([]);
@@ -34,22 +38,30 @@ export default function ManageScreen() {
   }
 
 
-  useEffect(() => {
+  useFocusEffect(
+    useCallback(() => {
+        const loadSubjects = async () => {
+            if (!userToken) return
 
-    const loadData = navigation.addListener('focus', () => {
-      loadSubjectsAndClasses(setSubjects, setClasses)
-    });
+            try {
+                const data = await getAllSubjects(userToken)
+                setSubjects(data)
+            } catch (error) {
+                console.log('Loading subjects failed', error.message)
+            }
+        }
 
-    return loadData;
-  }, [navigation])
+        loadSubjects()
+    }, [userToken])
+  )
 
 
   const showSubjects = () => {
     return subjects.map((subject, index) => {
         return(
             <View key={index} style={manageStyles.itemsView}>
-                <Text style={manageStyles.itemsText}>{subject.subject_name}</Text>
-                <TouchableOpacity onPress={() => navigation.navigate('EditSubjectScreen', { subjectID: subject.subject_id, subjectName: subject.subject_name })} style={{flex: 1, alignItems: 'flex-end'}}>
+                <Text style={manageStyles.itemsText}>{subject.name}</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('EditSubjectScreen', { subjectID: subject.id, subjectName: subject.name })} style={{flex: 1, alignItems: 'flex-end'}}>
                   <MaterialIcons name="edit" size={24} color={theme.textPrimary}/>
                 </TouchableOpacity>
             </View>

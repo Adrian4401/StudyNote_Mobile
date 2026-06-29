@@ -1,7 +1,7 @@
 import { Platform, TouchableOpacity, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { Ionicons, FontAwesome } from '@expo/vector-icons'
+import { Ionicons, FontAwesome, FontAwesome6 } from '@expo/vector-icons'
 import { useDarkMode } from '../context/DarkModeContext'
 import { 
     CalendarScreen, 
@@ -87,12 +87,12 @@ export function MainTabNavigator() {
           }}
         />
         <Tab.Screen 
-          name='Add' 
+          name='Tests' 
           component={AddEventScreen}
           options={{
             tabBarIcon: () => {
               return(
-                <Ionicons name="add-outline" size={45} color="#fff" />
+                <FontAwesome6 name="file-contract" size={25} color="#fff" />
               )
             },
             tabBarButton: (props) => (

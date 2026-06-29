@@ -38,6 +38,7 @@ const appLanguage = {
         thisWeekEventsLittleText: 'najbliższe 7 dni',
         futureEventsText: 'Dalsze terminy',
         olderEventsText: 'Archiwalne',
+        todayDate: 'Dziś jest',
 
         // NOTES SCREEN
         notesScreentitle: 'Notatnik',
@@ -159,6 +160,7 @@ const appLanguage = {
         thisWeekEventsLittleText: 'next 7 days',
         futureEventsText: 'Future deadlines',
         olderEventsText: 'Archived',
+        todayDate: 'Today is',
 
         // NOTES SCREEN
         notesScreentitle: 'Notebook',

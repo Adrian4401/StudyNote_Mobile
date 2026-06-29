@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Text, View, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { editSubject } from '../../database/queries.js';
+import { updateSubject, deleteSubject } from '../../api/subjects';
+import { useAuth } from '../../context/AuthContext.js';
 import { EditButton, GoBackButton } from '../../components/Buttons.js';
 import appLanguage from "../../utils/languages";
 import { useLanguage } from '../../context/LanguageContext';
@@ -14,7 +15,7 @@ import { TextField } from '../../components/TextField.js';
 
 
 export default function EditSubjectScreen() {
-
+    const { userToken } = useAuth()
     const navigation = useNavigation();
     const route = useRoute();
 
@@ -42,12 +43,33 @@ export default function EditSubjectScreen() {
 
 
 
-    const handleEditSubject = () => {
-        editSubject(subjectID, currentSubject, setSubjects, navigation)
+    const handleEditSubject = async () => {
+        if (!currentSubject || currentSubject.trim() === '') {
+            console.log('Cannot edit empty subject')
+            return
+        }
+
+        try {
+            await updateSubject(subjectID, currentSubject.trim(), userToken)
+            console.log('Subject updated successfully')
+            navigation.goBack()
+        } catch (error) {
+            console.log('Editing subject failed', error.message)
+        }
+    }
+
+    const confirmDeleteSubject = async () => {
+        try {
+            await deleteSubject(subjectID, userToken)
+            console.log('Subject deleted successfully')
+            navigation.goBack()
+        } catch (error) {
+            console.log('Deleting subject failed', error.message)
+        }
     }
 
     const handleDeleteSubject = () => {
-        alertDeleteSubject(subjectID, setSubjects, navigation, getTranslatedText)
+        alertDeleteSubject(getTranslatedText, confirmDeleteSubject)
     }
 
     const handleChangeSubject = (value) => {

@@ -38,7 +38,7 @@ export default function AddClassScreen() {
     const showBottomClassesInfo = () => {
         if(classes && classes.length > 0){
             return(
-                <View style={{width: '100%', justifyContent: 'flex-start', marginBottom: 10, marginTop: 40}}>
+                <View style={{width: '100%', justifyContent: 'flex-start', marginBottom: 10, marginTop: 60}}>
                     <Text style={styles.littleText}>{getTranslatedText('yourClasses')}</Text>
                 </View>
             )
@@ -46,7 +46,7 @@ export default function AddClassScreen() {
             return(
                 <View style={{width: '100%', alignItems: 'center', marginTop: 100}}>
                     <Text style={styles.littleText}>{getTranslatedText('emptyClassesInfo')}.</Text>
-                    <MaterialCommunityIcons name="emoticon-sad" size={100} color={theme.textSecondary} style={{marginTop: 20}}/>
+                    <MaterialCommunityIcons name="notebook-plus" size={50} color={theme.textSecondary} style={{marginTop: 20}}/>
                 </View>
             )
         }

@@ -4,5 +4,6 @@ export const API_URLS = {
     AUTH: {
         LOGIN: `${CONFIG.API_URL}/auth/login`,
         REGISTER: `${CONFIG.API_URL}/auth/register`,
-    }
+    },
+    SUBJECT: `${CONFIG.API_URL}/subjects`
 }

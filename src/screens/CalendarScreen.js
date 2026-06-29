@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import { FontAwesome5, FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5, FontAwesome, AntDesign } from '@expo/vector-icons';
 
 import { loadEvents } from '../database/queries';
 
@@ -10,7 +10,7 @@ import { CustomStatusBar } from '../components/StatusBar';
 
 import { showEvents } from '../components/ShowEvents';
 
-import { createDate } from '../utils/date';
+import { textDate } from '../utils/date';
 
 import { useLanguage } from '../context/LanguageContext';
 import appLanguage from "../utils/languages";
@@ -20,20 +20,21 @@ import { createStyles } from '../styles/index';
 
 import { Safearea } from '../components/SafeArea';
 
+import { useAuth } from '../context/AuthContext';
+
 
 
 
 export default function CalendarScreen() {
   const { language } = useLanguage();
   const { theme } = useDarkMode();
+  const { user } = useAuth();
 
   const navigation = useNavigation();
 
   const [weeklyData, setWeeklyData] = useState([]);
   const [futureData, setFutureData] = useState([]);
   const [olderData, setOlderData] = useState([]);
-
-  const todayDate = createDate()
   
   const styles = createStyles(theme)
   const getTranslatedText = (key) => {
@@ -120,19 +121,19 @@ export default function CalendarScreen() {
 
   const calendarStyles = StyleSheet.create({
     headlineUserView: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: 'column',
+      // alignItems: 'center',
+      gap: 10,
+      justifyContent: 'space-between',
       marginBottom: 20,
-      backgroundColor: theme.inputBackground,
+      // backgroundColor: theme.inputBackground,
       paddingVertical: 10,
       paddingHorizontal: 15,
       borderRadius: 20
     },
     headlineUserText: {
-      fontSize: 25, 
-      textTransform: 'uppercase', 
+      fontSize: 24, 
       color: theme.textPrimary,
-      flex: 2
     },
     eventNameView: {
       width: '100%',
@@ -166,8 +167,20 @@ export default function CalendarScreen() {
           {/* USER HEADLINE */}
           <View style={styles.headlineView}>
             <View style={calendarStyles.headlineUserView}>
-              <FontAwesome5 name="calendar-day" size={22} color={theme.textPrimary} />
-              <Text style={{...calendarStyles.headlineUserText, fontSize: 20, textAlign: 'center'}}>{todayDate}</Text>
+              <View>
+                <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+                  <Text style={calendarStyles.headlineUserText}>
+                    Witaj <Text style={{color: theme.primary}}>{user?.username}</Text>!
+                  </Text>
+                  <TouchableOpacity onPress={() => navigation.navigate('AddEventScreen')}>
+                    <AntDesign name="plus" size={26} color={theme.textPrimary} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <FontAwesome5 name="calendar-day" size={14} color={theme.textSecondary} style={{marginRight: 14}} />
+                <Text style={{...calendarStyles.headlineUserText, textAlign: 'center', fontSize: 16, color: theme.textSecondary}}>{getTranslatedText('todayDate')} {textDate(language)}</Text>
+              </View>
             </View>
           </View>
 

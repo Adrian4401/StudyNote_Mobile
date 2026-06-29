@@ -14,7 +14,7 @@ export const componentsStyles = (theme) =>
         borderRadius: 10,
         borderWidth: 1,
         borderColor: theme.textPrimary,
-        marginBottom: 20,
+        marginVertical: 20
       },
       searchIcon: {
         paddingVertical: 10,
@@ -66,7 +66,7 @@ export const componentsStyles = (theme) =>
         paddingVertical: 5,
         borderRadius: 20,
         justifyContent: 'center',
-        marginTop: 20
+        marginTop: 10
       },
       makeText: {
         color: '#fff',

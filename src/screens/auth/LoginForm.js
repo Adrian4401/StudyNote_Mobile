@@ -11,7 +11,7 @@ import { Error } from '../../components/Errors';
 
 export const LoginForm = () => {
     const { theme } = useDarkMode()
-    const { setUserToken } = useAuth()
+    const { setUserToken, setUser } = useAuth()
 
     const [emailOrUsername, setEmailOrUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -35,7 +35,10 @@ export const LoginForm = () => {
 
         try {
             const response = await login({ emailOrUsername, password });
+
             setUserToken(response.token);
+            setUser(response.user);
+
             console.log('Token: ', response.token);
         } catch (error) {
             setErrorCode(error.message)

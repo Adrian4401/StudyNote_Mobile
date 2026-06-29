@@ -1,5 +1,6 @@
 import { Alert } from "react-native";
-import { deleteAllData, deleteSubject, deleteClass, deleteEvent, deleteNote } from '../database/queries.js'
+import { deleteAllData, deleteClass, deleteEvent, deleteNote } from '../database/queries.js'
+// import { deleteSubject } from "../api/subjects.js";
 
 
 export const alertDeleteAllData = (getTranslatedText) => {
@@ -18,18 +19,23 @@ export const alertDeleteAllData = (getTranslatedText) => {
     )
 }
 
-export const alertDeleteSubject = (subjectID, setSubjects, navigation, getTranslatedText) => {
-    Alert.alert(getTranslatedText('deletingSubject'), getTranslatedText('deleteSubjectQuestion'), [
-        {
-            text: getTranslatedText('cancel'),
-            onPress: () => console.log('Anuluj'),
-            style: 'cancel'
-        },
-        {
-            text: getTranslatedText('delete'),
-            onPress: () => deleteSubject(subjectID, setSubjects, navigation)
-        }
-    ])
+export const alertDeleteSubject = (getTranslatedText, onConfirm) => {
+    Alert.alert(
+        getTranslatedText('deletingSubject'),
+        getTranslatedText('deleteSubjectQuestion'),
+        [
+            {
+                text: getTranslatedText('cancel'),
+                onPress: () => console.log('Anuluj'),
+                style: 'cancel',
+            },
+            {
+                text: getTranslatedText('delete'),
+                onPress: onConfirm,
+                style: 'destructive',
+            },
+        ]
+    )
 }
 
 export const alertDeleteClass = (classID, setClasses, navigation, getTranslatedText) => {

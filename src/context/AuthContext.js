@@ -1,25 +1,36 @@
 import { createContext, useState, useEffect, useContext, useMemo } from 'react'
 import * as SecureStore from 'expo-secure-store';
 
-const AuthContext = createContext({ userToken: null, setUserToken: () => {} })
+const AuthContext = createContext({ 
+    userToken: null, 
+    setUserToken: () => {},
+    user: null,
+    setUser: () => {}
+})
 
 export const AuthProvider = ({ children }) => {
     const [userToken, setUserTokenState] = useState(null)
+    const [user, setUserState] = useState(null)
 
     useEffect(() => {
-        const loadUserToken = async () => {
+        const loadData = async () => {
             try {
                 const token = await SecureStore.getItemAsync('userToken')
+                const storedUser = await SecureStore.getItemAsync('user')
+
                 if (token !== null) {
                     setUserTokenState(token)
-                    console.log('User token z local storage: ', token)
+                }
+
+                if (storedUser !== null) {
+                    setUserState(JSON.parse(storedUser))
                 }
             } catch (err) {
                 console.log('Błąd odczytania tokenu: ', err)
             }
         }
 
-        loadUserToken()
+        loadData()
     }, [])
 
     const setUserToken = async (token) => {
@@ -35,18 +46,41 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
-    const deleteUserToken = async (token) => {
+    const setUser = async (user) => {
         try {
-            if (token !== null) {
-                await SecureStore.deleteItemAsync('userToken')
+            if (user == null) {
+                await SecureStore.deleteItemAsync('user')
+                setUserState(null)
+            } else {
+                await SecureStore.setItemAsync('user', JSON.stringify(user))
+                setUserState(user)
             }
+        } catch (err) {
+            console.log('Błąd zapisu użytkownika: ', err)
+        }
+    }
+
+    const deleteUserToken = async () => {
+        try {
+            await SecureStore.deleteItemAsync('userToken')
+            await SecureStore.deleteItemAsync('user')
+
+            setUserTokenState(null)
+            setUserState(null)
+
             console.log('Token usunięty')
         } catch (err) {
             console.log('Błąd zapisu tokenu: ', err)
         }
     }
 
-    const value = useMemo(() => ({ userToken, setUserToken, deleteUserToken }), [userToken])
+    const value = useMemo(() => ({ 
+        userToken, 
+        user,
+        setUserToken, 
+        deleteUserToken, 
+        setUser 
+    }), [userToken, user])
 
     return (
         <AuthContext.Provider value={value}>

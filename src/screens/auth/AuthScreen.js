@@ -8,11 +8,10 @@ import {
   Platform,
   TouchableWithoutFeedback,
 } from "react-native";
-import { useAuth } from "../../context/AuthContext";
 import { SafeareaAuth } from "../../components/SafeArea";
 import { useDarkMode } from "../../context/DarkModeContext";
 import { AuthButton } from "../../components/Buttons";
-import { FontAwesome6 } from "@expo/vector-icons";
+import { FontAwesome6, Entypo } from "@expo/vector-icons";
 import { fontSizes } from "../../styles/typography";
 import { Error } from "../../components/Errors";
 import { LoginForm } from "./LoginForm";
@@ -23,7 +22,6 @@ import { useLanguage } from "../../context/LanguageContext";
 import { authStyles } from "./styles";
 
 export default function AuthScreen() {
-  const { setUserToken } = useAuth();
   const { theme } = useDarkMode();
   const styles = authStyles(theme);
 
@@ -132,13 +130,13 @@ const Header = ({ title, styles }) => {
           color={theme.textSecondary}
           style={{ marginRight: 20 }}
         />
-        <FontAwesome6
-          name="square-instagram"
+        <Entypo
+          name="instagram"
           size={fontSizes.medium}
           color={theme.textSecondary}
           style={{ marginRight: 20 }}
         />
-        <FontAwesome6
+        <Entypo
           name="facebook"
           size={fontSizes.medium}
           color={theme.textSecondary}
