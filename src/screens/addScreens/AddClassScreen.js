@@ -2,17 +2,18 @@ import { Text, View, ScrollView } from 'react-native';
 import { useEffect, useState } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { GoBackButton, MakeButton } from '../../components/Buttons.js';
-import { addClass, loadClasses } from '../../database/queries.js';
 import appLanguage from "../../utils/languages";
 import { useLanguage } from '../../context/LanguageContext';
 import { useDarkMode } from '../../context/DarkModeContext.js';
 import { createStyles } from '../../styles/index.js';
 import { SafeareaNoNav } from '../../components/SafeArea.js';
 import { TextField } from '../../components/TextField.js';
+import { useAuth } from '../../context/AuthContext.js';
+import { getAllClasses, addClass } from '../../api/classes';
 
 
 export default function AddClassScreen() {
-
+    const { userToken } = useAuth()
     const [classes, setClasses] = useState([]);
     const [currentClass, setCurrentClass] = useState(undefined);
 
@@ -30,9 +31,21 @@ export default function AddClassScreen() {
     }
 
     useEffect(() => {
-        loadClasses(setClasses);
-        console.log(classes)
-    }, []);
+        const loadUserClasses = async () => {
+            if(!userToken) return
+
+            try {
+                console.log('DATA -- Classes loaded')
+                const data = await getAllClasses(userToken)
+                console.log('CLASSES FROM API: ', data)
+                setClasses(data)
+            } catch (error) {
+                console.log('Loading classes failed', error.message)
+            }
+        }
+
+        loadUserClasses()
+    }, [userToken]);
 
 
     const showBottomClassesInfo = () => {
@@ -56,14 +69,34 @@ export default function AddClassScreen() {
         return classes.map((myclass, index) => {
             return(
                 <View key={index} style={styles.eventView}>
-                    <Text style={styles.subjectText}>{myclass.class_name}</Text>
+                    <Text style={styles.subjectText}>{myclass.name}</Text>
                 </View>
             )
         })
     }
 
-    const handleAddClass = () => {
-        addClass(currentClass, setCurrentClass, classes, setClasses)
+    const handleAddClass = async () => {
+        if (!currentClass || currentClass.trim() === '') {
+            console.log('Cannot add empty class')
+            return
+        }
+
+        try {
+            const newClass = await addClass({
+                name: currentClass.trim(),
+                token: userToken
+            })
+
+            setClasses((prevClasses) => [
+                ...prevClasses,
+                newClass
+            ])
+
+            setCurrentClass('')
+            console.log('Class added successfully')
+        } catch (error) {
+            console.log('Adding class failed: ', error.message)
+        }
     }
  
 

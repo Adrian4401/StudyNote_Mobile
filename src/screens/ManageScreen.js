@@ -4,8 +4,6 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 
-import { loadSubjectsAndClasses } from '../database/queries.js';
-
 import { useLanguage } from '../context/LanguageContext';
 import appLanguage from "../utils/languages";
 
@@ -15,6 +13,7 @@ import { createStyles } from '../styles/index';
 import { Safearea } from '../components/SafeArea.js';
 
 import { getAllSubjects } from '../api/subjects';
+import { getAllClasses } from '../api/classes';
 
 import { useAuth } from '../context/AuthContext.js';
 
@@ -50,8 +49,19 @@ export default function ManageScreen() {
                 console.log('Loading subjects failed', error.message)
             }
         }
+        const loadClasses = async () => {
+            if (!userToken) return
+
+            try {
+                const data = await getAllClasses(userToken)
+                setClasses(data)
+            } catch (error) {
+                console.log('Loading classes failed', error.message)
+            }
+        }
 
         loadSubjects()
+        loadClasses()
     }, [userToken])
   )
 
@@ -73,8 +83,8 @@ export default function ManageScreen() {
     return classes.map((myclass, index) => {
         return(
             <View key={index} style={manageStyles.itemsView}>
-                <Text style={manageStyles.itemsText}>{myclass.class_name}</Text>
-                <TouchableOpacity onPress={() => navigation.navigate('EditClassScreen', { classID: myclass.class_id, className: myclass.class_name })} style={{flex: 1, alignItems: 'flex-end'}}>
+                <Text style={manageStyles.itemsText}>{myclass.name}</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('EditClassScreen', { classID: myclass.id, className: myclass.name })} style={{flex: 1, alignItems: 'flex-end'}}>
                   <MaterialIcons name="edit" size={24} color={theme.textPrimary}/>
                 </TouchableOpacity>
             </View>
@@ -93,7 +103,7 @@ export default function ManageScreen() {
     itemsView: {
       width: '100%',
       backgroundColor: theme.secondary,
-      borderRadius: 20,
+      borderRadius: 12,
       padding: 10,
       marginVertical: 5,
       flexDirection: 'row',

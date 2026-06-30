@@ -11,10 +11,12 @@ import { useDarkMode } from '../../context/DarkModeContext.js';
 import { createStyles } from '../../styles/index.js';
 import { SafeareaNoNav } from '../../components/SafeArea.js';
 import { TextField } from '../../components/TextField.js';
+import { useAuth } from '../../context/AuthContext.js';
+import { deleteClass, updateClass } from '../../api/classes';
 
 
 export default function EditClassScreen() {
-
+    const { userToken } = useAuth()
     const navigation = useNavigation();
     const route = useRoute();
 
@@ -39,18 +41,40 @@ export default function EditClassScreen() {
 
     useEffect(() => {
         const { classID, className } = route.params;
+
         setCurrentClass(className);
         setClassID(classID);
     }, []);
 
     
 
-    const handleEditClass = () => {
-        editClass(classID, currentClass, setClasses, navigation)
+    const handleEditClass = async () => {
+        if (!currentClass || currentClass.trim() === '') {
+            console.log('Cannot edit empty class')
+            return
+        }
+
+        try {
+            await updateClass(classID, currentClass.trim(), userToken)
+            console.log('Class updated successfully')
+            navigation.goBack()
+        } catch (error) {
+            console.log('Editing class failed: ', error.errorCode)
+        }
+    }
+    
+    const confirmDeleteClass = async () => {
+        try {
+            await deleteClass(classID, userToken)
+            console.log('Class deleted successfully')
+            navigation.goBack()
+        } catch (error) {
+            console.log('Deleting class failed: ', error.errorCode)
+        }
     }
 
-    const handleDeleteClass = () => {
-        alertDeleteClass(classID, setClasses, navigation, getTranslatedText)
+    const handleDeleteClass = (value) => {
+        alertDeleteClass(getTranslatedText, confirmDeleteClass)
     }
 
 

@@ -38,8 +38,10 @@ export const alertDeleteSubject = (getTranslatedText, onConfirm) => {
     )
 }
 
-export const alertDeleteClass = (classID, setClasses, navigation, getTranslatedText) => {
-    Alert.alert(getTranslatedText('deletingClass'), getTranslatedText('deleteClassQuestion'), [
+export const alertDeleteClass = (getTranslatedText, onConfirm) => {
+    Alert.alert(
+        getTranslatedText('deletingClass'), 
+        getTranslatedText('deleteClassQuestion'), [
         {
             text: getTranslatedText('cancel'),
             onPress: () => console.log('Anuluj'),
@@ -47,7 +49,8 @@ export const alertDeleteClass = (classID, setClasses, navigation, getTranslatedT
         },
         {
             text: getTranslatedText('delete'),
-            onPress: () => deleteClass(classID, setClasses, navigation)
+            onPress: onConfirm,
+            style: 'destructive'
         }
     ])
 }

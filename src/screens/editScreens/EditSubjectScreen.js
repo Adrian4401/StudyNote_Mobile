@@ -19,7 +19,6 @@ export default function EditSubjectScreen() {
     const navigation = useNavigation();
     const route = useRoute();
 
-    const [subjects, setSubjects] = useState([]);
     const [currentSubject, setCurrentSubject] = useState('');
     const [subjectID, setSubjectID] = useState('');
 
