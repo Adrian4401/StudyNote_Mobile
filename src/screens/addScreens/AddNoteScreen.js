@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, FlatList } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useNavigation } from '@react-navigation/native';
 import { GoBackButton, MakeButton } from '../../components/Buttons.js';
-import { loadClasses, loadSubjects, addNote } from '../../database/queries.js';
+import { addNote } from '../../api/notes';
 import { createDate } from '../../utils/date.js';
 import appLanguage from "../../utils/languages";
 import { useLanguage } from '../../context/LanguageContext';
@@ -11,10 +11,13 @@ import { useDarkMode } from '../../context/DarkModeContext.js';
 import { createStyles } from '../../styles/index.js';
 import { SafeareaNoNav } from '../../components/SafeArea.js';
 import { TextField } from '../../components/TextField.js';
+import { getAllSubjects } from '../../api/subjects';
+import { useAuth } from '../../context/AuthContext.js';
+import { getAllClasses } from '../../api/classes';
 
 
 export default function AddNoteScreen() {
-
+    const { userToken } = useAuth()
     const navigation = useNavigation();
 
     const [openSubjects, setOpenSubjects] = useState(false);
@@ -44,33 +47,66 @@ export default function AddNoteScreen() {
 
     
     useEffect(() => {
-        const loadData = navigation.addListener('focus', () => {
-            loadSubjects(setSubjects),
-            loadClasses(setClasses)
-        })
-        
-        return loadData;
-    }, [navigation])
+        if(!userToken) {
+            return
+        }
+
+        const loadSubjects = async () => {
+            try {
+                const data = await getAllSubjects(userToken)
+                console.log('Subjects loaded successfully')
+                setSubjects(data)
+            } catch (error) {
+                console.log('Failed to load subjects: ', error.errorCode)
+            }
+        }
+        const loadClasses = async () => {
+            try {
+                const data = await getAllClasses(userToken)
+                console.log('Classes loaded successfully')
+                setClasses(data)
+            } catch (error) {
+                console.log('Failed to load classes: ', error.errorCode)
+            }
+        }
+
+        loadSubjects()
+        loadClasses()
+    }, [userToken])
 
 
 
     const subjectItems = subjects.map(subject => {
-        return { label: subject.subject_name, value: subject.subject_id.toString() };
+        return { label: subject.name, value: subject.id.toString() };
     });
 
     const classesItems = classes.map(myclass => {
-        return { label: myclass.class_name, value: myclass.class_id.toString() };
+        return { label: myclass.name, value: myclass.id.toString() };
     })
 
     handleChangeTitle = (value) => {
         setCurrentTitle(value)
     }
 
-    const handleAddNote = () => {
-        if(currentTitle.length > 0 && currentNote.length > 0 && currentSubject !== null && currentClass !== null) {
-            addNote(currentTitle, currentNote, currentSubject, currentClass, todayDate, navigation)
-        } else {
-            setCompleteFieldsInfo(true)
+    const handleAddNote = async () => {
+        if(!currentTitle.length > 0 || !currentNote.length > 0 || currentSubject === null || currentClass === null) {
+            console.log('MISSING FIELDS')
+            return
+        } 
+
+        try {
+            const newNote = await addNote({
+                title: currentTitle,
+                body: currentNote,
+                subjectId: currentSubject,
+                classId: currentClass,
+                token: userToken
+            })
+
+            console.log('Note added successfully: ', newNote)
+            navigation.goBack()
+        } catch (error) {
+            console.log('Adding note failed: ', error.errorCode)
         }
     }
 

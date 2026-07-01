@@ -4,7 +4,6 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { EditButton, GoBackButton } from '../../components/Buttons.js';
 import { selectEditedNote, editNote } from '../../database/queries.js';
-import Moment from 'moment';
 import 'moment/locale/pl'
 import appLanguage from "../../utils/languages";
 import { useLanguage } from '../../context/LanguageContext';
@@ -12,16 +11,21 @@ import { useDarkMode } from '../../context/DarkModeContext.js';
 import { createStyles } from '../../styles/index.js';
 import { SafeareaNoNav } from '../../components/SafeArea.js';
 import { TextField } from '../../components/TextField.js';
+import { useAuth } from '../../context/AuthContext';
+import { getAllSubjects } from '../../api/subjects';
+import { getAllClasses } from '../../api/classes';
+import { getNote, updateNote } from '../../api/notes';
 
 
 export default function EditNoteScreen() {
-
+    const { userToken } = useAuth()
     const navigation = useNavigation();
 
     const route = useRoute();
 
+    const [note, setNote] = useState([])
     const [currentTitle, setCurrentTitle] = useState('');
-    const [currentNote, setCurrentNote] = useState('');
+    const [currentBody, setCurrentBody] = useState('');
 
     const [openSubjects, setOpenSubjects] = useState(false);
     const [openClasses, setOpenClasses] = useState(false);
@@ -40,40 +44,84 @@ export default function EditNoteScreen() {
         return appLanguage[language][key];
     }
 
-    const handleChangeTitle = (value) => {
-        setCurrentTitle(value)
-    }
-
     useEffect(() => {
-        const { noteID } = route.params;
-        setNoteID(noteID)
+        const { noteId } = route.params;
+        
+        const loadNote = async () => {
+            if (!userToken) return
 
-        const loadData = navigation.addListener('focus', () => {
-            selectEditedNote(setSubjects, setClasses, noteID, setCurrentTitle, setCurrentNote, setCurrentSubject, setCurrentClass)
-        })
+            try {
+                const data = await getNote(noteId, userToken)
+                console.log('Note loaded successfully')
+                setNote(data)
+                setCurrentClass(data.classId)
+                setCurrentSubject(data.subjectId)
+                setCurrentBody(data.body)
+                setCurrentTitle(data.title)
+            } catch (error) {
+                console.log('Loading notes failed', error.message)
+            }
+        }
 
-        console.log('ID przedmiotu: ' + currentSubject);
+        const loadSubjects = async () => {
+            if (!userToken) return
 
-        return loadData;
-    }, [navigation, currentSubject])
+            try {
+                const data = await getAllSubjects(userToken)
+                console.log('Subjects loaded successfully')
+                setSubjects(data)
+            } catch (error) {
+                console.log('Loading subjects failed', error.message)
+            }
+        }
+
+        const loadClasses = async () => {
+            if (!userToken) return
+
+            try {
+                const data = await getAllClasses(userToken)
+                console.log('Classes loaded successfully')
+                setClasses(data)
+            } catch (error) {
+                console.log('Loading classes failed', error.message)
+            }
+        }
+
+        loadSubjects()
+        loadClasses()
+        loadNote()
+    }, [userToken])
 
 
 
     const subjectItems = subjects.map(subject => ({
-        label: subject.subject_name,
-        value: subject.subject_id,
+        label: subject.name,
+        value: subject.id,
     }));
 
     const classesItems = classes.map(myclass => ({
-        label: myclass.class_name,
-        value: myclass.class_id,
+        label: myclass.name,
+        value: myclass.id,
     }));
 
+    const handleChangeTitle = (value) => {
+        setCurrentTitle(value)
+    }
 
+    const handleEditNote = async () => {
+        if (!currentTitle || !currentBody || !currentSubject || !currentClass) {
+            console.log('Cannot edit empty note')
+            return
+        }
 
-    Moment.locale('pl');
-    var noteDate = new Date().toLocaleString();
-    var formattedNoteDate = Moment(formattedNoteDate).format('DD.MM.yyyy');
+        try {
+            await updateNote(note.note_id, currentTitle, currentBody, currentSubject, currentClass, userToken)
+            console.log('Note updated successfully')
+            navigation.goBack()
+        } catch (error) {
+            console.log('Editing note failed', error.message)
+        }
+    }
 
 
 
@@ -127,8 +175,8 @@ export default function EditNoteScreen() {
         } else if(item.type === 'noteTextInput') {
             return(
                 <TextInput 
-                    value={currentNote.toString()}
-                    onChangeText={setCurrentNote}
+                    value={currentBody}
+                    onChangeText={setCurrentBody}
                     placeholderTextColor={theme.textSecondary}
                     multiline={true}
                     style={{
@@ -150,7 +198,7 @@ export default function EditNoteScreen() {
             )
         } else if(item.type === 'editButton') {
             return(
-                <EditButton onPress={() => editNote(currentTitle, currentNote, currentSubject, currentClass, noteID, navigation)} />
+                <EditButton onPress={handleEditNote} />
             )
         }
     }

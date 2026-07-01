@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 
 import { GoBackButton } from '../../components/Buttons.js';
 
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
-
-import { selectNoteToRead } from '../../database/queries.js';
 
 import appLanguage from "../../utils/languages";
 import { useLanguage } from '../../context/LanguageContext';
@@ -16,22 +14,20 @@ import { useDarkMode } from '../../context/DarkModeContext.js';
 import { createStyles } from '../../styles/index.js';
 
 import { SafeareaNoNav } from '../../components/SafeArea.js';
+import { useAuth } from '../../context/AuthContext.js';
+import { getNote, deleteNote } from '../../api/notes';
+import { textDate } from '../../utils/date.js';
 
 
 
 
 export default function ReadNoteScreen() {
-
+    const { userToken } = useAuth()
     const navigation = useNavigation();
 
     const route = useRoute();
 
-    const [title, setTitle] = useState('');
-    const [subject, setSubject] = useState('');
-    const [myclass, setMyclass] = useState('');
-    const [createDay, setCreateDay] = useState('');
     const [note, setNote] = useState('');
-    const [noteID, setNoteID] = useState(null);
 
     const { theme } = useDarkMode()
     const styles = createStyles(theme)
@@ -43,23 +39,45 @@ export default function ReadNoteScreen() {
     }
     
 
+    useFocusEffect(
+        useCallback(() => {
+            const { noteId } = route.params
 
-    useEffect(() => {
-        const { noteID } = route.params;
-        setNoteID(noteID)
+            const loadNote = async () => {
+                if (!userToken) return
+    
+                try {
+                    const data = await getNote(noteId, userToken)
+                    console.log('Note loaded successfully')
+                    setNote(data)
+                } catch (error) {
+                    console.log('Loading notes failed', error.message)
+                }
+            }
+    
+            loadNote()
+        }, [userToken])
+    )
 
-        const loadData = navigation.addListener('focus', () => {
-            selectNoteToRead(noteID, setTitle, setNote, setSubject, setMyclass, setCreateDay)
-        })
 
-        return loadData;
-    }, [navigation])
+    // const handleDeleteNote = () => {
+    //     alertDeleteNote(note.note_id, navigation, getTranslatedText)
+    // }
 
-
+    const confirmDeleteNote = async () => {
+        try {
+            await deleteNote(note.note_id, userToken)
+            console.log('Note deleted successfully')
+            navigation.goBack()
+        } catch (error) {
+            console.log('Deleting note failed', error.message)
+        }
+    }
 
     const handleDeleteNote = () => {
-        alertDeleteNote(noteID, navigation, getTranslatedText)
+        alertDeleteNote(getTranslatedText, confirmDeleteNote)
     }
+    
 
 
     const noteStyles = StyleSheet.create({
@@ -127,7 +145,7 @@ export default function ReadNoteScreen() {
                             <TouchableOpacity onPress={handleDeleteNote}>
                                 <MaterialIcons name="delete" size={30} color={theme.textPrimary}/>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => navigation.navigate('EditNoteScreen', { noteID: noteID })}>
+                            <TouchableOpacity onPress={() => navigation.navigate('EditNoteScreen', { noteId: note.note_id })}>
                                 <MaterialIcons name="edit" size={30} color={theme.textPrimary}/>
                             </TouchableOpacity>
                         </View>
@@ -138,27 +156,27 @@ export default function ReadNoteScreen() {
                     <View style={{width: '100%', alignItems: 'flex-start'}}>
                         <View style={{marginVertical: 25}}>
                             <View style={noteStyles.noteDataView}>
-                                <Text style={noteStyles.noteDataText}>{createDay}</Text>
+                                <Text style={noteStyles.noteDataText}>{textDate(note.created_day)}</Text>
                             </View>
                             <View style={noteStyles.infoView}>
                                 <FontAwesome5 name="book" size={18} color={theme.textPrimary} style={{flex: 1}}/>
-                                <Text style={noteStyles.infoText}>{subject}</Text>
+                                <Text style={noteStyles.infoText}>{note.subject_name}</Text>
                             </View>
                             <View style={noteStyles.infoView}>
                                 <FontAwesome5 name="info-circle" size={18} color={theme.textPrimary} style={{flex: 1}} />
-                                <Text style={noteStyles.infoText}>{myclass}</Text>
+                                <Text style={noteStyles.infoText}>{note.class_name}</Text>
                             </View>
                         </View>
                         
                         <View style={{marginVertical: 5}}>
-                            <Text style={{fontSize: 30, color: theme.textPrimary}}>{title}</Text>
+                            <Text style={{fontSize: 30, color: theme.textPrimary}}>{note.title}</Text>
                         </View>        
                     </View>
 
                     <View style={noteStyles.line} />
 
                     <View style={{width: '100%'}}>
-                        <Text style={{color: theme.textPrimary, fontSize: 17}}>{note}</Text>
+                        <Text style={{color: theme.textPrimary, fontSize: 17}}>{note.body}</Text>
                     </View>
                     
 

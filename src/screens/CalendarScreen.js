@@ -101,7 +101,7 @@ export default function CalendarScreen() {
     if(weeklyData.length <= 0 && futureData.length <= 0 && olderData.length <= 0) {
       return (
         <View style={{alignItems: 'center'}}>
-          <Text style={{color: theme.textSecondary, fontSize: 20, marginTop: '30%', marginBottom: '5%', textTransform: 'uppercase'}}>{getTranslatedText('emptyEventsText')}</Text>
+          <Text style={{color: theme.textSecondary, fontSize: 20, marginTop: '50%', marginBottom: '5%', textTransform: 'uppercase'}}>{getTranslatedText('emptyEventsText')}</Text>
           <FontAwesome name="folder-open" size={50} color={theme.textSecondary} />
         </View>
       )

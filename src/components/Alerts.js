@@ -55,6 +55,23 @@ export const alertDeleteClass = (getTranslatedText, onConfirm) => {
     ])
 }
 
+export const alertDeleteNote = (getTranslatedText, onConfirm) => {
+    Alert.alert(
+        getTranslatedText('deletingNote'), 
+        getTranslatedText('deleteNoteQuestion'), [
+        {
+            text: getTranslatedText('cancel'),
+            onPress: () => console.log('Anuluj'),
+            style: 'cancel'
+        },
+        {
+            text: getTranslatedText('delete'),
+            onPress: onConfirm,
+            style: 'destructive'
+        }
+    ])
+}
+
 export const alertDeleteEvent = (eventID, navigation, getTranslatedText) => {
     Alert.alert(getTranslatedText('deletingEvent'), getTranslatedText('deleteEventQuestion'), [
         {
@@ -69,16 +86,3 @@ export const alertDeleteEvent = (eventID, navigation, getTranslatedText) => {
     ])
 }
 
-export const alertDeleteNote = (noteID, navigation, getTranslatedText) => {
-    Alert.alert(getTranslatedText('deletingNote'), getTranslatedText('deleteNoteQuestion'), [
-        {
-            text: getTranslatedText('cancel'),
-            onPress: () => console.log('Anuluj'),
-            style: 'cancel'
-        },
-        {
-            text: getTranslatedText('delete'),
-            onPress: () => deleteNote(noteID, navigation)
-        }
-    ])
-}

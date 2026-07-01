@@ -7,4 +7,5 @@ export const API_URLS = {
     },
     SUBJECT: `${CONFIG.API_URL}/subjects`,
     CLASS: `${CONFIG.API_URL}/classes`,
+    NOTE: `${CONFIG.API_URL}/notes`,
 }
