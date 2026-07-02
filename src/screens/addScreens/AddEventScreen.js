@@ -14,11 +14,17 @@ import { createStyles } from '../../styles/index.js';
 import { SafeareaNoNav } from '../../components/SafeArea.js';
 import { formatDate } from '../../utils/date.js'
 import { TextField } from '../../components/TextField.js';
+import { useAuth } from '../../context/AuthContext.js';
+import { useSubjects } from '../../hooks/useSubjects.js';
+import { useClasses } from '../../hooks/useClasses.js';
 
 
 export default function AddEventScreen() {
-
+    const { userToken } = useAuth()
     const navigation = useNavigation();
+
+    const { subjects, loadSubjects } = useSubjects()
+    const { classes, loadClasses } = useClasses()
 
     const [openSubjects, setOpenSubjects] = useState(false);
     const [openClasses, setOpenClasses] = useState(false);
@@ -26,9 +32,7 @@ export default function AddEventScreen() {
     const [currentTitle, setCurrentTitle] = useState('');
     const [currentDescription, setCurrentDescription] = useState('');
     const [currentClass, setCurrentClass] = useState(null);
-    const [subjects, setSubjects] = useState([]);
-    const [classes, setClasses] = useState([]);
-    const [valueSubjects, setValueSubjects] = useState(null);
+    const [currentSubject, setCurrentSubject] = useState(null);
     
     const [data, setData] = useState([]);
 
@@ -54,24 +58,18 @@ export default function AddEventScreen() {
 
 
     useEffect(() => {
-        const loadData = navigation.addListener('focus', () => {
-            loadSubjects(setSubjects),
-            loadClasses(setClasses)
-        })
+        loadSubjects()
+        loadClasses()
+    }, [loadSubjects, loadClasses])
 
-        selectChosenNotes(valueSubjects, setData);
 
-        setCheckedNotes(new Array(data.length).fill(false))
-        
-        return loadData;
-    }, [navigation, valueSubjects, setData, data.length])
 
     const subjectItems = subjects.map(subject => {
-        return { label: subject.subject_name, value: subject.subject_id.toString() };
+        return { label: subject.name, value: subject.id.toString() };
     });
 
     const classesItems = classes.map(myclass => {
-        return { label: myclass.class_name, value: myclass.class_id.toString() };
+        return { label: myclass.name, value: myclass.id.toString() };
     })
 
     const showMode = (currentMode) => {
@@ -114,8 +112,8 @@ export default function AddEventScreen() {
     const selectedDate = formatDate(date);
 
     const handleAddEvent = () => {
-        if(currentTitle.length > 0 && currentDescription.length > 0 && date !== null && currentClass !== null && valueSubjects !== null) {
-            addEvent(navigation, currentTitle, currentDescription, date, valueSubjects, currentClass, checkedNoteIDs)
+        if(currentTitle.length > 0 && currentDescription.length > 0 && date !== null && currentClass !== null && currentSubject !== null) {
+            addEvent(navigation, currentTitle, currentDescription, date, currentSubject, currentClass, checkedNoteIDs)
         } else {
             setCompleteFieldsInfo(true)
         }
@@ -143,11 +141,11 @@ export default function AddEventScreen() {
                 <DropDownPicker
                     placeholder={getTranslatedText('chooseSubject')}
                     open={openSubjects}
-                    value={valueSubjects}
+                    value={currentSubject}
                     items={subjectItems}
                     setOpen={setOpenSubjects}
-                    setValue={setValueSubjects}
-                    setItems={setSubjects}
+                    setValue={setCurrentSubject}
+                    // setItems={setSubjects}
                     ScrollView={false}
                     style={{...eventStyles.style, marginBottom: 10, marginTop: 10}}
                     dropDownContainerStyle={eventStyles.dropDownContainerStyle}
@@ -164,7 +162,7 @@ export default function AddEventScreen() {
                     items={classesItems}
                     setOpen={setOpenClasses}
                     setValue={setCurrentClass}
-                    setItems={setClasses}
+                    // setItems={setClasses}
                     ScrollView={false}
                     style={{...eventStyles.style, marginTop: 10}}
                     dropDownContainerStyle={eventStyles.dropDownContainerStyle}
@@ -201,15 +199,20 @@ export default function AddEventScreen() {
                 return(
                     <View style={{marginBottom: 20, alignItems: 'center'}}>
 
-                        <Text style={{...styles.littleText, marginBottom: 5}}>{getTranslatedText('chooseDeadline')}</Text>
+                        <Text style={{...styles.littleText, marginBottom: 10}}>{getTranslatedText('chooseDeadline')}</Text>
 
-                        <TouchableOpacity onPress={() => showMode('date')} style={eventStyles.dateTimeButtons}>
-                            <Text style={{fontSize: 20, color: 'white'}}>{getTranslatedText('day')}</Text>
-                        </TouchableOpacity>
+                        <View style={{flexDirection: 'row', alignItems: 'center', gap: 20, width: '100%'}}>
 
-                        <TouchableOpacity onPress={() => showMode('time')} style={eventStyles.dateTimeButtons}>
-                            <Text style={{fontSize: 20, color: 'white'}}>{getTranslatedText('hour')}</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity onPress={() => showMode('date')} style={eventStyles.dateTimeButtons}>
+                                <Text style={{fontSize: 20, color: 'white'}}>{getTranslatedText('day')}</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity onPress={() => showMode('time')} style={eventStyles.dateTimeButtons}>
+                                <Text style={{fontSize: 20, color: 'white'}}>{getTranslatedText('hour')}</Text>
+                            </TouchableOpacity>
+
+                        </View>
+                        
 
                         <View style={{width: '100%', flexDirection: 'row', justifyContent: 'space-between', marginVertical: 10}}>
                             <Text style={{flex: 1, flexWrap: 'wrap', fontSize: 20, color: 'white'}}>{getTranslatedText('choosenDeadline')}:</Text>
@@ -316,13 +319,12 @@ export default function AddEventScreen() {
             color: theme.textSecondary
         },
         dateTimeButtons: {
-            height: 50,
+            height: 40,
             backgroundColor: theme.primary,
             alignItems: 'center',
             justifyContent: 'center',
-            marginVertical: 5,
-            borderRadius: 20,
-            width: '100%'
+            borderRadius: 10,
+            flex: 1
         },
         arrowIconContainerStyle: {
             backgroundColor: theme.primary,
@@ -388,7 +390,7 @@ export default function AddEventScreen() {
                     renderItem={renderItem}
                     keyExtractor={(item, index) => index.toString()}
                     showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{flexDirection: 'column-reverse', paddingBottom: 50}}
+                    contentContainerStyle={{flexDirection: 'column-reverse', paddingBottom: 50, gap: 10}}
                 />
             </View>
 
