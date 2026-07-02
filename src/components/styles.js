@@ -144,15 +144,15 @@ export const componentsStyles = (theme) =>
       container: {
         width: '100%',
         backgroundColor: theme.secondary,
-        borderRadius: 20,
+        borderRadius: 12,
         padding: 10,
         marginVertical: 5
       },
       titleContainer: {
         width: '100%',
         padding: 2,
-        backgroundColor: theme.eventBackground,
-        borderRadius: 15,
+        backgroundColor: theme.background,
+        borderRadius: 6,
         alignItems: 'center'
       },
       titleText: {

@@ -25,17 +25,17 @@ export const showEvents = (dataType, navigation) => {
           </View>
 
           <View style={styles.subjectContainer}>
-            <FontAwesome5 name="book" size={20} color={theme.textPrimary}/>
+            <FontAwesome5 name="book" size={18} color={theme.textPrimary}/>
             <Text style={styles.subjectText}>{element.subject_name}</Text>
           </View>
 
-          <View>
+          <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
             <View style={styles.dateAndTimeContainer}>
-              <Ionicons name="calendar-clear" size={18} color={theme.textSecondary} style={{marginRight: 10}} />
+              <Ionicons name="calendar-clear" size={14} color={theme.textSecondary} style={{marginRight: 10}} />
               <Text style={globalStyles.littleText}>{element.deadlineDate}</Text>
             </View>
-            <View style={{...styles.dateAndTimeContainer, marginTop: 5}}>
-              <AntDesign name="clockcircle" size={18} color={theme.textSecondary} style={{marginRight: 10}} />
+            <View style={styles.dateAndTimeContainer}>
+              <AntDesign name="clockcircle" size={14} color={theme.textSecondary} style={{marginRight: 10}} />
               <Text style={globalStyles.littleText}>{element.deadlineTime}</Text>
             </View>
           </View>

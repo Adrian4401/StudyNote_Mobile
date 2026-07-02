@@ -128,7 +128,7 @@ export default function CalendarScreen() {
       marginBottom: 20,
       // backgroundColor: theme.inputBackground,
       paddingVertical: 10,
-      paddingHorizontal: 15,
+      // paddingHorizontal: 15,
       borderRadius: 20
     },
     headlineUserText: {

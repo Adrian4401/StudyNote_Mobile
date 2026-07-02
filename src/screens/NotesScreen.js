@@ -121,17 +121,21 @@ export default function NoteScreen() {
               <Text style={styles.headlineText}>{element.title}</Text>
             </View>
 
-            <View style={{flex: 1, backgroundColor: theme.textSecondary, height: 1, marginBottom: 7}} />
+            <View style={{flex: 1, backgroundColor: theme.textSecondary, height: 1, marginVertical: 10}} />
 
-            <View style={notesStyles.infoView}>
-              <FontAwesome5 name="book" size={14} color={theme.textSecondary} style={{flex: 1}}/>
-              <Text style={notesStyles.infoText}>{element.subject_name}</Text>
+            <View style={{flexDirection: 'row', alignItems: 'center',  marginBottom: 6}}>
+              {/* <View style={notesStyles.infoView}> */}
+                <FontAwesome5 name="book" size={14} color={theme.textSecondary} />
+                <Text style={{...notesStyles.infoText, marginLeft: 10}}>{element.subject_name} - </Text>
+              {/* </View> */}
+
+              {/* <View style={notesStyles.infoView}> */}
+                {/* <FontAwesome5 name="info-circle" size={14} color={theme.textSecondary} /> */}
+                <Text style={notesStyles.infoText}>{element.class_name}</Text>
+              {/* </View> */}
             </View>
 
-            <View style={notesStyles.infoView}>
-              <FontAwesome5 name="info-circle" size={14} color={theme.textSecondary} style={{flex: 1}} />
-              <Text style={notesStyles.infoText}>{element.class_name}</Text>
-            </View>
+            
 
             <View style={notesStyles.noteDataView}>
                 <Text style={notesStyles.noteDataText}>{getTranslatedText('noteCreated')} {textDate(language)}</Text>
@@ -165,13 +169,11 @@ export default function NoteScreen() {
       flexDirection: 'row',
       marginTop: 5,
       alignItems: 'center',
-      width: '100%',
-      paddingHorizontal: 5
     },
     infoText: {
       fontSize: 14,
       color: theme.textSecondary,
-      flex: 12
+      // marginLeft: 10
     },
     noteDataView: {
       alignItems: 'flex-end',
