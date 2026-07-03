@@ -37,7 +37,7 @@ export const MakeButton = ({onPress}) => {
 
     return (
         <TouchableOpacity style={styles.makeButton} onPress={onPress} >
-            <Text style={{fontSize: 22, paddingVertical: 2, color: theme.textPrimary, textTransform: 'uppercase', fontWeight: '500'}}>{getTranslatedText('add')}</Text>
+            <Text style={{fontSize: 20, paddingVertical: 2, color: theme.textPrimary, textTransform: 'uppercase', fontWeight: '500'}}>{getTranslatedText('add')}</Text>
         </TouchableOpacity>
     )
 }

@@ -60,13 +60,12 @@ export const componentsStyles = (theme) =>
         paddingRight: 5
       },
       makeButton: {
-        width: '100%',
         flexDirection: 'row',
         backgroundColor: theme.primary,
-        paddingVertical: 5,
-        borderRadius: 20,
+        paddingVertical: 3,
+        borderRadius: 10,
         justifyContent: 'center',
-        marginTop: 10
+        paddingHorizontal: 30
       },
       makeText: {
         color: '#fff',

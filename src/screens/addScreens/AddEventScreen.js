@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { GoBackButton, MakeButton } from '../../components/Buttons.js';
-import { loadClasses, loadSubjects, selectChosenNotes, addEvent } from '../../database/queries.js';
+// import { loadClasses, loadSubjects, selectChosenNotes, addEvent } from '../../database/queries.js';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Checkbox from 'expo-checkbox';
 import appLanguage from "../../utils/languages";
@@ -17,6 +17,9 @@ import { TextField } from '../../components/TextField.js';
 import { useAuth } from '../../context/AuthContext.js';
 import { useSubjects } from '../../hooks/useSubjects.js';
 import { useClasses } from '../../hooks/useClasses.js';
+import { useNotes } from '../../hooks/useNotes.js';
+import { Error } from '../../components/Errors.js';
+import { addEvent } from '../../api/events';
 
 
 export default function AddEventScreen() {
@@ -25,6 +28,7 @@ export default function AddEventScreen() {
 
     const { subjects, loadSubjects } = useSubjects()
     const { classes, loadClasses } = useClasses()
+    const { notes, loadNotes } = useNotes()
 
     const [openSubjects, setOpenSubjects] = useState(false);
     const [openClasses, setOpenClasses] = useState(false);
@@ -60,7 +64,8 @@ export default function AddEventScreen() {
     useEffect(() => {
         loadSubjects()
         loadClasses()
-    }, [loadSubjects, loadClasses])
+        loadNotes()
+    }, [loadSubjects, loadClasses, loadNotes])
 
 
 
@@ -99,9 +104,9 @@ export default function AddEventScreen() {
 
         const newCheckedNoteIDs = [...checkedNoteIDs];
         if (newCheckedNotes[index]) {
-            newCheckedNoteIDs.push(data[index].note_id);
+            newCheckedNoteIDs.push(filteredNotes[index].note_id);
         } else {
-            const noteIDIndex = newCheckedNoteIDs.indexOf(data[index].note_id);
+            const noteIDIndex = newCheckedNoteIDs.indexOf(filteredNotes[index].note_id);
             if (noteIDIndex !== -1) {
                 newCheckedNoteIDs.splice(noteIDIndex, 1);
             }
@@ -111,21 +116,55 @@ export default function AddEventScreen() {
     
     const selectedDate = formatDate(date);
 
-    const handleAddEvent = () => {
-        if(currentTitle.length > 0 && currentDescription.length > 0 && date !== null && currentClass !== null && currentSubject !== null) {
-            addEvent(navigation, currentTitle, currentDescription, date, currentSubject, currentClass, checkedNoteIDs)
+    // const handleAddEvent = () => {
+    //     if(currentTitle.length > 0 && currentDescription.length > 0 && date !== null && currentClass !== null && currentSubject !== null) {
+    //         addEvent(navigation, currentTitle, currentDescription, date, currentSubject, currentClass, checkedNoteIDs)
+    //     } else {
+    //         setCompleteFieldsInfo(true)
+    //     }
+    // }
+
+    const filteredNotes = currentSubject
+        ? notes.filter(note => String(note.subject_id ?? note.subjectId) === String(currentSubject))
+        : []
+
+
+    const handleAddEvent = async () => {
+        if (
+            currentTitle.trim().length > 0 &&
+            currentDescription.trim().length > 0 &&
+            date !== null &&
+            currentClass !== null &&
+            currentSubject !== null
+        ) {
+            try {
+                const newEvent = await addEvent({
+                    title: currentTitle.trim(),
+                    description: currentDescription.trim(),
+                    deadline: date,
+                    subjectId: currentSubject,
+                    classId: currentClass,
+                    noteIds: checkedNoteIDs,
+                    token: userToken,
+                });
+
+                console.log('Event added successfully:', newEvent);
+                navigation.goBack();
+            } catch (error) {
+                console.log('Adding event failed:', error.message);
+            }
         } else {
-            setCompleteFieldsInfo(true)
+            setCompleteFieldsInfo(true);
         }
     }
-
 
 
     const renderItem = ({item}) => {
         if(item.type === 'goBackButton') {
             return(
-                <View style={{width: '100%', marginTop: 20}}>
+                <View style={{width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 50, marginTop: 20}}>
                     <GoBackButton />
+                    <MakeButton onPress={handleAddEvent} />
                 </View>
             )
         } else if(item.type === 'titleTextInput') {
@@ -145,7 +184,6 @@ export default function AddEventScreen() {
                     items={subjectItems}
                     setOpen={setOpenSubjects}
                     setValue={setCurrentSubject}
-                    // setItems={setSubjects}
                     ScrollView={false}
                     style={{...eventStyles.style, marginBottom: 10, marginTop: 10}}
                     dropDownContainerStyle={eventStyles.dropDownContainerStyle}
@@ -162,7 +200,6 @@ export default function AddEventScreen() {
                     items={classesItems}
                     setOpen={setOpenClasses}
                     setValue={setCurrentClass}
-                    // setItems={setClasses}
                     ScrollView={false}
                     style={{...eventStyles.style, marginTop: 10}}
                     dropDownContainerStyle={eventStyles.dropDownContainerStyle}
@@ -253,7 +290,7 @@ export default function AddEventScreen() {
                 )
             }
         } else if(item.type === 'notes') {
-            return data.map((element, index) => {
+            return filteredNotes.map((element, index) => {
                 return (
                   <TouchableOpacity key={index} onPress={() => navigation.navigate('ReadNoteScreen', { noteID: element.note_id })} style={eventStyles.noteStyle}>
         
@@ -290,14 +327,12 @@ export default function AddEventScreen() {
                   </TouchableOpacity>
                 )
               })
-        } else if(item.type === 'addButton') {
+        } else if(item.type === 'info' && completeFieldsInfo) {
             return(
-                <>
-                    {completeFieldsInfo && (
-                        <Text style={{color: 'red', textAlign: 'center'}}>Wszystkie pola muszą być uzupełnione!</Text>
-                    )}
-                    <MakeButton onPress={handleAddEvent}/>
-                </>
+                <Error
+                    message={"Wszystkie pola muszą być uzupełnione!"}
+                    getTranslatedText={getTranslatedText}
+                />
             )
         }
     }
@@ -378,7 +413,7 @@ export default function AddEventScreen() {
             <View style={styles.flatlistContainer}>
                 <FlatList 
                     data={[
-                        { type: 'addButton' },
+                        { type: 'info' },
                         { type: 'notes' },
                         { type: 'dateTimePickers' },
                         { type: 'descriptionTextInput' },
