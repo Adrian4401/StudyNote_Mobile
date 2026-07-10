@@ -10,6 +10,28 @@ interface EventParams {
     token: string;
 }
 
+export async function getAllEvents(token: string) {
+    const response = await fetch(API_URLS.EVENT, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        }
+    })
+
+    const text = await response.text()
+    console.log('GET EVENTS STATUS: ', response.status)
+    console.log('GET EVENTS RESPONSE: ', text)
+
+    const data = text ? JSON.parse(text) : null
+
+    if(!response.ok) {
+        throw new Error(data?.errorCode || data?.message || 'Cannot get events')
+    }
+
+    return data
+}
+
 export async function addEvent({
     title,
     description,

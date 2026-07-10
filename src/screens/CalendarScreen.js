@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import { FontAwesome5, FontAwesome, AntDesign } from '@expo/vector-icons';
 
@@ -22,10 +22,13 @@ import { Safearea } from '../components/SafeArea';
 
 import { useAuth } from '../context/AuthContext';
 
+import { getAllEvents } from '../api/events';
+
 
 
 
 export default function CalendarScreen() {
+  const { userToken } = useAuth()
   const { language } = useLanguage();
   const { theme } = useDarkMode();
   const { user } = useAuth();
@@ -35,6 +38,7 @@ export default function CalendarScreen() {
   const [weeklyData, setWeeklyData] = useState([]);
   const [futureData, setFutureData] = useState([]);
   const [olderData, setOlderData] = useState([]);
+  const [events, setEvents] = useState([])
   
   const styles = createStyles(theme)
   const getTranslatedText = (key) => {
@@ -42,16 +46,74 @@ export default function CalendarScreen() {
   }
 
 
-  
-  useEffect(() => {
-    const loadData = navigation.addListener('focus', () => {
-      loadEvents(setWeeklyData, setFutureData, setOlderData)
-    });
+  useFocusEffect(
+    useCallback(() => {
+      const loadEvents = async () => {
+        if (!userToken) return
 
-    return () => {
-      loadData()
-    } 
-  }, [navigation, loadEvents, setWeeklyData, setFutureData, setOlderData])
+        try {
+          const data = await getAllEvents(userToken)
+
+          const { weekly, future, older } = splitEventsByDate(data)
+
+          setEvents(data)
+          setWeeklyData(weekly)
+          setFutureData(future)
+          setOlderData(older)
+
+          console.log('Events loaded successfully')
+        } catch (error) {
+          console.log('Loading events failed: ', error.errorCode)
+        }
+      }
+
+      loadEvents()
+    }, [userToken])
+  )
+
+
+
+  const splitEventsByDate = (events) => {
+      const now = new Date()
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+
+      const nextWeek = new Date(today)
+      nextWeek.setDate(today.getDate() + 7)
+
+      const weekly = []
+      const future = []
+      const older = []
+
+      events.forEach((event) => {
+          const eventDate = new Date(event.deadline)
+          const eventDay = new Date(
+              eventDate.getFullYear(),
+              eventDate.getMonth(),
+              eventDate.getDate()
+          )
+
+          if (eventDay < today) {
+              older.push(event)
+          } else if (eventDay <= nextWeek) {
+              weekly.push(event)
+          } else {
+              future.push(event)
+          }
+      })
+
+      return { weekly, future, older }
+  }
+
+  
+  // useEffect(() => {
+  //   const loadData = navigation.addListener('focus', () => {
+  //     loadEvents(setWeeklyData, setFutureData, setOlderData)
+  //   });
+
+  //   return () => {
+  //     loadData()
+  //   } 
+  // }, [navigation, loadEvents, setWeeklyData, setFutureData, setOlderData])
 
 
 
