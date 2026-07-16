@@ -116,14 +116,6 @@ export default function AddEventScreen() {
     
     const selectedDate = formatDate(date);
 
-    // const handleAddEvent = () => {
-    //     if(currentTitle.length > 0 && currentDescription.length > 0 && date !== null && currentClass !== null && currentSubject !== null) {
-    //         addEvent(navigation, currentTitle, currentDescription, date, currentSubject, currentClass, checkedNoteIDs)
-    //     } else {
-    //         setCompleteFieldsInfo(true)
-    //     }
-    // }
-
     const filteredNotes = currentSubject
         ? notes.filter(note => String(note.subject_id ?? note.subjectId) === String(currentSubject))
         : []

@@ -32,6 +32,28 @@ export async function getAllEvents(token: string) {
     return data
 }
 
+export async function getEvent(id: number, token: string) {
+    const response = await fetch(`${API_URLS.EVENT}/${id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        }
+    })
+
+    const text = await response.text()
+    console.log('GET EVENT STATUS: ', response.status)
+    console.log('GET EVENT RESPONSE: ', text)
+
+    const data = text ? JSON.parse(text) : null
+
+    if(!response.ok) {
+        throw new Error(data?.errorCode || data?.message || 'Cannot get event')
+    }
+
+    return data
+}
+
 export async function addEvent({
     title,
     description,

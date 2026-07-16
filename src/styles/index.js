@@ -54,7 +54,7 @@ export const createStyles = (theme) => {
             paddingHorizontal: 10
         },
         headlineText: {
-            fontSize: fontSizes.medium,
+            fontSize: (fontSizes.medium - 2),
             textTransform: 'uppercase',
             color: theme.textPrimary
         },

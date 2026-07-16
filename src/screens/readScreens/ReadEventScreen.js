@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState, useCallback } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 
 import { GoBackButton } from '../../components/Buttons.js';
 
@@ -16,25 +16,21 @@ import { useDarkMode } from '../../context/DarkModeContext.js';
 import { createStyles } from '../../styles/index.js';
 
 import { SafeareaNoNav } from '../../components/SafeArea.js';
+import { getEvent } from '../../api/events';
+import { useAuth } from '../../context/AuthContext.js';
+import { formatDateOnly, formatTimeOnly } from '../../utils/date.js';
 
 
 
 
 export default function ReadEventScreen() {
-
+    const { userToken } = useAuth()
     const navigation = useNavigation();
 
     const route = useRoute();
 
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [subject, setSubject] = useState('');
-    const [myclass, setMyclass] = useState('');
-    const [deadlineDate, setDeadlineDate] = useState('');
-    const [deadlineTime, setDeadlineTime] = useState('');
+    const [note, setNote] = useState([])
     const [eventID, setEventID] = useState(null);
-
-    const [notesData, setNotesData] = useState([]);
 
     const { theme } = useDarkMode()
     const styles = createStyles(theme)
@@ -46,20 +42,26 @@ export default function ReadEventScreen() {
     }
 
 
+    useFocusEffect(
+        useCallback(() => {
+            const { eventID } = route.params
 
-    useEffect(() => {
-        const { eventID } = route.params;
-        setEventID(eventID)
-
-        const loadData = navigation.addListener('focus', () => {
-            selectEventToRead(eventID, setTitle, setDescription, setSubject, setMyclass, setDeadlineDate, setDeadlineTime)
-            selectNotesToEvent(eventID, setNotesData)
-
-            // selectAllNotesEvent();
-        })
-
-        return loadData;
-    }, [navigation])
+            const loadEvent = async () => {
+                if (!userToken) return
+                console.log('Event id: ', eventID)
+    
+                try {
+                    const data = await getEvent(eventID, userToken)
+                    console.log('Event loaded successfully')
+                    setNote(data)
+                } catch (error) {
+                    console.log('Loading event failed', error.message)
+                }
+            }
+    
+            loadEvent()
+        }, [userToken])
+    )
 
 
 
@@ -94,25 +96,29 @@ export default function ReadEventScreen() {
 
                         <View style={{marginVertical: 25}}>
                             <View style={eventStyles.infoView}>
-                                <FontAwesome5 name="calendar" size={18} color={theme.textPrimary} style={{flex: 1}}/>
-                                <Text style={eventStyles.infoText}>{deadlineDate}</Text>
+                                <FontAwesome5 name="calendar" size={18} color={theme.textPrimary} style={{flex: 1, textAlign: 'left'}}/>
+                                <Text style={eventStyles.infoText}>
+                                    {note?.deadline? formatDateOnly(note.deadline, language) : ''}
+                                </Text>
                             </View>
                             <View style={eventStyles.infoView}>
-                                <FontAwesome5 name="clock" size={18} color={theme.textPrimary} style={{flex: 1}}/>
-                                <Text style={eventStyles.infoText}>{deadlineTime}</Text>
+                                <FontAwesome5 name="clock" size={18} color={theme.textPrimary} style={{flex: 1, textAlign: 'left'}}/>
+                                <Text style={eventStyles.infoText}>
+                                    {note?.deadline? formatTimeOnly(note.deadline, language) : ''}
+                                </Text>
                             </View>
                             <View style={eventStyles.infoView}>
-                                <FontAwesome5 name="book" size={18} color={theme.textPrimary} style={{flex: 1}}/>
-                                <Text style={eventStyles.infoText}>{subject}</Text>
+                                <FontAwesome5 name="book" size={18} color={theme.textPrimary} style={{flex: 1, textAlign: 'left'}}/>
+                                <Text style={eventStyles.infoText}>{note.subject?.name}</Text>
                             </View>
                             <View style={eventStyles.infoView}>
-                                <FontAwesome5 name="info-circle" size={18} color={theme.textPrimary} style={{flex: 1}} />
-                                <Text style={eventStyles.infoText}>{myclass}</Text>
+                                <FontAwesome5 name="info-circle" size={18} color={theme.textPrimary} style={{flex: 1, textAlign: 'left'}} />
+                                <Text style={eventStyles.infoText}>{note.class?.name}</Text>
                             </View>
                         </View>
                         
                         <View style={{marginVertical: 5}}>
-                            <Text style={{fontSize: 30, color: theme.textPrimary}}>{title}</Text>
+                            <Text style={{fontSize: 30, color: theme.textPrimary}}>{note.title}</Text>
                         </View>
 
                     </View>
@@ -122,38 +128,47 @@ export default function ReadEventScreen() {
 
 
                     <View style={{width: '100%', marginBottom: 50}}>
-                        <Text style={{color: theme.textPrimary, fontSize: 17}}>{description}</Text>
+                        <Text style={{color: theme.textPrimary, fontSize: 17}}>{note.description}</Text>
                     </View>
                 </>
             )
         } else if(item.type === 'notes') {
-            return notesData.map((element, index) => {
-                return (
-                  <TouchableOpacity key={index} onPress={() => navigation.navigate('ReadNoteScreen', { noteID: element.note_id })} style={eventStyles.noteStyle}>
-     
-                    <View>
-                        <Text style={styles.headlineText}>{element.title}</Text>
-                    </View>
-        
-                    <View style={{flex: 1, backgroundColor: theme.textSecondary, height: 1, marginBottom: 7}} />
-        
-                    <View style={eventStyles.infoView}>
-                        <FontAwesome5 name="book" size={18} color={theme.textPrimary} style={{flex: 1}}/>
-                        <Text style={eventStyles.infoText}>{element.subject_name}</Text>
-                    </View>
-        
-                    <View style={eventStyles.infoView}>
-                        <FontAwesome5 name="info-circle" size={18} color={theme.textPrimary} style={{flex: 1}} />
-                        <Text style={eventStyles.infoText}>{element.class_name}</Text>
-                    </View>
-        
-                    <View style={eventStyles.noteDataView}>
-                        <Text style={eventStyles.noteDataText}>{element.create_day}</Text>
-                    </View>
+            if (!note?.notes || note.notes.length === 0) {
+                return null
+            }
 
-                  </TouchableOpacity>
-                )
-            })
+            return (
+                <View style={{ width: '100%' }}>
+                    <Text style={{ ...styles.headlineText, marginBottom: 15 }}>
+                        {getTranslatedText('attachedNotes')}
+                    </Text>
+
+                    {note.notes.map((element) => (
+                        <TouchableOpacity
+                            key={element.id}
+                            onPress={() => navigation.navigate('ReadNoteScreen', { noteID: element.id })}
+                            style={eventStyles.noteStyle}
+                        >
+                            <View>
+                                <Text style={styles.headlineText}>{element.title}</Text>
+                            </View>
+
+                            <View style={{ flex: 1, backgroundColor: theme.textSecondary, height: 1, marginVertical: 12 }} />
+
+                            <View style={eventStyles.infoView}>
+                                <FontAwesome5 name="sticky-note" size={18} color={theme.textPrimary} style={{ flex: 1 }} />
+                                <Text 
+                                    style={eventStyles.infoText}
+                                    numberOfLines={1}
+                                    ellipsizeMode='tail'
+                                >
+                                    {element.body}
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            )
         }
     }
 
@@ -167,7 +182,8 @@ export default function ReadEventScreen() {
             backgroundColor: theme.eventBackground,
             marginVertical: 20,
             borderRadius: 20,
-            paddingHorizontal: 10
+            paddingHorizontal: 10,
+            
         },
         topPanelIcons: {
             flex: 0.35,
@@ -178,8 +194,8 @@ export default function ReadEventScreen() {
         noteStyle: {
             width: '100%',
             backgroundColor: theme.secondary,
-            borderRadius: 20,
-            padding: 12,
+            borderRadius: 10,
+            padding: 8,
             marginBottom: 15, 
             borderColor: theme.textSecondary, 
             borderWidth: 1
@@ -192,13 +208,13 @@ export default function ReadEventScreen() {
         },
         infoView: {
             flexDirection: 'row',
-            marginTop: 2,
+            marginTop: 10,
             alignItems: 'center',
             width: '100%',
             paddingHorizontal: 5
         },
         infoText: {
-            fontSize: 18,
+            fontSize: 16,
             color: theme.textPrimary,
             flex: 10
         },

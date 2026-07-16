@@ -87,6 +87,9 @@ const appLanguage = {
         chooseDeadline: 'Wybierz termin',
         choosenDeadline: 'Wybrany termin',
 
+        // READ EVENT SCREEN
+        attachedNotes: 'Dołączone notatki',
+
 
 
         // ALERTS
@@ -210,6 +213,9 @@ const appLanguage = {
         addDescriptionPlaceholder: 'Add brief description...',
         chooseDeadline: 'Choose deadline',
         choosenDeadline: 'Chosen deadline',
+
+        // READ EVENT SCREEN
+        attachedNotes: 'Attached notes',
 
 
 

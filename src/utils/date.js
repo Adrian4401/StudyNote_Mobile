@@ -17,6 +17,25 @@ export const textDate = (language = 'pl') => {
     }).format(date)
 }
 
+export const formatDateOnly = (dateValue, language = 'pl') => {
+    const date = new Date(dateValue)
+
+    return new Intl.DateTimeFormat(getDateLocale(language), {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+    }).format(date)
+}
+
+export const formatTimeOnly = (dateValue, language = 'pl') => {
+    const date = new Date(dateValue)
+
+    return new Intl.DateTimeFormat(getDateLocale(language), {
+        hour: '2-digit',
+        minute: '2-digit',
+    }).format(date)
+}
+
 export const createDate = () => {
     var day = (new Date().getDate()).toString().padStart(2, '0');
     var month = (new Date().getMonth() + 1).toString().padStart(2, '0');
