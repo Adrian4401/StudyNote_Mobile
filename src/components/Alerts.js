@@ -72,8 +72,10 @@ export const alertDeleteNote = (getTranslatedText, onConfirm) => {
     ])
 }
 
-export const alertDeleteEvent = (eventID, navigation, getTranslatedText) => {
-    Alert.alert(getTranslatedText('deletingEvent'), getTranslatedText('deleteEventQuestion'), [
+export const alertDeleteEvent = (getTranslatedText, onConfirm) => {
+    Alert.alert(
+        getTranslatedText('deletingEvent'), 
+        getTranslatedText('deleteEventQuestion'), [
         {
             text: getTranslatedText('cancel'),
             onPress: () => console.log('Anuluj'),
@@ -81,7 +83,8 @@ export const alertDeleteEvent = (eventID, navigation, getTranslatedText) => {
         },
         {
             text: getTranslatedText('delete'),
-            onPress: () => deleteEvent(eventID, navigation)
+            onPress: onConfirm,
+            style: 'destructive'
         }
     ])
 }

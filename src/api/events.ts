@@ -91,3 +91,75 @@ export async function addEvent({
 
     return data;
 }
+
+interface UpdateEventParams {
+    id: number | string
+    title: string
+    description: string
+    deadline: Date
+    subjectId: string
+    classId: string
+    noteIds: number[]
+    token: string
+}
+
+export async function updateEvent({
+    id,
+    title,
+    description,
+    deadline,
+    subjectId,
+    classId,
+    noteIds,
+    token,
+}: UpdateEventParams) {
+    const response = await fetch(`${API_URLS.EVENT}/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+            title,
+            description,
+            deadline,
+            subjectId,
+            classId,
+            noteIds,
+        }),
+    })
+
+    const text = await response.text()
+    console.log('UPDATE EVENT STATUS:', response.status)
+    console.log('UPDATE EVENT RESPONSE:', text)
+
+    const data = text ? JSON.parse(text) : null
+
+    if (!response.ok) {
+        throw new Error(data?.errorCode || data?.message || 'Cannot update event')
+    }
+
+    return data
+}
+
+export async function deleteEvent(id: number, token: string) {
+    const response = await fetch(`${API_URLS.EVENT}/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        }
+    })
+
+    const text = await response.text()
+    console.log('GET EVENT STATUS: ', response.status)
+    console.log('GET EVENT RESPONSE: ', text)
+
+    const data = text ? JSON.parse(text) : null
+
+    if(!response.ok) {
+        throw new Error(data?.errorCode || data?.message || 'Cannot get event')
+    }
+
+    return data
+}

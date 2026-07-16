@@ -16,7 +16,7 @@ import { useDarkMode } from '../../context/DarkModeContext.js';
 import { createStyles } from '../../styles/index.js';
 
 import { SafeareaNoNav } from '../../components/SafeArea.js';
-import { getEvent } from '../../api/events';
+import { deleteEvent, getEvent } from '../../api/events';
 import { useAuth } from '../../context/AuthContext.js';
 import { formatDateOnly, formatTimeOnly } from '../../utils/date.js';
 
@@ -29,7 +29,7 @@ export default function ReadEventScreen() {
 
     const route = useRoute();
 
-    const [note, setNote] = useState([])
+    const [event, setEvent] = useState([])
     const [eventID, setEventID] = useState(null);
 
     const { theme } = useDarkMode()
@@ -53,7 +53,7 @@ export default function ReadEventScreen() {
                 try {
                     const data = await getEvent(eventID, userToken)
                     console.log('Event loaded successfully')
-                    setNote(data)
+                    setEvent(data)
                 } catch (error) {
                     console.log('Loading event failed', error.message)
                 }
@@ -64,10 +64,20 @@ export default function ReadEventScreen() {
     )
 
 
+    const confirmDeleteEvent = async () => {
+        try {
+            await deleteEvent(event.id, userToken)
+            console.log('Note deleted successfully')
+            navigation.goBack()
+        } catch (error) {
+            console.log('Deleting note failed', error.message)
+        }
+    }
 
     const handleDeleteEvent = () => {
-        alertDeleteEvent(eventID, navigation, getTranslatedText)
+        alertDeleteEvent(getTranslatedText, confirmDeleteEvent)
     }
+
 
 
 
@@ -80,7 +90,7 @@ export default function ReadEventScreen() {
                         <TouchableOpacity onPress={handleDeleteEvent}>
                             <MaterialIcons name="delete" size={30} color={theme.textPrimary}/>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate('EditEventScreen', { eventID: eventID })}>
+                        <TouchableOpacity onPress={() => navigation.navigate('EditEventScreen', { eventId: event.id })}>
                             <MaterialIcons name="edit" size={30} color={theme.textPrimary}/>
                         </TouchableOpacity>
                     </View>
@@ -96,29 +106,29 @@ export default function ReadEventScreen() {
 
                         <View style={{marginVertical: 25}}>
                             <View style={eventStyles.infoView}>
-                                <FontAwesome5 name="calendar" size={18} color={theme.textPrimary} style={{flex: 1, textAlign: 'left'}}/>
+                                <FontAwesome5 name="calendar-day" size={18} color={theme.textSecondary} style={{flex: 1, textAlign: 'left'}}/>
                                 <Text style={eventStyles.infoText}>
-                                    {note?.deadline? formatDateOnly(note.deadline, language) : ''}
+                                    {event?.deadline? formatDateOnly(event.deadline, language) : ''}, {event?.deadline? formatTimeOnly(event.deadline, language) : ''}
                                 </Text>
                             </View>
-                            <View style={eventStyles.infoView}>
+                            {/* <View style={eventStyles.infoView}>
                                 <FontAwesome5 name="clock" size={18} color={theme.textPrimary} style={{flex: 1, textAlign: 'left'}}/>
                                 <Text style={eventStyles.infoText}>
                                     {note?.deadline? formatTimeOnly(note.deadline, language) : ''}
                                 </Text>
-                            </View>
+                            </View> */}
                             <View style={eventStyles.infoView}>
-                                <FontAwesome5 name="book" size={18} color={theme.textPrimary} style={{flex: 1, textAlign: 'left'}}/>
-                                <Text style={eventStyles.infoText}>{note.subject?.name}</Text>
+                                <FontAwesome5 name="book" size={18} color={theme.textSecondary} style={{flex: 1, textAlign: 'left'}}/>
+                                <Text style={eventStyles.infoText}>{event.subject?.name}, {event.class?.name}</Text>
                             </View>
-                            <View style={eventStyles.infoView}>
+                            {/* <View style={eventStyles.infoView}>
                                 <FontAwesome5 name="info-circle" size={18} color={theme.textPrimary} style={{flex: 1, textAlign: 'left'}} />
                                 <Text style={eventStyles.infoText}>{note.class?.name}</Text>
-                            </View>
+                            </View> */}
                         </View>
                         
                         <View style={{marginVertical: 5}}>
-                            <Text style={{fontSize: 30, color: theme.textPrimary}}>{note.title}</Text>
+                            <Text style={{fontSize: 30, color: theme.textPrimary}}>{event.title}</Text>
                         </View>
 
                     </View>
@@ -128,25 +138,25 @@ export default function ReadEventScreen() {
 
 
                     <View style={{width: '100%', marginBottom: 50}}>
-                        <Text style={{color: theme.textPrimary, fontSize: 17}}>{note.description}</Text>
+                        <Text style={{color: theme.textPrimary, fontSize: 17}}>{event.description}</Text>
                     </View>
                 </>
             )
         } else if(item.type === 'notes') {
-            if (!note?.notes || note.notes.length === 0) {
+            if (!event?.notes || event.notes.length === 0) {
                 return null
             }
 
             return (
                 <View style={{ width: '100%' }}>
-                    <Text style={{ ...styles.headlineText, marginBottom: 15 }}>
+                    <Text style={{ ...styles.headlineText, marginBottom: 24, color: theme.textSecondary }}>
                         {getTranslatedText('attachedNotes')}
                     </Text>
 
-                    {note.notes.map((element) => (
+                    {event.notes.map((element) => (
                         <TouchableOpacity
                             key={element.id}
-                            onPress={() => navigation.navigate('ReadNoteScreen', { noteID: element.id })}
+                            onPress={() => navigation.navigate('ReadNoteScreen', { noteId: element.id })}
                             style={eventStyles.noteStyle}
                         >
                             <View>
@@ -156,7 +166,7 @@ export default function ReadEventScreen() {
                             <View style={{ flex: 1, backgroundColor: theme.textSecondary, height: 1, marginVertical: 12 }} />
 
                             <View style={eventStyles.infoView}>
-                                <FontAwesome5 name="sticky-note" size={18} color={theme.textPrimary} style={{ flex: 1 }} />
+                                <FontAwesome5 name="sticky-note" size={18} color={theme.textSecondary} style={{ flex: 1 }} />
                                 <Text 
                                     style={eventStyles.infoText}
                                     numberOfLines={1}
@@ -215,7 +225,7 @@ export default function ReadEventScreen() {
         },
         infoText: {
             fontSize: 16,
-            color: theme.textPrimary,
+            color: theme.textSecondary,
             flex: 10
         },
         noteDataView: {

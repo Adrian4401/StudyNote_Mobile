@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity, Platform } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { EditButton, GoBackButton } from '../../components/Buttons.js';
-import { selectChosenNotes, selectEditedEvent, editEvent } from '../../database/queries.js';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Checkbox from 'expo-checkbox';
 import appLanguage from "../../utils/languages";
@@ -14,10 +13,15 @@ import { createStyles } from '../../styles/index.js';
 import { SafeareaNoNav } from '../../components/SafeArea.js';
 import { formatDate } from '../../utils/date.js';
 import { TextField } from '../../components/TextField.js';
+import { useAuth } from '../../context/AuthContext.js';
+import { getEvent, updateEvent } from '../../api/events';
+import { useSubjects } from '../../hooks/useSubjects.js';
+import { useClasses } from '../../hooks/useClasses.js';
+import { getAllNotes } from '../../api/notes'
 
 
 export default function EditEventScreen() {
-
+    const { userToken } = useAuth()
     const navigation = useNavigation();
     const route = useRoute();
 
@@ -27,11 +31,15 @@ export default function EditEventScreen() {
     const [currentTitle, setCurrentTitle] = useState('');
     const [currentDescription, setCurrentDescription] = useState('');
     const [currentClass, setCurrentClass] = useState(null);
-    const [subjects, setSubjects] = useState([]);
-    const [classes, setClasses] = useState([]);
+    const { subjects, loadSubjects } = useSubjects()
+    const { classes, loadClasses } = useClasses()
     const [valueSubjects, setValueSubjects] = useState(null);
+
+    const [eventNotes, setEventNotes] = useState([])
+    const [allNotes, setAllNotes] = useState([])
     
-    const [data, setData] = useState([]);
+    const [event, setEvent] = useState(null);
+    const [notes, setNotes] = useState([])
 
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('');
@@ -54,45 +62,78 @@ export default function EditEventScreen() {
         return appLanguage[language][key];
     }
 
+
+    useFocusEffect(
+        useCallback(() => {
+            const { eventId } = route.params
+
+            const loadEvent = async () => {
+                if (!userToken) return
+                console.log('Event id: ', eventId)
     
+                try {
+                    const data = await getEvent(eventId, userToken)
 
+                    console.log('Event loaded successfully: ', data)
+
+                    setEvent(data)
+                    setNotes(data.notes || [])
+                    
+                    setCurrentTitle(data.title)
+                    setCurrentDescription(data.description)
+                    setValueSubjects(String(data.subjectId))
+                    setCurrentClass(String(data.classId))
+                    setDate(new Date(data.deadline))
+                    setEventID(data.id)
+                    setEventNotes(data.notes || [])
+                    setCheckedNoteIDs((data.notes || []).map(note => note.id))
+                } catch (error) {
+                    console.log('Loading event failed', error.message)
+                }
+            }
+
+            const loadNotes = async () => {
+                if (!userToken) return
+
+                try {
+                    const data = await getAllNotes(userToken)
+                    setAllNotes(data)
+                } catch (error) {
+                    console.log('Loading notes failed', error.message)
+                }
+            }
+    
+            loadNotes()
+            loadSubjects()
+            loadClasses()
+            loadEvent()
+        }, [userToken, loadSubjects, loadClasses])
+    )
 
 
     useEffect(() => {
-        const { eventID } = route.params;
-        setEventID(eventID)
-
-        console.log('ID wydarzenia: ', eventID)
-
-        const loadData = navigation.addListener('focus', () => {
-            selectEditedEvent(eventID, setCurrentTitle, setCurrentDescription, setValueSubjects, setCurrentClass, setDate, setSubjects, setClasses, setCheckedNoteIDs)    
-        })
-
-        selectChosenNotes(valueSubjects, setData);
-        
-        return loadData;
-    }, [navigation, valueSubjects, setData])
-
-
-    useEffect(() => {
-        const newCheckedNotes = data.map(element => checkedNoteIDs.includes(element.note_id));
+        const newCheckedNotes = notes.map(note => checkedNoteIDs.includes(note.id));
         setCheckedNotes(newCheckedNotes);
-    }, [checkedNoteIDs, data]);
+    }, [checkedNoteIDs, notes]);
     
-
     const subjectItems = subjects.map(subject => {
         return { 
-            label: subject.subject_name, 
-            value: subject.subject_id
+            label: subject.name, 
+            value: String(subject.id)
         };
     });
 
     const classesItems = classes.map(myclass => {
         return { 
-            label: myclass.class_name, 
-            value: myclass.class_id
+            label: myclass.name, 
+            value: String(myclass.id)
         };
     })
+
+
+    const filteredNotes = valueSubjects
+        ? allNotes.filter(note => String(note.subject_id ?? note.subjectId) === String(valueSubjects))
+        : []
 
 
 
@@ -118,25 +159,51 @@ export default function EditEventScreen() {
         setCurrentTitle(value)
     }
 
-    const handleNoteCheckboxChange = (index) => {
-        const newCheckedNotes = [...checkedNotes];
-        newCheckedNotes[index] = !newCheckedNotes[index];
-        setCheckedNotes(newCheckedNotes);
+    const handleNoteCheckboxChange = (note) => {
+        const noteId = note.note_id ?? note.id
 
-        const newCheckedNoteIDs = [...checkedNoteIDs];
-        if (newCheckedNotes[index]) {
-            newCheckedNoteIDs.push(data[index].note_id);
-        } else {
-            const noteIDIndex = newCheckedNoteIDs.indexOf(data[index].note_id);
-            if (noteIDIndex !== -1) {
-                newCheckedNoteIDs.splice(noteIDIndex, 1);
+        setCheckedNoteIDs((prev) => {
+            if (prev.includes(noteId)) {
+                return prev.filter(id => id !== noteId)
             }
-        }
-        setCheckedNoteIDs(newCheckedNoteIDs);
+
+            return [...prev, noteId]
+        })
     }
 
     
     const selectedDate = formatDate(date);
+
+    const handleEditEvent = async () => {
+        if (
+            !currentTitle.trim() ||
+            !currentDescription.trim() ||
+            !date ||
+            !valueSubjects ||
+            !currentClass
+        ) {
+            console.log('Cannot update event: missing fields')
+            return
+        }
+
+        try {
+            const updatedEvent = await updateEvent({
+                id: eventID,
+                title: currentTitle.trim(),
+                description: currentDescription.trim(),
+                deadline: date,
+                subjectId: valueSubjects,
+                classId: currentClass,
+                noteIds: checkedNoteIDs,
+                token: userToken,
+            })
+
+            console.log('Event updated successfully:', updatedEvent)
+            navigation.goBack()
+        } catch (error) {
+            console.log('Updating event failed:', error.message)
+        }
+    }
 
 
 
@@ -163,7 +230,6 @@ export default function EditEventScreen() {
                     items={subjectItems}
                     setOpen={setOpenSubjects}
                     setValue={setValueSubjects}
-                    setItems={setSubjects}
                     ScrollView={false}
                     style={{...eventStyles.style, marginBottom: 10, marginTop: 10}}
                     dropDownContainerStyle={eventStyles.dropDownContainerStyle}
@@ -179,7 +245,6 @@ export default function EditEventScreen() {
                     items={classesItems}
                     setOpen={setOpenClasses}
                     setValue={setCurrentClass}
-                    setItems={setClasses}
                     ScrollView={false}
                     style={{...eventStyles.style, marginTop: 20}}
                     dropDownContainerStyle={eventStyles.dropDownContainerStyle}
@@ -279,19 +344,19 @@ export default function EditEventScreen() {
             
             
         } else if(item.type === 'notes') {
-            data.forEach((element, index) => {
-                noteIndexes.push(element.note_id);
-            });
+            // data.forEach((element, index) => {
+            //     noteIndexes.push(element.note_id);
+            // });
 
-            return data.map((element, index) => {
+            return filteredNotes.map((element, index) => {
                 return (
-                  <TouchableOpacity key={index} onPress={() => navigation.navigate('ReadNoteScreen', { noteID: element.note_id })} style={eventStyles.noteStyle}>
+                  <TouchableOpacity key={index} onPress={() => navigation.navigate('ReadNoteScreen', { noteID: element.id })} style={eventStyles.noteStyle}>
         
                     <View style={{flex: 1, justifyContent: 'center'}}>
                         <Checkbox
-                            value={checkedNotes[index]}
-                            onValueChange={() => handleNoteCheckboxChange(index)}
-                            color={checkedNotes[index] ? theme.primary : undefined }
+                            value={checkedNoteIDs.includes(element.note_id ?? element.id)}
+                            onValueChange={() => handleNoteCheckboxChange(element)}
+                            color={checkedNoteIDs.includes(element.note_id ?? element.id) ? theme.primary : undefined}
                         />
                     </View>
 
@@ -313,7 +378,7 @@ export default function EditEventScreen() {
                         </View>
             
                         <View style={eventStyles.noteDataView}>
-                            <Text style={eventStyles.noteDataText}>{element.create_day}</Text>
+                            <Text style={eventStyles.noteDataText}>{element.deadline}</Text>
                         </View>
                     </View>
 
@@ -322,7 +387,7 @@ export default function EditEventScreen() {
               })
         } else if(item.type === 'addButton') {
             return(
-                <EditButton onPress={() => editEvent(navigation, currentTitle, currentDescription, date, valueSubjects, currentClass, checkedNoteIDs, eventID)}/>
+                <EditButton onPress={handleEditEvent}/>
             )
         }
     }
