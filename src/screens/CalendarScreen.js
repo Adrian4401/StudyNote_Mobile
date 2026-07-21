@@ -1,10 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { useState, useCallback } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import { FontAwesome5, FontAwesome, AntDesign } from '@expo/vector-icons';
-
-import { loadEvents } from '../database/queries';
 
 import { CustomStatusBar } from '../components/StatusBar';
 
@@ -24,6 +22,8 @@ import { useAuth } from '../context/AuthContext';
 
 import { getAllEvents } from '../api/events';
 
+import { LoadingIndicator } from '../components/LoadingIndicator';
+
 
 
 
@@ -39,6 +39,7 @@ export default function CalendarScreen() {
   const [futureData, setFutureData] = useState([]);
   const [olderData, setOlderData] = useState([]);
   const [events, setEvents] = useState([])
+  const [loading, setLoading] = useState(true)
   
   const styles = createStyles(theme)
   const getTranslatedText = (key) => {
@@ -49,11 +50,15 @@ export default function CalendarScreen() {
   useFocusEffect(
     useCallback(() => {
       const loadEvents = async () => {
-        if (!userToken) return
+        if (!userToken) {
+          setLoading(false)
+          return
+        }
+
+        setLoading(true)
 
         try {
           const data = await getAllEvents(userToken)
-
           const { weekly, future, older } = splitEventsByDate(data)
 
           setEvents(data)
@@ -64,6 +69,8 @@ export default function CalendarScreen() {
           console.log('Events loaded successfully')
         } catch (error) {
           console.log('Loading events failed: ', error.errorCode)
+        } finally {
+          setLoading(false)
         }
       }
 
@@ -103,17 +110,6 @@ export default function CalendarScreen() {
 
       return { weekly, future, older }
   }
-
-  
-  // useEffect(() => {
-  //   const loadData = navigation.addListener('focus', () => {
-  //     loadEvents(setWeeklyData, setFutureData, setOlderData)
-  //   });
-
-  //   return () => {
-  //     loadData()
-  //   } 
-  // }, [navigation, loadEvents, setWeeklyData, setFutureData, setOlderData])
 
 
 
@@ -184,13 +180,10 @@ export default function CalendarScreen() {
   const calendarStyles = StyleSheet.create({
     headlineUserView: {
       flexDirection: 'column',
-      // alignItems: 'center',
       gap: 10,
       justifyContent: 'space-between',
       marginBottom: 20,
-      // backgroundColor: theme.inputBackground,
       paddingVertical: 10,
-      // paddingHorizontal: 15,
       borderRadius: 20
     },
     headlineUserText: {
@@ -246,12 +239,18 @@ export default function CalendarScreen() {
             </View>
           </View>
 
-          <ShowAllEvents />
+          {loading ? (
+            <View style={{alignItems: 'center'}}>
+              <LoadingIndicator />
+            </View>
+          ) : (
+            <ShowAllEvents />
+          )}
 
         </View>
       </ScrollView>
 
-      <View style={{width: '100%',height: 40}} />
+      <View style={{width: '100%', height: 40}} />
 
     </Safearea>
   );

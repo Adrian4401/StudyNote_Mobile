@@ -70,13 +70,13 @@ export const SettingsScreenButton = ({onPress, icon, text}) => {
     )
 }
 
-export const AuthButton = ({onPress, text, outlined}) => {
+export const AuthButton = ({onPress, text, outlined, disabled}) => {
     const { theme } = useDarkMode()
     const styles = componentsStyles(theme).buttons
 
     return (
         outlined ? 
-            <TouchableOpacity style={styles.authButtonOutlined.container} onPress={onPress} >
+            <TouchableOpacity style={styles.authButtonOutlined.container} onPress={onPress} disabled={disabled} >
                 <Text style={styles.authButtonOutlined.text}>{text}</Text>
             </TouchableOpacity> 
             : 
@@ -86,7 +86,7 @@ export const AuthButton = ({onPress, text, outlined}) => {
                 start={{x: 0, y: 0.75}}
                 end={{x: 1, y: 0.25}}
             >
-                <TouchableOpacity style={styles.authButton.container} onPress={onPress} >
+                <TouchableOpacity style={styles.authButton.container} onPress={onPress} disabled={disabled} >
                     <Text style={styles.authButton.text}>{text}</Text>
                 </TouchableOpacity> 
             </LinearGradient>

@@ -8,6 +8,7 @@ import { useLanguage } from '../../context/LanguageContext'
 import { TextField } from '../../components/TextField';
 import { useAuth } from '../../context/AuthContext'
 import { Error } from '../../components/Errors';
+import { LoadingIndicator } from '../../components/LoadingIndicator';
 
 export const LoginForm = () => {
     const { theme } = useDarkMode()
@@ -16,6 +17,7 @@ export const LoginForm = () => {
     const [emailOrUsername, setEmailOrUsername] = useState('')
     const [password, setPassword] = useState('')
     const [errorCode, setErrorCode] = useState('')
+    const [loading, setLoading] = useState(false)
 
     const { language } = useLanguage();
     const getTranslatedText = (key) => {
@@ -31,6 +33,7 @@ export const LoginForm = () => {
     }
 
     const onLogin = async () => {
+        setLoading(true)
         setErrorCode('')
 
         try {
@@ -43,6 +46,8 @@ export const LoginForm = () => {
         } catch (error) {
             setErrorCode(error.message)
             console.error('Login failed:', error);
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -63,8 +68,13 @@ export const LoginForm = () => {
                 variant={'light'}
             />
             <AuthButton 
-                text={getTranslatedText('loginButton')} 
-                onPress={onLogin} 
+                text={
+                    loading
+                    ? <LoadingIndicator />
+                    : getTranslatedText('loginButton')
+                } 
+                onPress={onLogin}
+                disabled={loading}
             />
 
             {errorCode ? (

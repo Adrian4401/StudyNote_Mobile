@@ -138,7 +138,7 @@ export default function NoteScreen() {
             
 
             <View style={notesStyles.noteDataView}>
-                <Text style={notesStyles.noteDataText}>{getTranslatedText('noteCreated')} {textDate(language)}</Text>
+                <Text style={notesStyles.noteDataText}>{getTranslatedText('created')} {textDate(language)}</Text>
             </View>
 
           </TouchableOpacity>

@@ -45,7 +45,7 @@ const appLanguage = {
         yourNotesHeadline: 'Twoje notatki', 
         emptyNotesText: 'Nie ma jeszcze żadnych notatek',
         chooseSubjectDropdownPlaceholder: 'Wybierz przedmiot',
-        noteCreated: 'Utworzono',
+        created: 'Utworzono',
 
         // MANAGE SCREEN
         manageScreenTitle: 'Zarządzanie',
@@ -171,7 +171,7 @@ const appLanguage = {
         yourNotesHeadline: 'Your notes', 
         emptyNotesText: 'No notes yet',
         chooseSubjectDropdownPlaceholder: 'Choose subject',
-        noteCreated: 'Created',
+        created: 'Created',
 
         // MANAGE SCREEN
         manageScreenTitle: 'Management',

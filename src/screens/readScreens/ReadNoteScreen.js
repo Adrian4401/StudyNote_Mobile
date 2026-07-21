@@ -111,9 +111,9 @@ export default function ReadNoteScreen() {
             paddingHorizontal: 5
         },
         infoText: {
-            fontSize: 18,
+            fontSize: 16,
             color: theme.textPrimary,
-            flex: 10
+            // flex: 12
         },
         noteDataView: {
             marginTop: 5,
@@ -122,7 +122,7 @@ export default function ReadNoteScreen() {
         noteDataText: {
             fontSize: 12,
             color: theme.textSecondary,
-            textTransform: 'uppercase'
+            // textTransform: 'uppercase'
         },
     })
 
@@ -156,16 +156,20 @@ export default function ReadNoteScreen() {
                     <View style={{width: '100%', alignItems: 'flex-start'}}>
                         <View style={{marginVertical: 25}}>
                             <View style={noteStyles.noteDataView}>
-                                <Text style={noteStyles.noteDataText}>{textDate(note.created_day)}</Text>
+                                <Text style={noteStyles.noteDataText}>{getTranslatedText('created')} {textDate(note.created_day)}</Text>
                             </View>
                             <View style={noteStyles.infoView}>
-                                <FontAwesome5 name="book" size={18} color={theme.textPrimary} style={{flex: 1}}/>
-                                <Text style={noteStyles.infoText}>{note.subject_name}</Text>
+                                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                    <FontAwesome5 name="book" size={16} color={theme.textPrimary} style={{marginRight: 12}}/>
+                                    <Text style={noteStyles.infoText}>{note.subject_name}</Text>
+                                    <Text style={{...noteStyles.infoText, marginLeft: 12}}>({note.class_name})</Text>
+                                </View>
+                                
                             </View>
-                            <View style={noteStyles.infoView}>
-                                <FontAwesome5 name="info-circle" size={18} color={theme.textPrimary} style={{flex: 1}} />
+                            {/* <View style={noteStyles.infoView}>
+                                <FontAwesome5 name="info-circle" size={16} color={theme.textPrimary} style={{flex: 1}} />
                                 <Text style={noteStyles.infoText}>{note.class_name}</Text>
-                            </View>
+                            </View> */}
                         </View>
                         
                         <View style={{marginVertical: 5}}>
