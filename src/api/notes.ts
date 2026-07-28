@@ -142,13 +142,15 @@ export async function analyzeNote(id: number, token: string) {
         },
     })
 
-    const data = await response.json()
+    const text = await response.text()
+    console.log('ANALYZE NOTE STATUS:', response.status)
+    console.log('ANALYZE NOTE RESPONSE:', text)
+
+    const data = text ? JSON.parse(text) : null
 
     if (!response.ok) {
-        throw new Error(data?.errorCode || data?.message || 'Cannot AI analyze note')
+        throw new Error(data?.errorCode || data?.message || 'Cannot analyze note')
     }
-
-    console.log("After analize note with AI response: ", data.text)
 
     return data
 }

@@ -16,6 +16,8 @@ import EditEventScreen from "./editScreens/EditEventScreen";
 import ReadNoteScreen from "./readScreens/ReadNoteScreen";
 import ReadEventScreen from "./readScreens/ReadEventScreen";
 
+import AiNoteReviewScreen from "./aiScreens/NoteReviewScreen";
+
 
 export {
     CalendarScreen,
@@ -34,5 +36,7 @@ export {
     EditEventScreen,
     
     ReadNoteScreen,
-    ReadEventScreen
+    ReadEventScreen,
+
+    AiNoteReviewScreen
 }

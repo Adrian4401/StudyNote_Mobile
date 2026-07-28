@@ -122,19 +122,17 @@ export default function EditNoteScreen() {
         }
     }
 
-    const handleAiFixNote = async () => {
+    const handleAiFixNote = () => {
         if (!note.note_id) {
             console.log('Cannot edit with AI empty note')
             return
         }
 
-        try {
-            const data = await analyzeNote(note.note_id, userToken)
-            console.log('Note with AI updated successfully: ', data)
-            // navigation.goBack()
-        } catch (error) {
-            console.log('Editing with AI note failed', error.message)
-        }
+        navigation.navigate('AiNoteReviewScreen', {
+            noteId: note.note_id,
+            subjectId: currentSubject,
+            classId: currentClass
+        })
     }
 
 
