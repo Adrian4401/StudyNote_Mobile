@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, FlatList } from 'react-native';
+import { StyleSheet, Text, View, TextInput, FlatList, Button } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { EditButton, GoBackButton } from '../../components/Buttons.js';
-import { selectEditedNote, editNote } from '../../database/queries.js';
+import { EditButton, GoBackButton, GradientButton } from '../../components/Buttons.js';
 import 'moment/locale/pl'
 import appLanguage from "../../utils/languages";
 import { useLanguage } from '../../context/LanguageContext';
@@ -14,7 +13,7 @@ import { TextField } from '../../components/TextField.js';
 import { useAuth } from '../../context/AuthContext';
 import { getAllSubjects } from '../../api/subjects';
 import { getAllClasses } from '../../api/classes';
-import { getNote, updateNote } from '../../api/notes';
+import { analyzeNote, getNote, updateNote } from '../../api/notes';
 
 
 export default function EditNoteScreen() {
@@ -123,6 +122,21 @@ export default function EditNoteScreen() {
         }
     }
 
+    const handleAiFixNote = async () => {
+        if (!note.note_id) {
+            console.log('Cannot edit with AI empty note')
+            return
+        }
+
+        try {
+            const data = await analyzeNote(note.note_id, userToken)
+            console.log('Note with AI updated successfully: ', data)
+            // navigation.goBack()
+        } catch (error) {
+            console.log('Editing with AI note failed', error.message)
+        }
+    }
+
 
 
     const renderItem = ({item}) => {
@@ -200,6 +214,14 @@ export default function EditNoteScreen() {
             return(
                 <EditButton onPress={handleEditNote} />
             )
+        } else if(item.type === 'aiButton') {
+            return(
+                <GradientButton
+                    onPress={handleAiFixNote}
+                    text={getTranslatedText('fixWithAI')}
+                    icon='sparkles'
+                />
+            )
         }
     }
 
@@ -238,6 +260,7 @@ export default function EditNoteScreen() {
                     data={[
                         { type: 'editButton' },
                         { type: 'noteTextInput' },
+                        { type: 'aiButton' },
                         { type: 'classesDropDownPicker' },
                         { type: 'subjectsDropDownPicker' },
                         { type: 'titleTextInput' },

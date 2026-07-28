@@ -46,6 +46,7 @@ const appLanguage = {
         emptyNotesText: 'Nie ma jeszcze żadnych notatek',
         chooseSubjectDropdownPlaceholder: 'Wybierz przedmiot',
         created: 'Utworzono',
+        fixWithAI: 'Ulepsz z AI',
 
         // MANAGE SCREEN
         manageScreenTitle: 'Zarządzanie',
@@ -172,6 +173,7 @@ const appLanguage = {
         emptyNotesText: 'No notes yet',
         chooseSubjectDropdownPlaceholder: 'Choose subject',
         created: 'Created',
+        fixWithAI: 'Enhance with AI',
 
         // MANAGE SCREEN
         manageScreenTitle: 'Management',

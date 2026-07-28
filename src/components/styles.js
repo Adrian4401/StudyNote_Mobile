@@ -14,7 +14,7 @@ export const componentsStyles = (theme) =>
         borderRadius: 10,
         borderWidth: 1,
         borderColor: theme.textPrimary,
-        marginVertical: 20
+        marginBottom: 20
       },
       searchIcon: {
         paddingVertical: 10,
@@ -108,16 +108,17 @@ export const componentsStyles = (theme) =>
         gradient: {
           borderRadius: 10, 
           width: '100%', 
-          height: 50, 
+          height: 46, 
           alignItems: 'center', 
           justifyContent: 'center',
-          marginTop: 10
+          marginTop: 30
         },
         container: {
           width: '100%', 
           height: '100%', 
           alignItems: 'center', 
-          justifyContent: 'center'
+          justifyContent: 'center',
+          flexDirection: 'row'
         },
         text: {
           fontSize: fontSizes.medium, 

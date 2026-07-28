@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { SafeareaAuth } from "../../components/SafeArea";
 import { useDarkMode } from "../../context/DarkModeContext";
-import { AuthButton } from "../../components/Buttons";
+import { GradientButton } from "../../components/Buttons";
 import { FontAwesome6, Entypo } from "@expo/vector-icons";
 import { fontSizes } from "../../styles/typography";
 import { Error } from "../../components/Errors";
@@ -82,7 +82,7 @@ export default function AuthScreen() {
                       : getTranslatedText("noAccountText")}
                   </Text>
                 </View>
-                <AuthButton
+                <GradientButton
                   text={
                     isRegistering
                       ? getTranslatedText("loginButton")

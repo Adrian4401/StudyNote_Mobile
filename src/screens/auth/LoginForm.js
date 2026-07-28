@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { View, Text } from 'react-native'
 import { useDarkMode } from '../../context/DarkModeContext'
 import { login } from '../../api/auth';
-import { AuthButton } from '../../components/Buttons'
+import { GradientButton } from '../../components/Buttons'
 import appLanguage from '../../utils/languages'
 import { useLanguage } from '../../context/LanguageContext'
 import { TextField } from '../../components/TextField';
@@ -67,7 +67,7 @@ export const LoginForm = () => {
                 icon={'lock'}
                 variant={'light'}
             />
-            <AuthButton 
+            <GradientButton 
                 text={
                     loading
                     ? <LoadingIndicator />

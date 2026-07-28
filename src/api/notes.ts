@@ -129,3 +129,26 @@ export async function deleteNote (id: number, token: string) {
 
     return data
 }
+
+// ==========================
+// AI functions
+// ==========================
+
+export async function analyzeNote(id: number, token: string) {
+    const response = await fetch(`${API_URLS.NOTE}/${id}/analyze`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+        throw new Error(data?.errorCode || data?.message || 'Cannot AI analyze note')
+    }
+
+    console.log("After analize note with AI response: ", data.text)
+
+    return data
+}

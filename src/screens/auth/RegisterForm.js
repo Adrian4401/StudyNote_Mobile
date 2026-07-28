@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { View } from 'react-native'
 import { useDarkMode } from '../../context/DarkModeContext'
 import { register } from '../../api/auth';
-import { AuthButton } from '../../components/Buttons'
+import { GradientButton } from '../../components/Buttons'
 import appLanguage from '../../utils/languages'
 import { useLanguage } from '../../context/LanguageContext'
 import { TextField } from '../../components/TextField';
@@ -83,7 +83,7 @@ export const RegisterForm = ({ usernamePlaceholder, emailPlaceholder, passwordPl
                 icon={'lock'}
                 variant={'light'}
             />
-            <AuthButton 
+            <GradientButton 
                 text={getTranslatedText('registerButton')} 
                 onPress={onRegister} 
             />

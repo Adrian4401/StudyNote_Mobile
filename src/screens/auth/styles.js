@@ -21,8 +21,9 @@ export const authStyles = (theme) =>
       marginBottom: 6,
     },
     logoContainer: {
-      flex: 1,
+      // flex: 1,
       width: "100%",
+      height: "20%",
       justifyContent: "flex-start",
       alignItems: "center",
       flexDirection: "row",
@@ -30,7 +31,8 @@ export const authStyles = (theme) =>
       paddingTop: 20,
     },
     mainContainer: {
-      flex: 3,
+      // flex: 3,
+      height: "80%",
       justifyContent: "space-between",
       backgroundColor: theme.newBackground,
       width: "100%",
@@ -46,7 +48,7 @@ export const authStyles = (theme) =>
     bottomContainer: {
       flex: 1,
       alignItems: "center",
-      justifyContent: "flex-end",
+      justifyContent: "flex-start",
     },
     changeFormContainer: {
       width: "100%",

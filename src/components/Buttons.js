@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'
+import { MaterialCommunityIcons, AntDesign, Ionicons } from '@expo/vector-icons'
 import appLanguage from '../utils/languages'
 import { useLanguage } from '../context/LanguageContext'
 import { useDarkMode } from '../context/DarkModeContext';
@@ -70,7 +70,7 @@ export const SettingsScreenButton = ({onPress, icon, text}) => {
     )
 }
 
-export const AuthButton = ({onPress, text, outlined, disabled}) => {
+export const GradientButton = ({onPress, text, outlined, disabled, icon}) => {
     const { theme } = useDarkMode()
     const styles = componentsStyles(theme).buttons
 
@@ -87,6 +87,13 @@ export const AuthButton = ({onPress, text, outlined, disabled}) => {
                 end={{x: 1, y: 0.25}}
             >
                 <TouchableOpacity style={styles.authButton.container} onPress={onPress} disabled={disabled} >
+                    {icon && 
+                        <Ionicons 
+                            name={icon} 
+                            size={16}
+                            color='#fff'
+                            style={{marginRight: 8}}
+                        />}
                     <Text style={styles.authButton.text}>{text}</Text>
                 </TouchableOpacity> 
             </LinearGradient>
