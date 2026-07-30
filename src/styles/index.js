@@ -114,6 +114,15 @@ export const createStyles = (theme) => {
             flexDirection: 'row',
             justifyContent: 'space-between'
         },
+
+
+        divider: {
+            height: 1, 
+            backgroundColor: theme.primary, 
+            width: '40%', 
+            marginTop: 10, 
+            marginBottom: 14
+        }
     })
 }
 

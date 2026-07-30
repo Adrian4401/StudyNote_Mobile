@@ -91,6 +91,17 @@ const appLanguage = {
         // READ EVENT SCREEN
         attachedNotes: 'Dołączone notatki',
 
+        // REVIEW SCREEN
+        reviewScreenTitle: 'Analiza AI',
+        reviewDesc: 'Twój agent właśnie pracuje nad ulepszeniem Twojej notatki',
+        reviewInfo1: 'Analizuję treść notatki...',
+        reviewInfo2: 'Szukam niejasnych fragmentów...',
+        reviewInfo3: 'Przygotowuję poprawioną wersję...',
+        reviewSummary: 'Podsumowanie',
+        reviewWorthAdd: 'Co warto dopisać',
+        reviewUnclear: 'Co jest niejasne',
+        reviewRevisedNote: 'Poprawiona wersja',
+
 
 
         // ALERTS
@@ -218,6 +229,17 @@ const appLanguage = {
 
         // READ EVENT SCREEN
         attachedNotes: 'Attached notes',
+
+        // REVIEW SCREEN
+        reviewScreenTitle: 'AI Analysis',
+        reviewDesc: 'Your agent is currently working on improving your note.',
+        reviewInfo1: 'Analyzing the note content...',
+        reviewInfo2: 'Looking for unclear passages...',
+        reviewInfo3: 'Preparing an improved version...',
+        reviewSummary: 'Summary',
+        reviewWorthAdd: 'What to add',
+        reviewUnclear: 'What is unclear',
+        reviewRevisedNote: 'Revised version',
 
 
 

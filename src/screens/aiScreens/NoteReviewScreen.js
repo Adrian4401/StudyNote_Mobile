@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { useAuth } from '../../context/AuthContext'
 import { useDarkMode } from '../../context/DarkModeContext'
@@ -29,17 +29,24 @@ export default function AiNoteReviewScreen() {
     const [loadingMessageIndex, setLoadingMessageIndex] = useState(0)
 
     const loadingMessages = [
-        'Analizuję treść notatki...',
-        'Szukam niejasnych fragmentów...',
-        'Przygotowuję poprawioną wersję...',
+        getTranslatedText('reviewInfo1'),
+        getTranslatedText('reviewInfo2'),
+        getTranslatedText('reviewInfo3')
     ]
 
     useEffect(() => {
         if (!loading) return
 
         const interval = setInterval(() => {
-            setLoadingMessageIndex((prev) => (prev + 1) % loadingMessages.length)
-        }, 4000)
+            setLoadingMessageIndex((prev) => {
+                if (prev >= loadingMessages.length - 1) {
+                    clearInterval(interval);
+                    return prev;
+                }
+
+                return prev + 1;
+            });
+        }, 6000);
 
         return () => clearInterval(interval)
     }, [loading])
@@ -75,20 +82,7 @@ export default function AiNoteReviewScreen() {
                 userToken
             )
 
-            // navigation.reset({
-            //     index: 0,
-            //     routes: [
-            //         { name: 'Note' },
-            //         // {
-            //         //     name: 'ReadNoteScreen',
-            //         //     params: { noteId }
-            //         // }
-            //     ]
-            // })
-
-            navigation.navigate('MainTabNavigator', {
-                screen: 'Note'
-            })
+            navigation.pop(2)
         } catch (error) {
             setErrorCode(error.message)
         }
@@ -104,10 +98,14 @@ export default function AiNoteReviewScreen() {
         ))
     }
 
+
+
+
+
     return (
         <SafeareaNoNav>
             <View style={styles.headerBackground}>
-                <Text style={styles.headerText}>Analiza AI</Text>
+                <Text style={styles.headerText}>{getTranslatedText('reviewScreenTitle')}</Text>
             </View>
 
             <ScrollView>
@@ -120,7 +118,7 @@ export default function AiNoteReviewScreen() {
                         <View style={{ alignItems: 'center', marginTop: 80 }}>
                             <ActivityIndicator size="large" color={theme.primary} />
                             <Text style={{ color: theme.textPrimary, marginTop: 20, textAlign: 'center', fontSize: 18 }}>
-                                Twój agent właśnie pracuje nad ulepszeniem Twojej notatki
+                                {getTranslatedText('reviewDesc')}
                             </Text>
                             <Text style={{ color: theme.textSecondary, marginTop: 12, textAlign: 'center' }}>
                                 {loadingMessages[loadingMessageIndex]}
@@ -137,22 +135,25 @@ export default function AiNoteReviewScreen() {
 
                     {!loading && aiResult ? (
                         <View style={{ width: '100%' }}>
-                            <Text style={styles.headlineText}>Podsumowanie</Text>
+                            <Text style={styles.headlineText}>{getTranslatedText('reviewSummary')}</Text>
+                            <View style={styles.divider} />
                             <Text style={{ color: theme.textSecondary, fontSize: 16, marginBottom: 24 }}>
                                 {aiResult.summary}
                             </Text>
 
-                            <Text style={styles.headlineText}>Co warto dopisać</Text>
+                            <Text style={styles.headlineText}>{getTranslatedText('reviewWorthAdd')}</Text>
+                            <View style={styles.divider} />
                             <View style={{ marginBottom: 24 }}>
                                 {renderList(aiResult.suggestedAdditions)}
                             </View>
 
-                            <Text style={styles.headlineText}>Co jest niejasne</Text>
+                            <Text style={styles.headlineText}>{getTranslatedText('reviewUnclear')}</Text>
+                            <View style={styles.divider} />
                             <View style={{ marginBottom: 24 }}>
                                 {renderList(aiResult.unclearParts)}
                             </View>
 
-                            <Text style={styles.headlineText}>Poprawiona wersja</Text>
+                            <Text style={{...styles.headlineText, marginBottom: 12}}>{getTranslatedText('reviewRevisedNote')}</Text>
                             <View style={{
                                 backgroundColor: theme.secondary,
                                 borderColor: theme.textSecondary,
@@ -178,3 +179,4 @@ export default function AiNoteReviewScreen() {
         </SafeareaNoNav>
     )
 }
+
