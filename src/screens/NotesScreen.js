@@ -16,7 +16,7 @@ import { useAuth } from '../context/AuthContext';
 import { getAllNotes } from '../api/notes';
 import { getAllSubjects } from '../api/subjects';
 
-import { textDate } from '../utils/date';
+import { formatDateOnly, textDate } from '../utils/date';
 
 
 
@@ -124,21 +124,13 @@ export default function NoteScreen() {
             <View style={{flex: 1, backgroundColor: theme.textSecondary, height: 1, marginVertical: 10}} />
 
             <View style={{flexDirection: 'row', alignItems: 'center',  marginBottom: 6}}>
-              {/* <View style={notesStyles.infoView}> */}
-                <FontAwesome5 name="book" size={14} color={theme.textSecondary} />
-                <Text style={{...notesStyles.infoText, marginLeft: 10}}>{element.subject_name} - </Text>
-              {/* </View> */}
-
-              {/* <View style={notesStyles.infoView}> */}
-                {/* <FontAwesome5 name="info-circle" size={14} color={theme.textSecondary} /> */}
-                <Text style={notesStyles.infoText}>{element.class_name}</Text>
-              {/* </View> */}
+              <FontAwesome5 name="book" size={14} color={theme.textSecondary} />
+              <Text style={{...notesStyles.infoText, marginLeft: 10}}>{element.subject_name} - </Text>
+              <Text style={notesStyles.infoText}>{element.class_name}</Text>
             </View>
 
-            
-
             <View style={notesStyles.noteDataView}>
-                <Text style={notesStyles.noteDataText}>{getTranslatedText('created')} {textDate(language)}</Text>
+                <Text style={notesStyles.noteDataText}>{getTranslatedText('created')} {formatDateOnly(element.create_day, language)}</Text>
             </View>
 
           </TouchableOpacity>
