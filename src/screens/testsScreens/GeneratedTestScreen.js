@@ -8,11 +8,19 @@ import appLanguage from '../../utils/languages'
 import { createStyles } from '../../styles'
 import { SafeareaNoNav } from '../../components/SafeArea'
 import { GoBackButton, MakeButton } from '../../components/Buttons'
+import { ActivityIndicator } from 'react-native'
+import { useAuth } from '../../context/AuthContext'
+import { checkOpenAnswers } from '../../api/tests'
+
+
 
 export default function GeneratedTestScreen() {
     const navigation = useNavigation()
     const route = useRoute()
     const { test } = route.params
+
+    const { userToken } = useAuth()
+    const [checking, setChecking] = useState(false)
 
     const { theme } = useDarkMode()
     const styles = createStyles(theme)
@@ -75,13 +83,54 @@ export default function GeneratedTestScreen() {
         return currentAnswer === answerId
     }
 
-    const handleFinishTest = () => {
-        navigation.navigate('TestSummaryScreen', {
-            questions,
-            userAnswers
-        })
+    const handleFinishTest = async () => {
+        const openQuestions = questions.filter((question) => question.type === 'open')
+
+        if (openQuestions.length === 0) {
+            navigation.navigate('TestSummaryScreen', {
+                questions,
+                userAnswers,
+                openAnswersResults: data.results || []
+            })
+
+            return
+        }
+
+        const openAnswers = openQuestions.map((question) => ({
+            questionId: question.id,
+            question: question.question,
+            expectedAnswer: question.expectedAnswer,
+            userAnswer: userAnswers[question.id] || ''
+        }))
+
+        try {
+            setChecking(true)
+
+            const data = await checkOpenAnswers({
+                openAnswers,
+                token: userToken
+            })
+
+            navigation.navigate('TestSummaryScreen', {
+                questions,
+                userAnswers,
+                openAnswersResults: data.results || []
+            })
+        } catch (error) {
+            console.log('Checking open answers failed:', error.message)
+
+            navigation.navigate('TestSummaryScreen', {
+                questions,
+                userAnswers,
+                openAnswersResults: []
+            })
+        } finally {
+            setChecking(false)
+        }
     }
 
+
+    
     const renderClosedAnswer = (question, answer) => {
         const selected = isAnswerSelected(question, answer.id)
 
@@ -248,9 +297,20 @@ export default function GeneratedTestScreen() {
                             </View>
                         ))}
 
-                        <View style={{ width: '100%', marginTop: 10, marginBottom: 30 }}>
-                            <MakeButton onPress={handleFinishTest} />
-                        </View>
+                        {/* <View style={{ width: '100%', marginTop: 10, marginBottom: 30 }}> */}
+                            {checking ? (
+                                <View style={{ alignItems: 'center', marginTop: 20, marginBottom: 30 }}>
+                                    <ActivityIndicator size="large" color={theme.primary} />
+                                    <Text style={{ color: theme.textSecondary, marginTop: 12 }}>
+                                        Sprawdzam odpowiedzi otwarte...
+                                    </Text>
+                                </View>
+                            ) : (
+                                <View style={{ width: '100%', marginTop: 10, marginBottom: 30 }}>
+                                    <MakeButton onPress={handleFinishTest} />
+                                </View>
+                            )}
+                        {/* </View> */}
                     </View>
                 </View>
             </ScrollView>
