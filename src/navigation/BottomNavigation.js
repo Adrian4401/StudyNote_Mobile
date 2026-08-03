@@ -8,7 +8,7 @@ import {
     NotesScreen, 
     ManageScreen, 
     SettingsScreen, 
-    AddEventScreen, 
+    SubjectTestScreen
 } from '../screens';
 
 
@@ -87,8 +87,8 @@ export function MainTabNavigator() {
           }}
         />
         <Tab.Screen 
-          name='Tests' 
-          component={AddEventScreen}
+          name='SubjectTestScreen' 
+          component={SubjectTestScreen}
           options={{
             tabBarIcon: () => {
               return(
@@ -96,7 +96,7 @@ export function MainTabNavigator() {
               )
             },
             tabBarButton: (props) => (
-              <CustomTabBarButton {...props} navigation={navigation} onPress={() => navigation.navigate('AddEventScreen')}/>
+              <CustomTabBarButton {...props} navigation={navigation} onPress={() => navigation.navigate('SubjectTestScreen')}/>
             )
           }}
         />

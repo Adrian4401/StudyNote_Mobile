@@ -18,6 +18,9 @@ import ReadEventScreen from "./readScreens/ReadEventScreen";
 
 import AiNoteReviewScreen from "./aiScreens/NoteReviewScreen";
 
+import SubjectTestScreen from "./testsScreens/SubjectTestScreen";
+import GeneratedTestScreen from "./testsScreens/GeneratedTestScreen";
+
 
 export {
     CalendarScreen,
@@ -38,5 +41,8 @@ export {
     ReadNoteScreen,
     ReadEventScreen,
 
-    AiNoteReviewScreen
+    AiNoteReviewScreen,
+
+    SubjectTestScreen,
+    GeneratedTestScreen
 }

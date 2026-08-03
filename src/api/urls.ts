@@ -9,4 +9,5 @@ export const API_URLS = {
     CLASS: `${CONFIG.API_URL}/classes`,
     NOTE: `${CONFIG.API_URL}/notes`,
     EVENT: `${CONFIG.API_URL}/events`,
+    TEST: `${CONFIG.API_URL}/tests`
 }

@@ -19,7 +19,7 @@ import {
     ReadEventScreen,
 
     AiNoteReviewScreen,
-    NotesScreen
+    GeneratedTestScreen
 } from '../screens';
 
 
@@ -105,6 +105,12 @@ export function StackNavigation() {
                         <Stack.Screen
                             name='AiNoteReviewScreen'
                             component={AiNoteReviewScreen}
+                            options={{ headerShown: false }}
+                        />
+
+                        <Stack.Screen
+                            name='GeneratedTestScreen'
+                            component={GeneratedTestScreen}
                             options={{ headerShown: false }}
                         />
                     </>
