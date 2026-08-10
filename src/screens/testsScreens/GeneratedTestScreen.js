@@ -1,18 +1,15 @@
 import { useState } from 'react'
-import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { useDarkMode } from '../../context/DarkModeContext'
 import { useLanguage } from '../../context/LanguageContext'
+import { useAuth } from '../../context/AuthContext'
 import appLanguage from '../../utils/languages'
 import { createStyles } from '../../styles'
 import { SafeareaNoNav } from '../../components/SafeArea'
 import { GoBackButton, MakeButton } from '../../components/Buttons'
-import { ActivityIndicator } from 'react-native'
-import { useAuth } from '../../context/AuthContext'
 import { checkOpenAnswers } from '../../api/tests'
-
-
 
 export default function GeneratedTestScreen() {
     const navigation = useNavigation()
@@ -20,8 +17,6 @@ export default function GeneratedTestScreen() {
     const { test } = route.params
 
     const { userToken } = useAuth()
-    const [checking, setChecking] = useState(false)
-
     const { theme } = useDarkMode()
     const styles = createStyles(theme)
 
@@ -31,12 +26,20 @@ export default function GeneratedTestScreen() {
     const questions = test?.questions || []
 
     const [userAnswers, setUserAnswers] = useState({})
+    const [checking, setChecking] = useState(false)
 
     const getAnswerText = (question, answer) => {
         if (question.type !== 'true_false') return answer.text
 
-        if (answer.text === 'true') return 'Prawda'
-        if (answer.text === 'false') return 'Fałsz'
+        const answerText = String(answer.text).trim().toLowerCase()
+
+        if (answerText === 'true' || answerText === 'prawda') {
+            return getTranslatedText('trueAnswer')
+        }
+
+        if (answerText === 'false' || answerText === 'fałsz' || answerText === 'falsz') {
+            return getTranslatedText('falseAnswer')
+        }
 
         return answer.text
     }
@@ -90,7 +93,7 @@ export default function GeneratedTestScreen() {
             navigation.navigate('TestSummaryScreen', {
                 questions,
                 userAnswers,
-                openAnswersResults: data.results || []
+                openAnswersResults: []
             })
 
             return
@@ -129,8 +132,6 @@ export default function GeneratedTestScreen() {
         }
     }
 
-
-    
     const renderClosedAnswer = (question, answer) => {
         const selected = isAnswerSelected(question, answer.id)
 
@@ -156,11 +157,7 @@ export default function GeneratedTestScreen() {
             >
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <MaterialCommunityIcons
-                        name={
-                            selected
-                                ? 'checkbox-marked-circle'
-                                : 'checkbox-blank-circle-outline'
-                        }
+                        name={selected ? 'checkbox-marked-circle' : 'checkbox-blank-circle-outline'}
                         size={22}
                         color={selected ? '#fff' : theme.textSecondary}
                         style={{ marginRight: 10 }}
@@ -185,7 +182,7 @@ export default function GeneratedTestScreen() {
             <TextInput
                 value={userAnswers[question.id] || ''}
                 onChangeText={(value) => handleOpenAnswer(question.id, value)}
-                placeholder="Wpisz odpowiedź..."
+                placeholder={getTranslatedText('enterAnswerPlaceholder')}
                 placeholderTextColor={theme.textSecondary}
                 multiline
                 style={{
@@ -205,10 +202,10 @@ export default function GeneratedTestScreen() {
     }
 
     const renderQuestionTypeInfo = (type) => {
-        if (type === 'single_choice') return 'Jednokrotny wybór'
-        if (type === 'multiple_choice') return 'Wielokrotny wybór'
-        if (type === 'true_false') return 'Prawda / fałsz'
-        if (type === 'open') return 'Pytanie otwarte'
+        if (type === 'single_choice') return getTranslatedText('singleChoiceQuestionType')
+        if (type === 'multiple_choice') return getTranslatedText('multipleChoiceQuestionType')
+        if (type === 'true_false') return getTranslatedText('trueFalseQuestionType')
+        if (type === 'open') return getTranslatedText('openQuestionTypeLong')
 
         return ''
     }
@@ -216,7 +213,7 @@ export default function GeneratedTestScreen() {
     return (
         <SafeareaNoNav>
             <View style={styles.headerBackground}>
-                <Text style={styles.headerText}>Test</Text>
+                <Text style={styles.headerText}>{getTranslatedText('testTitle')}</Text>
             </View>
 
             <ScrollView>
@@ -227,11 +224,11 @@ export default function GeneratedTestScreen() {
 
                     <View style={{ width: '100%' }}>
                         <Text style={{ ...styles.headlineText, marginBottom: 6 }}>
-                            Rozwiąż test
+                            {getTranslatedText('solveTest')}
                         </Text>
 
                         <Text style={{ ...styles.littleText, marginBottom: 20 }}>
-                            Liczba pytań: {questions.length}
+                            {getTranslatedText('questionsCount')}: {questions.length}
                         </Text>
 
                         {questions.map((question, index) => (
@@ -245,13 +242,7 @@ export default function GeneratedTestScreen() {
                                     alignItems: 'stretch'
                                 }}
                             >
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        marginBottom: 10
-                                    }}
-                                >
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
                                     <View
                                         style={{
                                             width: 34,
@@ -268,49 +259,33 @@ export default function GeneratedTestScreen() {
                                         </Text>
                                     </View>
 
-                                    <Text
-                                        style={{
-                                            color: theme.textSecondary,
-                                            fontSize: 14,
-                                            flex: 1
-                                        }}
-                                    >
+                                    <Text style={{ color: theme.textSecondary, fontSize: 14, flex: 1 }}>
                                         {renderQuestionTypeInfo(question.type)}
                                     </Text>
                                 </View>
 
-                                <Text
-                                    style={{
-                                        color: theme.textPrimary,
-                                        fontSize: 18,
-                                        marginBottom: 8
-                                    }}
-                                >
+                                <Text style={{ color: theme.textPrimary, fontSize: 18, marginBottom: 8 }}>
                                     {question.question}
                                 </Text>
 
                                 {question.type === 'open'
                                     ? renderOpenAnswer(question)
-                                    : question.answers.map((answer) =>
-                                        renderClosedAnswer(question, answer)
-                                    )}
+                                    : question.answers.map((answer) => renderClosedAnswer(question, answer))}
                             </View>
                         ))}
 
-                        {/* <View style={{ width: '100%', marginTop: 10, marginBottom: 30 }}> */}
-                            {checking ? (
-                                <View style={{ alignItems: 'center', marginTop: 20, marginBottom: 30 }}>
-                                    <ActivityIndicator size="large" color={theme.primary} />
-                                    <Text style={{ color: theme.textSecondary, marginTop: 12 }}>
-                                        Sprawdzam odpowiedzi otwarte...
-                                    </Text>
-                                </View>
-                            ) : (
-                                <View style={{ width: '100%', marginTop: 10, marginBottom: 30 }}>
-                                    <MakeButton onPress={handleFinishTest} />
-                                </View>
-                            )}
-                        {/* </View> */}
+                        {checking ? (
+                            <View style={{ alignItems: 'center', marginTop: 20, marginBottom: 30 }}>
+                                <ActivityIndicator size="large" color={theme.primary} />
+                                <Text style={{ color: theme.textSecondary, marginTop: 12 }}>
+                                    {getTranslatedText('checkingOpenAnswers')}
+                                </Text>
+                            </View>
+                        ) : (
+                            <View style={{ width: '100%', marginTop: 10, marginBottom: 30 }}>
+                                <MakeButton onPress={handleFinishTest} />
+                            </View>
+                        )}
                     </View>
                 </View>
             </ScrollView>

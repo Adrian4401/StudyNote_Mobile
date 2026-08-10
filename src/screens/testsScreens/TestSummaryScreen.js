@@ -41,9 +41,7 @@ export default function TestSummaryScreen() {
             return Array.isArray(answer) ? answer : []
         }
 
-        if (question.type === 'open') {
-            return []
-        }
+        if (question.type === 'open') return []
 
         return answer ? [answer] : []
     }
@@ -63,17 +61,13 @@ export default function TestSummaryScreen() {
             return (result?.score || 0) >= 0.7
         }
 
-        const correctAnswerIds = getCorrectAnswerIds(question)
-        const userAnswerIds = getUserAnswerIds(question)
-
-        return arraysEqual(correctAnswerIds, userAnswerIds)
+        return arraysEqual(getCorrectAnswerIds(question), getUserAnswerIds(question))
     }
 
     const closedQuestions = questions.filter((question) => question.type !== 'open')
     const openQuestions = questions.filter((question) => question.type === 'open')
 
     const closedPoints = closedQuestions.filter(isQuestionCorrect).length
-
     const openPoints = openQuestions.reduce((sum, question) => {
         const result = getOpenAnswerResult(question.id)
         return sum + (result?.score || 0)
@@ -86,33 +80,38 @@ export default function TestSummaryScreen() {
     const getAnswerTextById = (question, answerId) => {
         const answer = question.answers?.find((item) => item.id === answerId)
 
-        if (!answer) return 'Brak odpowiedzi'
+        if (!answer) return getTranslatedText('noAnswer')
 
         if (question.type === 'true_false') {
-            if (answer.text === 'true') return 'Prawda'
-            if (answer.text === 'false') return 'Fałsz'
+            const answerText = String(answer.text).trim().toLowerCase()
+
+            if (answerText === 'true' || answerText === 'prawda') {
+                return getTranslatedText('trueAnswer')
+            }
+
+            if (answerText === 'false' || answerText === 'fałsz' || answerText === 'falsz') {
+                return getTranslatedText('falseAnswer')
+            }
         }
 
         return answer.text
     }
 
     const getCorrectAnswersText = (question) => {
-        const correctAnswerIds = getCorrectAnswerIds(question)
-
-        return correctAnswerIds
+        return getCorrectAnswerIds(question)
             .map((answerId) => getAnswerTextById(question, answerId))
             .join(', ')
     }
 
     const getUserAnswersText = (question) => {
         if (question.type === 'open') {
-            return userAnswers[question.id] || 'Brak odpowiedzi'
+            return userAnswers[question.id] || getTranslatedText('noAnswer')
         }
 
         const userAnswerIds = getUserAnswerIds(question)
 
         if (userAnswerIds.length === 0) {
-            return 'Brak odpowiedzi'
+            return getTranslatedText('noAnswer')
         }
 
         return userAnswerIds
@@ -126,14 +125,16 @@ export default function TestSummaryScreen() {
             const score = result?.score || 0
 
             return (
-                <View style={{
-                    backgroundColor: score >= 0.7 ? '#2EAD5B' : score >= 0.4 ? '#D99A2B' : '#D94A4A',
-                    borderRadius: 8,
-                    paddingVertical: 6,
-                    paddingHorizontal: 10
-                }}>
+                <View
+                    style={{
+                        backgroundColor: score >= 0.7 ? '#2EAD5B' : score >= 0.4 ? '#D99A2B' : '#D94A4A',
+                        borderRadius: 8,
+                        paddingVertical: 6,
+                        paddingHorizontal: 10
+                    }}
+                >
                     <Text style={{ color: '#fff' }}>
-                        {score}/1 pkt
+                        {score}/1 {getTranslatedText('pointsShort')}
                     </Text>
                 </View>
             )
@@ -142,24 +143,26 @@ export default function TestSummaryScreen() {
         const correct = isQuestionCorrect(question)
 
         return (
-            <View style={{
-                backgroundColor: correct ? '#2EAD5B' : '#D94A4A',
-                borderRadius: 8,
-                paddingVertical: 6,
-                paddingHorizontal: 10
-            }}>
+            <View
+                style={{
+                    backgroundColor: correct ? '#2EAD5B' : '#D94A4A',
+                    borderRadius: 8,
+                    paddingVertical: 6,
+                    paddingHorizontal: 10
+                }}
+            >
                 <Text style={{ color: '#fff' }}>
-                    {correct ? 'Poprawna' : 'Błędna'}
+                    {correct ? getTranslatedText('correct') : getTranslatedText('incorrect')}
                 </Text>
             </View>
         )
     }
 
     const renderQuestionTypeText = (type) => {
-        if (type === 'single_choice') return 'Jednokrotny wybór'
-        if (type === 'multiple_choice') return 'Wielokrotny wybór'
-        if (type === 'true_false') return 'Prawda / fałsz'
-        if (type === 'open') return 'Pytanie otwarte'
+        if (type === 'single_choice') return getTranslatedText('singleChoiceQuestionType')
+        if (type === 'multiple_choice') return getTranslatedText('multipleChoiceQuestionType')
+        if (type === 'true_false') return getTranslatedText('trueFalseQuestionType')
+        if (type === 'open') return getTranslatedText('openQuestionTypeLong')
 
         return ''
     }
@@ -180,22 +183,19 @@ export default function TestSummaryScreen() {
                     alignItems: 'stretch'
                 }}
             >
-                <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: 12
-                }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                        <View style={{
-                            width: 34,
-                            height: 34,
-                            borderRadius: 8,
-                            backgroundColor: theme.primary,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginRight: 10
-                        }}>
+                        <View
+                            style={{
+                                width: 34,
+                                height: 34,
+                                borderRadius: 8,
+                                backgroundColor: theme.primary,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginRight: 10
+                            }}
+                        >
                             <Text style={{ color: '#fff', fontSize: 16 }}>
                                 {index + 1}
                             </Text>
@@ -204,11 +204,7 @@ export default function TestSummaryScreen() {
                         <Text
                             numberOfLines={1}
                             ellipsizeMode="tail"
-                            style={{
-                                color: theme.textSecondary,
-                                fontSize: 14,
-                                flex: 1
-                            }}
+                            style={{ color: theme.textSecondary, fontSize: 14, flex: 1 }}
                         >
                             {renderQuestionTypeText(question.type)}
                         </Text>
@@ -217,24 +213,13 @@ export default function TestSummaryScreen() {
                     {renderAnswerBadge(question)}
                 </View>
 
-                <Text style={{
-                    color: theme.textPrimary,
-                    fontSize: 18,
-                    marginBottom: 14
-                }}>
+                <Text style={{ color: theme.textPrimary, fontSize: 18, marginBottom: 14 }}>
                     {question.question}
                 </Text>
 
-                <View style={{
-                    backgroundColor: theme.secondary,
-                    borderColor: theme.textSecondary,
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    padding: 12,
-                    marginBottom: 10
-                }}>
+                <View style={{ backgroundColor: theme.secondary, borderColor: theme.textSecondary, borderWidth: 1, borderRadius: 8, padding: 12, marginBottom: 10 }}>
                     <Text style={{ color: theme.textSecondary, marginBottom: 6 }}>
-                        Twoja odpowiedź
+                        {getTranslatedText('yourAnswer')}
                     </Text>
 
                     <Text style={{ color: theme.textPrimary, fontSize: 16 }}>
@@ -243,16 +228,9 @@ export default function TestSummaryScreen() {
                 </View>
 
                 {!isOpen && !correct ? (
-                    <View style={{
-                        backgroundColor: theme.secondary,
-                        borderColor: '#2EAD5B',
-                        borderWidth: 1,
-                        borderRadius: 8,
-                        padding: 12,
-                        marginBottom: 10
-                    }}>
+                    <View style={{ backgroundColor: theme.secondary, borderColor: '#2EAD5B', borderWidth: 1, borderRadius: 8, padding: 12, marginBottom: 10 }}>
                         <Text style={{ color: '#2EAD5B', marginBottom: 6 }}>
-                            Poprawna odpowiedź
+                            {getTranslatedText('correctAnswer')}
                         </Text>
 
                         <Text style={{ color: theme.textPrimary, fontSize: 16 }}>
@@ -263,16 +241,9 @@ export default function TestSummaryScreen() {
 
                 {isOpen ? (
                     <>
-                        <View style={{
-                            backgroundColor: theme.secondary,
-                            borderColor: theme.textSecondary,
-                            borderWidth: 1,
-                            borderRadius: 8,
-                            padding: 12,
-                            marginBottom: 10
-                        }}>
+                        <View style={{ backgroundColor: theme.secondary, borderColor: theme.textSecondary, borderWidth: 1, borderRadius: 8, padding: 12, marginBottom: 10 }}>
                             <Text style={{ color: theme.textSecondary, marginBottom: 6 }}>
-                                Oczekiwana odpowiedź
+                                {getTranslatedText('expectedAnswer')}
                             </Text>
 
                             <Text style={{ color: theme.textPrimary, fontSize: 16 }}>
@@ -280,20 +251,13 @@ export default function TestSummaryScreen() {
                             </Text>
                         </View>
 
-                        <View style={{
-                            backgroundColor: theme.secondary,
-                            borderColor: theme.primary,
-                            borderWidth: 1,
-                            borderRadius: 8,
-                            padding: 12,
-                            marginBottom: 10
-                        }}>
+                        <View style={{ backgroundColor: theme.secondary, borderColor: theme.primary, borderWidth: 1, borderRadius: 8, padding: 12, marginBottom: 10 }}>
                             <Text style={{ color: theme.primary, marginBottom: 6 }}>
-                                Ocena AI
+                                {getTranslatedText('aiScore')}
                             </Text>
 
                             <Text style={{ color: theme.textPrimary, fontSize: 16 }}>
-                                {openResult?.feedback || 'Brak oceny'}
+                                {openResult?.feedback || getTranslatedText('noScore')}
                             </Text>
                         </View>
                     </>
@@ -302,7 +266,7 @@ export default function TestSummaryScreen() {
                 {question.explanation ? (
                     <View style={{ marginTop: 4 }}>
                         <Text style={{ color: theme.textSecondary, marginBottom: 6 }}>
-                            Wyjaśnienie
+                            {getTranslatedText('explanation')}
                         </Text>
 
                         <Text style={{ color: theme.textPrimary, fontSize: 15 }}>
@@ -317,7 +281,7 @@ export default function TestSummaryScreen() {
     return (
         <SafeareaNoNav>
             <View style={styles.headerBackground}>
-                <Text style={styles.headerText}>Wynik testu</Text>
+                <Text style={styles.headerText}>{getTranslatedText('testResultTitle')}</Text>
             </View>
 
             <ScrollView>
@@ -326,53 +290,34 @@ export default function TestSummaryScreen() {
                         <GoBackButton />
                     </View>
 
-                    <View style={{
-                        width: '100%',
-                        backgroundColor: theme.secondary,
-                        borderColor: theme.textSecondary,
-                        borderWidth: 1,
-                        borderRadius: 8,
-                        padding: 18,
-                        marginBottom: 24
-                    }}>
+                    <View style={{ width: '100%', backgroundColor: theme.secondary, borderColor: theme.textSecondary, borderWidth: 1, borderRadius: 8, padding: 18, marginBottom: 24 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <MaterialCommunityIcons
-                                name="clipboard-check-outline"
-                                size={34}
-                                color={theme.primary}
-                                style={{ marginRight: 12 }}
-                            />
+                            <MaterialCommunityIcons name="clipboard-check-outline" size={34} color={theme.primary} style={{ marginRight: 12 }} />
 
                             <View>
                                 <Text style={{ color: theme.textPrimary, fontSize: 24 }}>
-                                    {correctCount.toFixed(1)}/{maxPoints} pkt
+                                    {correctCount.toFixed(1)}/{maxPoints} {getTranslatedText('pointsShort')}
                                 </Text>
 
                                 <Text style={{ color: theme.textSecondary, marginTop: 4 }}>
-                                    Wynik: {percent}%
+                                    {getTranslatedText('resultText')}: {percent}%
                                 </Text>
                             </View>
                         </View>
 
                         {openQuestions.length > 0 ? (
-                            <Text style={{
-                                color: theme.textSecondary,
-                                marginTop: 14,
-                                fontSize: 14
-                            }}>
-                                Pytania otwarte zostały ocenione przez AI.
+                            <Text style={{ color: theme.textSecondary, marginTop: 14, fontSize: 14 }}>
+                                {getTranslatedText('openQuestionsCheckedByAI')}
                             </Text>
                         ) : null}
                     </View>
 
                     <View style={{ width: '100%' }}>
                         <Text style={{ ...styles.headlineText, marginBottom: 14 }}>
-                            Odpowiedzi
+                            {getTranslatedText('answersText')}
                         </Text>
 
-                        {questions.map((question, index) =>
-                            renderQuestionSummary(question, index)
-                        )}
+                        {questions.map((question, index) => renderQuestionSummary(question, index))}
                     </View>
 
                     <TouchableOpacity
@@ -388,7 +333,7 @@ export default function TestSummaryScreen() {
                         }}
                     >
                         <Text style={{ color: '#fff', fontSize: 16 }}>
-                            Wygeneruj kolejny test
+                            {getTranslatedText('generateNextTest')}
                         </Text>
                     </TouchableOpacity>
                 </View>

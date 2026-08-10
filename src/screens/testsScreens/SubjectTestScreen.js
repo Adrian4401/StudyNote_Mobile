@@ -29,42 +29,20 @@ export default function SubjectTestScreen() {
 
     const [subjects, setSubjects] = useState([])
     const [notes, setNotes] = useState([])
-
     const [openSubjects, setOpenSubjects] = useState(false)
     const [selectedSubjectId, setSelectedSubjectId] = useState(null)
     const [selectedNoteIds, setSelectedNoteIds] = useState([])
-
     const [questionsCount, setQuestionsCount] = useState(5)
-    const [questionTypes, setQuestionTypes] = useState([
-        'single_choice',
-        'true_false'
-    ])
-
+    const [questionTypes, setQuestionTypes] = useState(['single_choice', 'true_false'])
     const [loadingData, setLoadingData] = useState(true)
     const [generating, setGenerating] = useState(false)
     const [errorCode, setErrorCode] = useState('')
 
     const questionTypeOptions = [
-        {
-            label: 'Prawda / fałsz',
-            value: 'true_false',
-            icon: 'toggle-switch-outline'
-        },
-        {
-            label: 'Jednokrotny wybór',
-            value: 'single_choice',
-            icon: 'checkbox-marked-circle-outline'
-        },
-        {
-            label: 'Wielokrotny wybór',
-            value: 'multiple_choice',
-            icon: 'checkbox-multiple-marked-outline'
-        },
-        {
-            label: 'Otwarte',
-            value: 'open',
-            icon: 'file-document-edit-outline'
-        }
+        { label: getTranslatedText('trueFalseQuestionType'), value: 'true_false', icon: 'toggle-switch-outline' },
+        { label: getTranslatedText('singleChoiceQuestionType'), value: 'single_choice', icon: 'checkbox-marked-circle-outline' },
+        { label: getTranslatedText('multipleChoiceQuestionType'), value: 'multiple_choice', icon: 'checkbox-multiple-marked-outline' },
+        { label: getTranslatedText('openQuestionType'), value: 'open', icon: 'file-document-edit-outline' }
     ]
 
     useEffect(() => {
@@ -146,9 +124,7 @@ export default function SubjectTestScreen() {
                 token: userToken
             })
 
-            navigation.navigate('GeneratedTestScreen', {
-                test: data
-            })
+            navigation.navigate('GeneratedTestScreen', { test: data })
         } catch (error) {
             setErrorCode(error.message)
             console.log('Generating test failed:', error.message)
@@ -161,13 +137,9 @@ export default function SubjectTestScreen() {
         if (!selectedSubjectId) {
             return (
                 <View style={{ alignItems: 'center', marginTop: 20 }}>
-                    <MaterialCommunityIcons
-                        name="book-open-page-variant-outline"
-                        size={42}
-                        color={theme.textSecondary}
-                    />
+                    <MaterialCommunityIcons name="book-open-page-variant-outline" size={42} color={theme.textSecondary} />
                     <Text style={{ ...styles.littleText, textAlign: 'center', marginTop: 12 }}>
-                        Najpierw wybierz przedmiot
+                        {getTranslatedText('chooseSubjectFirst')}
                     </Text>
                 </View>
             )
@@ -176,13 +148,9 @@ export default function SubjectTestScreen() {
         if (filteredNotes.length === 0) {
             return (
                 <View style={{ alignItems: 'center', marginTop: 20 }}>
-                    <MaterialCommunityIcons
-                        name="note-off-outline"
-                        size={42}
-                        color={theme.textSecondary}
-                    />
+                    <MaterialCommunityIcons name="note-off-outline" size={42} color={theme.textSecondary} />
                     <Text style={{ ...styles.littleText, textAlign: 'center', marginTop: 12 }}>
-                        Brak notatek dla tego przedmiotu
+                        {getTranslatedText('emptySubjectNotes')}
                     </Text>
                 </View>
             )
@@ -234,7 +202,7 @@ export default function SubjectTestScreen() {
     return (
         <SafeareaNoNav>
             <View style={styles.headerBackground}>
-                <Text style={styles.headerText}>Generator testu</Text>
+                <Text style={styles.headerText}>{getTranslatedText('testGeneratorTitle')}</Text>
             </View>
 
             <ScrollView>
@@ -247,31 +215,28 @@ export default function SubjectTestScreen() {
                         <View style={{ alignItems: 'center', marginTop: 80 }}>
                             <ActivityIndicator size="large" color={theme.primary} />
                             <Text style={{ color: theme.textSecondary, marginTop: 16 }}>
-                                Ładowanie danych...
+                                {getTranslatedText('loadingData')}
                             </Text>
                         </View>
                     ) : (
                         <View style={{ width: '100%' }}>
                             {errorCode ? (
-                                <Error
-                                    message={errorCode}
-                                    getTranslatedText={getTranslatedText}
-                                />
+                                <Error message={errorCode} getTranslatedText={getTranslatedText} />
                             ) : null}
 
                             <Text style={{ ...styles.littleText, marginBottom: 12 }}>
-                                Wybierz przedmiot
+                                {getTranslatedText('chooseSubject')}
                             </Text>
 
                             <DropDownPicker
-                                listMode='SCROLLVIEW'
+                                listMode="SCROLLVIEW"
                                 open={openSubjects}
                                 value={selectedSubjectId}
                                 items={subjectItems}
                                 setOpen={setOpenSubjects}
                                 setValue={setSelectedSubjectId}
                                 setItems={() => {}}
-                                placeholder="Przedmiot"
+                                placeholder={getTranslatedText('chooseSubject')}
                                 zIndex={3000}
                                 style={{
                                     backgroundColor: theme.secondary,
@@ -282,17 +247,13 @@ export default function SubjectTestScreen() {
                                     backgroundColor: theme.secondary,
                                     borderColor: theme.textSecondary
                                 }}
-                                textStyle={{
-                                    color: theme.textPrimary
-                                }}
-                                placeholderStyle={{
-                                    color: theme.textSecondary
-                                }}
+                                textStyle={{ color: theme.textPrimary }}
+                                placeholderStyle={{ color: theme.textSecondary }}
                             />
 
                             <View style={{ width: '100%', marginTop: 30 }}>
                                 <Text style={{ ...styles.littleText, marginBottom: 12 }}>
-                                    Wybierz notatki
+                                    {getTranslatedText('chooseNotes')}
                                 </Text>
 
                                 {renderNotes()}
@@ -300,7 +261,7 @@ export default function SubjectTestScreen() {
 
                             <View style={{ width: '100%', marginTop: 30 }}>
                                 <Text style={{ ...styles.littleText, marginBottom: 12 }}>
-                                    Liczba pytań: {questionsCount}
+                                    {getTranslatedText('questionsCount')}: {questionsCount}
                                 </Text>
 
                                 <Slider
@@ -317,7 +278,7 @@ export default function SubjectTestScreen() {
 
                             <View style={{ width: '100%', marginTop: 30 }}>
                                 <Text style={{ ...styles.littleText, marginBottom: 12 }}>
-                                    Rodzaje pytań
+                                    {getTranslatedText('questionTypesText')}
                                 </Text>
 
                                 {questionTypeOptions.map((type) => (
@@ -338,7 +299,7 @@ export default function SubjectTestScreen() {
                                 <View style={{ alignItems: 'center', marginTop: 30 }}>
                                     <ActivityIndicator size="large" color={theme.primary} />
                                     <Text style={{ color: theme.textSecondary, marginTop: 12 }}>
-                                        Generuję test...
+                                        {getTranslatedText('generatingTest')}
                                     </Text>
                                 </View>
                             ) : (

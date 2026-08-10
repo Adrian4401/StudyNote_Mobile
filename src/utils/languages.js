@@ -81,6 +81,11 @@ const appLanguage = {
         // ADD NOTE SCREEN
         noteTitlePlaceholder: 'Dodaj tytuł notatki...',
         addNotePlaceholder: 'Dodaj notatkę...',
+        writeOrDictateNote: 'Napisz lub podyktuj notatkę',
+        speechListening: 'Słucham...',
+        savingNote: 'Zapisuję notatkę...',
+        SPEECH_TO_TEXT_ERROR: 'Nie udało się rozpoznać mowy',
+        MISSING_FIELDS: 'Wszystkie pola muszą być uzupełnione',
 
         // ADD EVENT SCREEN
         eventTitlePlaceholder: 'Dodaj tytuł wydarzenia...',
@@ -101,6 +106,48 @@ const appLanguage = {
         reviewWorthAdd: 'Co warto dopisać',
         reviewUnclear: 'Co jest niejasne',
         reviewRevisedNote: 'Poprawiona wersja',
+
+        // TESTS SCREEN
+        testGeneratorTitle: 'Generator testu',
+        chooseNotes: 'Wybierz notatki',
+        chooseSubjectFirst: 'Najpierw wybierz przedmiot',
+        emptySubjectNotes: 'Brak notatek dla tego przedmiotu',
+        loadingData: 'Ładowanie danych...',
+        questionsCount: 'Liczba pytań',
+        questionTypesText: 'Rodzaje pytań',
+        generatingTest: 'Generuję test...',
+        trueFalseQuestionType: 'Prawda / fałsz',
+        singleChoiceQuestionType: 'Jednokrotny wybór',
+        multipleChoiceQuestionType: 'Wielokrotny wybór',
+        openQuestionType: 'Otwarte',
+
+        // GENERATED TEST SCREEN
+        testTitle: 'Test',
+        solveTest: 'Rozwiąż test',
+        openQuestionTypeLong: 'Pytanie otwarte',
+        enterAnswerPlaceholder: 'Wpisz odpowiedź...',
+        checkingOpenAnswers: 'Sprawdzam odpowiedzi otwarte...',
+        trueAnswer: 'Prawda',
+        falseAnswer: 'Fałsz',
+
+        // TEST SUMMARY SCREEN
+        testResultTitle: 'Wynik testu',
+        resultText: 'Wynik',
+        answersText: 'Odpowiedzi',
+        questionText: 'Pytanie',
+        yourAnswer: 'Twoja odpowiedź',
+        correctAnswer: 'Poprawna odpowiedź',
+        expectedAnswer: 'Oczekiwana odpowiedź',
+        aiScore: 'Ocena AI',
+        noAnswer: 'Brak odpowiedzi',
+        noScore: 'Brak oceny',
+        explanation: 'Wyjaśnienie',
+        correct: 'Poprawna',
+        incorrect: 'Błędna',
+        pointsShort: 'pkt',
+        openQuestionsCheckedByAI: 'Pytania otwarte zostały ocenione przez AI.',
+        generateNextTest: 'Wygeneruj kolejny test',
+        TEST_MISSING_FIELDS: 'Wybierz przedmiot, notatki oraz przynajmniej jeden typ pytania',
 
 
 
@@ -220,6 +267,11 @@ const appLanguage = {
         // ADD NOTE SCREEN
         noteTitlePlaceholder: 'Add note title...',
         addNotePlaceholder: 'Add note...',
+        writeOrDictateNote: 'Write or dictate a note',
+        speechListening: 'Listening...',
+        savingNote: 'Saving note...',
+        SPEECH_TO_TEXT_ERROR: 'Could not recognize speech',
+        MISSING_FIELDS: 'All fields are required',
 
         // ADD EVENT SCREEN
         eventTitlePlaceholder: 'Add event title...',
@@ -240,6 +292,48 @@ const appLanguage = {
         reviewWorthAdd: 'What to add',
         reviewUnclear: 'What is unclear',
         reviewRevisedNote: 'Revised version',
+
+        // TESTS SCREEN
+        testGeneratorTitle: 'Test generator',
+        chooseNotes: 'Choose notes',
+        chooseSubjectFirst: 'Choose a subject first',
+        emptySubjectNotes: 'No notes for this subject',
+        loadingData: 'Loading data...',
+        questionsCount: 'Number of questions',
+        questionTypesText: 'Question types',
+        generatingTest: 'Generating test...',
+        trueFalseQuestionType: 'True / false',
+        singleChoiceQuestionType: 'Single choice',
+        multipleChoiceQuestionType: 'Multiple choice',
+        openQuestionType: 'Open',
+        
+        // GENERATED TEST SCREEN
+        testTitle: 'Test',
+        solveTest: 'Solve the test',
+        openQuestionTypeLong: 'Open question',
+        enterAnswerPlaceholder: 'Enter your answer...',
+        checkingOpenAnswers: 'Checking open answers...',
+        trueAnswer: 'True',
+        falseAnswer: 'False',
+
+        // TEST SUMMARY SCREEN
+        testResultTitle: 'Test result',
+        resultText: 'Result',
+        answersText: 'Answers',
+        questionText: 'Question',
+        yourAnswer: 'Your answer',
+        correctAnswer: 'Correct answer',
+        expectedAnswer: 'Expected answer',
+        aiScore: 'AI score',
+        noAnswer: 'No answer',
+        noScore: 'No score',
+        explanation: 'Explanation',
+        correct: 'Correct',
+        incorrect: 'Incorrect',
+        pointsShort: 'pts',
+        openQuestionsCheckedByAI: 'Open questions were evaluated by AI.',
+        generateNextTest: 'Generate another test',
+        TEST_MISSING_FIELDS: 'Choose a subject, notes and at least one question type',
 
 
 
