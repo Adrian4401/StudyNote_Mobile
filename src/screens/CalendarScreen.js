@@ -1,257 +1,378 @@
-import { useState, useCallback } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-
-import { FontAwesome5, FontAwesome, AntDesign } from '@expo/vector-icons';
-
-import { CustomStatusBar } from '../components/StatusBar';
-
-import { showEvents } from '../components/ShowEvents';
-
-import { textDate } from '../utils/date';
-
-import { useLanguage } from '../context/LanguageContext';
-import appLanguage from "../utils/languages";
-
-import { useDarkMode } from '../context/DarkModeContext';
-import { createStyles } from '../styles/index';
-
-import { Safearea } from '../components/SafeArea';
-
-import { useAuth } from '../context/AuthContext';
-
-import { getAllEvents } from '../api/events';
-
-import { LoadingIndicator } from '../components/LoadingIndicator';
-
+import { useState, useCallback } from 'react'
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import { FontAwesome5, FontAwesome, AntDesign } from '@expo/vector-icons'
+import { CustomStatusBar } from '../components/StatusBar'
+import { ShowEvents } from '../components/ShowEvents'
+import { textDate } from '../utils/date'
+import { useLanguage } from '../context/LanguageContext'
+import appLanguage from '../utils/languages'
+import { useDarkMode } from '../context/DarkModeContext'
+import { createStyles } from '../styles/index'
+import { Safearea } from '../components/SafeArea'
+import { useAuth } from '../context/AuthContext'
+import { getAllEvents } from '../api/events'
+import { LoadingIndicator } from '../components/LoadingIndicator'
 
 
 
 export default function CalendarScreen() {
-  const { userToken } = useAuth()
-  const { language } = useLanguage();
-  const { theme } = useDarkMode();
-  const { user } = useAuth();
+    const navigation = useNavigation()
 
-  const navigation = useNavigation();
+    const { userToken, user } = useAuth()
+    const { language } = useLanguage()
+    const { theme } = useDarkMode()
 
-  const [weeklyData, setWeeklyData] = useState([]);
-  const [futureData, setFutureData] = useState([]);
-  const [olderData, setOlderData] = useState([]);
-  const [events, setEvents] = useState([])
-  const [loading, setLoading] = useState(true)
-  
-  const styles = createStyles(theme)
-  const getTranslatedText = (key) => {
-    return appLanguage[language][key];
-  }
+    const styles = createStyles(theme)
+    const calendarStyles = createCalendarStyles(theme)
 
-
-  useFocusEffect(
-    useCallback(() => {
-      const loadEvents = async () => {
-        if (!userToken) {
-          setLoading(false)
-          return
-        }
-
-        setLoading(true)
-
-        try {
-          const data = await getAllEvents(userToken)
-          const { weekly, future, older } = splitEventsByDate(data)
-
-          setEvents(data)
-          setWeeklyData(weekly)
-          setFutureData(future)
-          setOlderData(older)
-
-          console.log('Events loaded successfully')
-        } catch (error) {
-          console.log('Loading events failed: ', error.errorCode)
-        } finally {
-          setLoading(false)
-        }
-      }
-
-      loadEvents()
-    }, [userToken])
-  )
-
-
-
-  const splitEventsByDate = (events) => {
-      const now = new Date()
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-
-      const nextWeek = new Date(today)
-      nextWeek.setDate(today.getDate() + 7)
-
-      const weekly = []
-      const future = []
-      const older = []
-
-      events.forEach((event) => {
-          const eventDate = new Date(event.deadline)
-          const eventDay = new Date(
-              eventDate.getFullYear(),
-              eventDate.getMonth(),
-              eventDate.getDate()
-          )
-
-          if (eventDay < today) {
-              older.push(event)
-          } else if (eventDay <= nextWeek) {
-              weekly.push(event)
-          } else {
-              future.push(event)
-          }
-      })
-
-      return { weekly, future, older }
-  }
-
-
-
-  const showThisWeekEvents = () => {
-    return (
-      <>
-        <View style={{width: '100%'}}>
-          <Text style={{...styles.headlineText, marginBottom: 0, marginTop: 10}}>{getTranslatedText('thisWeekEventsText')}</Text>
-          <Text style={styles.littleText}>{getTranslatedText('thisWeekEventsLittleText')}</Text>
-        </View>
-
-        {showEvents(weeklyData, navigation)}
-      </>
-    )
-  }
-
-
-  const showFutureEvents = () => {
-    return (
-      <>
-        <View style={styles.headlineView}>
-          <Text style={{...styles.headlineText, marginBottom: 0, marginTop: 10}}>{getTranslatedText('futureEventsText')}</Text>
-        </View>
-
-        {showEvents(futureData, navigation)}
-      </>
-    )
-  }
-
-
-  const showOlderEvents = () => {
-    return (
-      <>
-        <View style={styles.headlineView}>
-          <Text style={{...styles.headlineText, marginBottom: 0, marginTop: 10}}>{getTranslatedText('olderEventsText')}</Text>
-        </View>
-
-        {showEvents(olderData, navigation)}
-      </>
-    )
-  }
-
-
-
-
-  const ShowAllEvents = () => {
-    if(weeklyData.length <= 0 && futureData.length <= 0 && olderData.length <= 0) {
-      return (
-        <View style={{alignItems: 'center'}}>
-          <Text style={{color: theme.textSecondary, fontSize: 20, marginTop: '50%', marginBottom: '5%', textTransform: 'uppercase'}}>{getTranslatedText('emptyEventsText')}</Text>
-          <FontAwesome name="folder-open" size={50} color={theme.textSecondary} />
-        </View>
-      )
+    const getTranslatedText = (key) => {
+        return appLanguage[language][key]
     }
-    else {
-      return (
-        <>
-          {weeklyData.length > 0 && showThisWeekEvents()}
-          {futureData.length > 0 && showFutureEvents()}
-          {olderData.length > 0 && showOlderEvents()}
-        </>
-      );
+
+    const [weeklyData, setWeeklyData] = useState([])
+    const [futureData, setFutureData] = useState([])
+    const [olderData, setOlderData] = useState([])
+    const [loading, setLoading] = useState(true)
+
+    const splitEventsByDate = (events) => {
+        const now = new Date()
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+
+        const nextWeek = new Date(today)
+        nextWeek.setDate(today.getDate() + 7)
+
+        const weekly = []
+        const future = []
+        const older = []
+
+        events.forEach((event) => {
+            const eventDate = new Date(event.deadline)
+            const eventDay = new Date(
+                eventDate.getFullYear(),
+                eventDate.getMonth(),
+                eventDate.getDate()
+            )
+
+            if (eventDay < today) {
+                older.push(event)
+            } else if (eventDay <= nextWeek) {
+                weekly.push(event)
+            } else {
+                future.push(event)
+            }
+        })
+
+        return { weekly, future, older }
     }
-  }
 
+    useFocusEffect(
+        useCallback(() => {
+            const loadEvents = async () => {
+                if (!userToken) {
+                    setLoading(false)
+                    return
+                }
 
+                setLoading(true)
 
-  const calendarStyles = StyleSheet.create({
-    headlineUserView: {
-      flexDirection: 'column',
-      gap: 10,
-      justifyContent: 'space-between',
-      marginBottom: 20,
-      paddingVertical: 10,
-      borderRadius: 20
-    },
-    headlineUserText: {
-      fontSize: 24, 
-      color: theme.textPrimary,
-    },
-    eventNameView: {
-      width: '100%',
-      padding: 5,
-      backgroundColor: theme.eventBackground,
-      borderRadius: 15,
-      alignItems: 'center'
-    },
-    eventNameText: {
-      fontSize: 25,
-      textTransform: 'uppercase',
-      color: '#fff'
-    }
-  });
+                try {
+                    const data = await getAllEvents(userToken)
+                    const { weekly, future, older } = splitEventsByDate(data || [])
 
+                    setWeeklyData(weekly)
+                    setFutureData(future)
+                    setOlderData(older)
 
+                    console.log('Events loaded successfully')
+                } catch (error) {
+                    console.log('Loading events failed: ', error.message)
+                } finally {
+                    setLoading(false)
+                }
+            }
 
-  return (
-    <Safearea>
-      <CustomStatusBar />
-      
-      {/* HEADER */}
-      <View style={styles.headerBackground}>
-          <Text style={styles.headerText}>{getTranslatedText('calendarScreenTitle')}</Text>
-      </View>
+            loadEvents()
+        }, [userToken])
+    )
 
-      {/* CONTAINER */}
-      <ScrollView>
-        <View style={styles.viewContainer}>
-          
-          {/* USER HEADLINE */}
-          <View style={styles.headlineView}>
-            <View style={calendarStyles.headlineUserView}>
-              <View>
-                <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-                  <Text style={calendarStyles.headlineUserText}>
-                    Witaj <Text style={{color: theme.primary}}>{user?.username}</Text>!
-                  </Text>
-                  <TouchableOpacity onPress={() => navigation.navigate('AddEventScreen')}>
-                    <AntDesign name="plus" size={26} color={theme.textPrimary} />
-                  </TouchableOpacity>
+    const renderSectionHeader = (title, subtitle = null, icon = 'calendar-check') => {
+        return (
+            <View style={calendarStyles.sectionHeader}>
+                <View style={calendarStyles.sectionIcon}>
+                    <FontAwesome5 name={icon} size={14} color="#fff" />
                 </View>
-              </View>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <FontAwesome5 name="calendar-day" size={14} color={theme.textSecondary} style={{marginRight: 14}} />
-                <Text style={{...calendarStyles.headlineUserText, textAlign: 'center', fontSize: 16, color: theme.textSecondary}}>{getTranslatedText('todayDate')} {textDate(language)}</Text>
-              </View>
+
+                <View style={{ flex: 1 }}>
+                    <Text style={styles.headlineText}>{title}</Text>
+
+                    {subtitle ? (
+                        <Text style={{ ...styles.littleText, marginTop: 2 }}>
+                            {subtitle}
+                        </Text>
+                    ) : null}
+                </View>
             </View>
-          </View>
+        )
+    }
 
-          {loading ? (
-            <View style={{alignItems: 'center'}}>
-              <LoadingIndicator />
+    const renderThisWeekEvents = () => {
+        return (
+            <View style={calendarStyles.section}>
+                {renderSectionHeader(
+                    getTranslatedText('thisWeekEventsText'),
+                    getTranslatedText('thisWeekEventsLittleText'),
+                    'calendar-day'
+                )}
+
+                <ShowEvents dataType={weeklyData} navigation={navigation} />
             </View>
-          ) : (
-            <ShowAllEvents />
-          )}
+        )
+    }
 
-        </View>
-      </ScrollView>
+    const renderFutureEvents = () => {
+        return (
+            <View style={calendarStyles.section}>
+                {renderSectionHeader(
+                    getTranslatedText('futureEventsText'),
+                    null,
+                    'calendar-plus'
+                )}
 
-      <View style={{width: '100%', height: 40}} />
+                <ShowEvents dataType={futureData} navigation={navigation} />
+            </View>
+        )
+    }
 
-    </Safearea>
-  );
+    const renderOlderEvents = () => {
+        return (
+            <View style={calendarStyles.section}>
+                {renderSectionHeader(
+                    getTranslatedText('olderEventsText'),
+                    null,
+                    'history'
+                )}
+
+                <ShowEvents dataType={olderData} navigation={navigation} />
+            </View>
+        )
+    }
+
+    const renderEmptyEvents = () => {
+        return (
+            <View style={calendarStyles.emptyContainer}>
+                <View style={calendarStyles.emptyIconContainer}>
+                    <FontAwesome name="folder-open" size={44} color={theme.textSecondary} />
+                </View>
+
+                <Text style={calendarStyles.emptyTitle}>
+                    {getTranslatedText('emptyEventsText')}
+                </Text>
+
+                <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() => navigation.navigate('AddEventScreen')}
+                    style={calendarStyles.emptyButton}
+                >
+                    <AntDesign name="plus" size={18} color="#fff" />
+                    <Text style={calendarStyles.emptyButtonText}>
+                        {getTranslatedText('add')} {getTranslatedText('event')}
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
+    const renderAllEvents = () => {
+        if (
+            weeklyData.length === 0 &&
+            futureData.length === 0 &&
+            olderData.length === 0
+        ) {
+            return renderEmptyEvents()
+        }
+
+        return (
+            <>
+                {weeklyData.length > 0 ? renderThisWeekEvents() : null}
+                {futureData.length > 0 ? renderFutureEvents() : null}
+                {olderData.length > 0 ? renderOlderEvents() : null}
+            </>
+        )
+    }
+
+    return (
+        <Safearea>
+            <CustomStatusBar />
+
+            <View style={styles.headerBackground}>
+                <Text style={styles.headerText}>
+                    {getTranslatedText('calendarScreenTitle')}
+                </Text>
+            </View>
+
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={styles.viewContainer}>
+                    <View style={calendarStyles.topPanel}>
+                      <View style={{ flex: 1 }}>
+                          <Text style={calendarStyles.welcomeText}>
+                              {getTranslatedText('welcome')}{' '}
+                              <Text style={{ color: theme.primary }}>{user?.username}</Text>
+                          </Text>
+
+                          <View style={calendarStyles.dateRow}>
+                              <FontAwesome5
+                                  name="calendar-day"
+                                  size={14}
+                                  color={theme.textSecondary}
+                                  style={{ marginRight: 10 }}
+                              />
+
+                              <Text style={calendarStyles.dateText}>
+                                  {getTranslatedText('todayDate')} {textDate(language)}
+                              </Text>
+                          </View>
+                      </View>
+
+                      <TouchableOpacity
+                          activeOpacity={0.8}
+                          onPress={() => navigation.navigate('AddEventScreen')}
+                          style={calendarStyles.addButton}
+                      >
+                          <AntDesign name="plus" size={22} color="#fff" />
+                      </TouchableOpacity>
+                  </View>
+
+                    {loading ? (
+                        <View style={calendarStyles.loadingContainer}>
+                            <LoadingIndicator />
+                        </View>
+                    ) : (
+                        renderAllEvents()
+                    )}
+                </View>
+            </ScrollView>
+
+            <View style={{ width: '100%', height: 40 }} />
+        </Safearea>
+    )
+}
+
+const createCalendarStyles = (theme) => {
+    return StyleSheet.create({
+        topPanel: {
+            width: '100%',
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 28,
+            paddingBottom: 18,
+            borderBottomColor: theme.textSecondary,
+            borderBottomWidth: 1
+        },
+        welcomeText: {
+            color: theme.textPrimary,
+            fontSize: 24,
+            marginBottom: 10
+        },
+        dateRow: {
+            flexDirection: 'row',
+            alignItems: 'center'
+        },
+        dateText: {
+            color: theme.textSecondary,
+            fontSize: 15
+        },
+        addButton: {
+            width: 44,
+            height: 44,
+            borderRadius: 8,
+            backgroundColor: theme.primary,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginLeft: 14
+        },
+        welcomeText: {
+            color: theme.textPrimary,
+            fontSize: 24,
+            marginBottom: 12
+        },
+        dateRow: {
+            flexDirection: 'row',
+            alignItems: 'center'
+        },
+        dateText: {
+            color: theme.textSecondary,
+            fontSize: 15
+        },
+        addButton: {
+            width: 46,
+            height: 46,
+            borderRadius: 8,
+            backgroundColor: theme.primary,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginLeft: 12
+        },
+        section: {
+            width: '100%',
+            marginBottom: 22
+        },
+        sectionHeader: {
+            width: '100%',
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 10
+        },
+        sectionIcon: {
+            width: 34,
+            height: 34,
+            borderRadius: 8,
+            backgroundColor: theme.primary,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 10
+        },
+        emptyContainer: {
+            width: '100%',
+            alignItems: 'center',
+            marginTop: 70,
+            paddingHorizontal: 20
+        },
+        emptyIconContainer: {
+            width: 84,
+            height: 84,
+            borderRadius: 8,
+            backgroundColor: theme.secondary,
+            borderColor: theme.textSecondary,
+            borderWidth: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 18
+        },
+        emptyTitle: {
+            color: theme.textSecondary,
+            fontSize: 18,
+            textAlign: 'center',
+            textTransform: 'uppercase',
+            marginBottom: 20
+        },
+        emptyButton: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: theme.primary,
+            borderRadius: 8,
+            paddingVertical: 12,
+            paddingHorizontal: 16
+        },
+        emptyButtonText: {
+            color: '#fff',
+            fontSize: 16,
+            marginLeft: 8
+        },
+        loadingContainer: {
+            width: '100%',
+            alignItems: 'center',
+            marginTop: 80
+        }
+    })
 }

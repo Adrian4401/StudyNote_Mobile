@@ -18,6 +18,7 @@ const appLanguage = {
         chooseClasses: 'Wybierz zajęcia',
         day: 'Dzień',
         hour: 'Godzina',
+        welcome: 'Witaj',
 
         // AUTH SCREEN
         loginTitle: 'Logowanie',
@@ -47,6 +48,7 @@ const appLanguage = {
         chooseSubjectDropdownPlaceholder: 'Wybierz przedmiot',
         created: 'Utworzono',
         fixWithAI: 'Ulepsz z AI',
+        showAllNotes: 'Pokaż wszystkie notatki',
 
         // MANAGE SCREEN
         manageScreenTitle: 'Zarządzanie',
@@ -203,6 +205,7 @@ const appLanguage = {
         chooseClasses: 'Choose classes',
         day: 'Day',
         hour: 'Hour',
+        welcome: 'Hello',
 
         // AUTH SCREEN
         loginTitle: 'Login',
@@ -232,6 +235,7 @@ const appLanguage = {
         chooseSubjectDropdownPlaceholder: 'Choose subject',
         created: 'Created',
         fixWithAI: 'Enhance with AI',
+        showAllNotes: 'Show all notes',
 
         // MANAGE SCREEN
         manageScreenTitle: 'Management',
