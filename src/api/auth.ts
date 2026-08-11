@@ -11,6 +11,12 @@ interface RegisterParams {
     password: string;
 }
 
+interface ChangePasswordParams {
+    currentPassword: string
+    newPassword: string
+    token: string
+}
+
 export async function login({ emailOrUsername, password }: LoginParams) {
     const response = await fetch(API_URLS.AUTH.LOGIN, {
         method: 'POST',
@@ -43,4 +49,27 @@ export async function register({ username, email, password }: RegisterParams) {
     if (!response.ok) throw new Error(`Registration failed: ${response.status}`);
 
     return JSON.parse(text);
+}
+
+export async function changePassword({ currentPassword, newPassword, token }: ChangePasswordParams) {
+    const response = await fetch(API_URLS.AUTH.CHANGE_PASSWORD, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            currentPassword,
+            newPassword
+        })
+    })
+
+    const text = await response.text()
+    const data = text ? JSON.parse(text) : null
+
+    if (!response.ok) {
+        throw new Error(data?.errorCode || data?.message || 'Cannot change password')
+    }
+
+    return data
 }

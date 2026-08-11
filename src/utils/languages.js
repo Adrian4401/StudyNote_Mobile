@@ -68,6 +68,17 @@ const appLanguage = {
         deleteDataButton: 'Usuń wszystkie dane',
         userSection: 'Użytkownik',
         logoutButton: 'Wyloguj się',
+        changePassword: 'Zmień hasło',
+        currentPassword: 'Aktualne hasło',
+        newPassword: 'Nowe hasło',
+        repeatNewPassword: 'Powtórz nowe hasło',
+        save: 'Zapisz',
+        saving: 'Zapisywanie...',
+        PASSWORD_MISSING_FIELDS: 'Uzupełnij wszystkie pola',
+        PASSWORD_TOO_SHORT: 'Hasło musi mieć minimum 6 znaków',
+        INVALID_CURRENT_PASSWORD: 'Aktualne hasło jest nieprawidłowe',
+        PASSWORDS_NOT_MATCH: 'Hasła nie są takie same',
+        PASSWORD_CHANGE_ERROR: 'Nie udało się zmienić hasła',
 
 
         // ADD SUBJECT SCREEN
@@ -255,6 +266,17 @@ const appLanguage = {
         deleteDataButton: 'Delete all data',
         userSection: 'User',
         logoutButton: 'Log out',
+        changePassword: 'Change password',
+        currentPassword: 'Current password',
+        newPassword: 'New password',
+        repeatNewPassword: 'Repeat new password',
+        save: 'Save',
+        saving: 'Saving...',
+        PASSWORD_MISSING_FIELDS: 'Fill in all fields',
+        PASSWORD_TOO_SHORT: 'Password must be at least 6 characters',
+        INVALID_CURRENT_PASSWORD: 'Current password is incorrect',
+        PASSWORDS_NOT_MATCH: 'Passwords do not match',
+        PASSWORD_CHANGE_ERROR: 'Could not change password',
 
 
 

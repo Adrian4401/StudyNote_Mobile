@@ -1,168 +1,478 @@
-import { useState } from 'react';
-import { StyleSheet, Text, View, Image, Switch, Platform, FlatList } from 'react-native';
-import DropDownPicker from 'react-native-dropdown-picker';
-import { createStyles } from '../styles/index';
-import { SettingsScreenButton } from '../components/Buttons';
-import { alertDeleteAllData } from '../components/Alerts';
-import appLanguage from "../utils/languages";
-import { useLanguage } from '../context/LanguageContext';
-import { useDarkMode } from '../context/DarkModeContext';
-import { useAuth } from '../context/AuthContext';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Safearea } from '../components/SafeArea';
-import { deleteUserToken } from '../context/AuthContext';
+import { useState } from 'react'
+import {
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    Switch,
+    Platform,
+    ScrollView,
+    Modal,
+    TextInput,
+    TouchableOpacity,
+    ActivityIndicator
+} from 'react-native'
+import DropDownPicker from 'react-native-dropdown-picker'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
-
+import { createStyles } from '../styles/index'
+import { SettingsScreenButton } from '../components/Buttons'
+import appLanguage from '../utils/languages'
+import { useLanguage } from '../context/LanguageContext'
+import { useDarkMode } from '../context/DarkModeContext'
+import { useAuth } from '../context/AuthContext'
+import { Safearea } from '../components/SafeArea'
+import { changePassword } from '../api/auth'
+import { Error } from '../components/Errors'
 
 export default function SettingsScreen() {
-  const { setUserToken } = useAuth();
-  const [openLanguages, setOpenLanguages] = useState(false);
-  // const [valueLanguages, setValueLanguages] = useState('pl');
-  const { language, changeLanguage } = useLanguage();
-  const [languages, setLanguages] = useState([
-    {label: 'Polski', value: 'pl', icon: () => <Image source={require('../../assets/flags/pl_flag.png')} style={{borderRadius: 20, marginHorizontal: 5}}/>},
-    {label: 'English', value: 'en', icon: () => <Image source={require('../../assets/flags/uk_flag.png')} style={{borderRadius: 20, marginHorizontal: 5}}/>}
-  ]);
-  const { darkMode, changeDarkMode, theme } = useDarkMode()
-  const styles = createStyles(theme)
+    const { userToken, user, setUserToken } = useAuth()
 
-  const onLogout = async () => {
-    await setUserToken(null)
-  }
+    const { language, changeLanguage } = useLanguage()
+    const { darkMode, changeDarkMode, theme } = useDarkMode()
 
-  const getTranslatedText = (key) => {
-    return appLanguage[language][key];
-  }
+    const styles = createStyles(theme)
+    const settingsStyles = createSettingsStyles(theme)
 
-  const handleLanguageChange = (value) => {
-    console.log('Wybrany jezyk: ', value)
-    changeLanguage(value)
-  }
-
-  const handleDarkModeChange = (value) => {
-    console.log('Wybrany darkmode: ', value)
-    changeDarkMode(value)
-  }
-
-  const handleDeleteAllData = () => {
-    alertDeleteAllData(getTranslatedText)
-  }
-
-  const renderItem = ({ item }) => {
-    if (item.type === 'language') {
-      return (
-        <>
-          <View style={styles.headlineView}>
-            <Text style={styles.sectionText}>{getTranslatedText('languageText')}</Text>
-          </View>
-          <DropDownPicker
-            placeholder='Wybierz język'
-            open={openLanguages}
-            value={language}
-            items={languages}
-            setOpen={setOpenLanguages}
-            setValue={(callback) => {
-              const value = typeof callback === 'function' ? callback(language) : callback;
-              handleLanguageChange(value);
-            }}
-            setItems={setLanguages}
-            ScrollView={false}
-            style={settingsStyles.dropDownStyle}
-            dropDownContainerStyle={settingsStyles.dropDownContainerStyle}
-            textStyle={settingsStyles.dropDownTextStyle}
-            arrowIconContainerStyle={settingsStyles.arrowIconContainerStyle}
-          />
-        </>
-      )
+    const getTranslatedText = (key) => {
+        return appLanguage[language][key]
     }
-    if (item.type === 'rest') {
-      return (
-        <>
-          {/* DARK THEME section */}
-          <View style={styles.headlineView}>
-            <Text style={styles.sectionText}>{getTranslatedText('themeText')}</Text>
-          </View>
 
-          <View style={{...styles.eventView, flexDirection: 'row', paddingHorizontal: 20, alignItems: 'center'}}>
-            <MaterialCommunityIcons name="invert-colors" size={24} color={theme.primary} style={{paddingHorizontal: 5}}/>
-            <Text style={styles.subjectText}>{darkMode ? getTranslatedText('dark') : getTranslatedText('light')}</Text>
-            <View style={{flex: 1, alignItems: 'flex-end'}}>
-              <Switch
-                value={darkMode}
-                onValueChange={handleDarkModeChange}
-                trackColor={{false: theme.textSecondary, true: theme.primary}}
-                thumbColor={darkMode ? '#0066CD' : '#BDBBBB'}
-                style={{height: Platform.OS === 'android' ? 20 : 30}}
-              />
+    const [openLanguages, setOpenLanguages] = useState(false)
+    const [languages, setLanguages] = useState([
+        {
+            label: 'Polski',
+            value: 'pl',
+            icon: () => (
+                <Image
+                    source={require('../../assets/flags/pl_flag.png')}
+                    style={{ borderRadius: 20, marginHorizontal: 5 }}
+                />
+            )
+        },
+        {
+            label: 'English',
+            value: 'en',
+            icon: () => (
+                <Image
+                    source={require('../../assets/flags/uk_flag.png')}
+                    style={{ borderRadius: 20, marginHorizontal: 5 }}
+                />
+            )
+        }
+    ])
+
+    const [passwordModalVisible, setPasswordModalVisible] = useState(false)
+    const [currentPassword, setCurrentPassword] = useState('')
+    const [newPassword, setNewPassword] = useState('')
+    const [repeatNewPassword, setRepeatNewPassword] = useState('')
+    const [errorCode, setErrorCode] = useState('')
+    const [savingPassword, setSavingPassword] = useState(false)
+
+    const onLogout = async () => {
+        await setUserToken(null)
+    }
+
+    const handleLanguageChange = (value) => {
+        changeLanguage(value)
+    }
+
+    const handleDarkModeChange = (value) => {
+        changeDarkMode(value)
+    }
+
+    const resetPasswordForm = () => {
+        setCurrentPassword('')
+        setNewPassword('')
+        setRepeatNewPassword('')
+        setErrorCode('')
+    }
+
+    const closePasswordModal = () => {
+        setPasswordModalVisible(false)
+        resetPasswordForm()
+    }
+
+    const handleChangePassword = async () => {
+        if (!currentPassword || !newPassword || !repeatNewPassword) {
+            setErrorCode('PASSWORD_MISSING_FIELDS')
+            return
+        }
+
+        if (newPassword !== repeatNewPassword) {
+            setErrorCode('PASSWORDS_NOT_MATCH')
+            return
+        }
+
+        try {
+            setSavingPassword(true)
+            setErrorCode('')
+
+            await changePassword({
+                currentPassword,
+                newPassword,
+                token: userToken
+            })
+
+            closePasswordModal()
+        } catch (error) {
+            setErrorCode(error.message)
+        } finally {
+            setSavingPassword(false)
+        }
+    }
+
+    return (
+        <Safearea>
+            <View style={styles.headerBackground}>
+                <Text style={styles.headerText}>
+                    {getTranslatedText('settingsScreenTitle')}
+                </Text>
             </View>
-          </View>
 
-          {/* DATA section */}
-          
-          {/* <View style={styles.headlineView}>
-            <Text style={styles.sectionText}>{getTranslatedText('dataText')}</Text>
-          </View> */}
-          {/* <SettingsScreenButton onPress={() => console.log("To do")} icon={"file-export"} text={getTranslatedText('dataExportButton')}/> */}
-          {/* <SettingsScreenButton onPress={() => console.log("To do")} icon={"file-import"} text={getTranslatedText('dataImportButton')}/> */}
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+            >
+                <View style={styles.viewContainer}>
+                    <View style={settingsStyles.userCard}>
+                        <View style={settingsStyles.avatar}>
+                            <MaterialCommunityIcons name="account" size={34} color="#fff" />
+                        </View>
 
-          <View style={styles.headlineView}>
-            <Text style={styles.sectionText}>{getTranslatedText('deleteDataText')}</Text>
-          </View>
-          <SettingsScreenButton onPress={handleDeleteAllData} icon={"delete"} text={getTranslatedText('deleteDataButton')}/>
+                        <View style={{ flex: 1 }}>
+                            <Text
+                                numberOfLines={1}
+                                ellipsizeMode="tail"
+                                style={settingsStyles.usernameText}
+                            >
+                                {user?.username}
+                            </Text>
 
-          <View style={styles.headlineView}>
-            <Text style={styles.sectionText}>{getTranslatedText('userSection')}</Text>
-          </View>
-          <SettingsScreenButton onPress={onLogout} icon={"logout"} text={getTranslatedText('logoutButton')}/>
-        </>
-      )
-    }
-  }
+                            <Text
+                                numberOfLines={1}
+                                ellipsizeMode="tail"
+                                style={settingsStyles.userSubtitle}
+                            >
+                                {user?.email}
+                            </Text>
+                        </View>
+                    </View>
 
-  const settingsStyles = StyleSheet.create({
-    dropDownStyle: {
-      backgroundColor: theme.secondary,
-      flex: 1,
-      borderRadius: 20,
-      borderWidth: 0
-    },
-    dropDownContainerStyle: {
-      backgroundColor: theme.secondary,
-      paddingVertical: 5,
-      borderWidth: 1
-    },
-    dropDownTextStyle: {
-      color: theme.textPrimary,
-      fontSize: 20
-    },
-    arrowIconContainerStyle: {
-      backgroundColor: theme.primary,
-      borderRadius: 5,
-      marginEnd: 5
-    }
-  });
+                    <View style={settingsStyles.section}>
+                        <Text style={styles.sectionText}>
+                            {getTranslatedText('userSection')}
+                        </Text>
 
+                        <SettingsScreenButton
+                            onPress={() => setPasswordModalVisible(true)}
+                            icon="lock-reset"
+                            text={getTranslatedText('changePassword')}
+                        />
 
-  return (
-    <Safearea>
+                        <Text style={settingsStyles.smallInfo}>
+                            {getTranslatedText('accountSettingsInfo')}
+                        </Text>
+                    </View>
 
-      <View style={styles.headerBackground}>
-          <Text style={styles.headerText}>{getTranslatedText('settingsScreenTitle')}</Text>
-      </View>
+                    <View style={settingsStyles.section}>
+                        <Text style={styles.sectionText}>
+                            {getTranslatedText('languageText')}
+                        </Text>
 
-      <View style={styles.flatlistContainer}>
-        <FlatList
-          data={[
-            { type: 'rest' },
-            { type: 'language' }
-          ]}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => index.toString()}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{flexDirection: 'column-reverse', paddingBottom: 100, width: '100%'}}
-        />
-      </View>
+                        <DropDownPicker
+                            listMode="SCROLLVIEW"
+                            placeholder={getTranslatedText('languageText')}
+                            open={openLanguages}
+                            value={language}
+                            items={languages}
+                            setOpen={setOpenLanguages}
+                            setValue={(callback) => {
+                                const value = typeof callback === 'function'
+                                    ? callback(language)
+                                    : callback
 
-    </Safearea>
-  );
+                                handleLanguageChange(value)
+                            }}
+                            setItems={setLanguages}
+                            style={settingsStyles.dropdown}
+                            dropDownContainerStyle={settingsStyles.dropdownContainer}
+                            textStyle={settingsStyles.dropdownText}
+                            placeholderStyle={settingsStyles.dropdownPlaceholder}
+                            arrowIconContainerStyle={settingsStyles.arrowIconContainer}
+                        />
+                    </View>
+
+                    <View style={settingsStyles.section}>
+                        <Text style={styles.sectionText}>
+                            {getTranslatedText('themeText')}
+                        </Text>
+
+                        <View style={settingsStyles.settingRow}>
+                            <MaterialCommunityIcons
+                                name="invert-colors"
+                                size={24}
+                                color={theme.primary}
+                                style={{ marginRight: 12 }}
+                            />
+
+                            <Text style={settingsStyles.settingText}>
+                                {darkMode
+                                    ? getTranslatedText('dark')
+                                    : getTranslatedText('light')}
+                            </Text>
+
+                            <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                                <Switch
+                                    value={darkMode}
+                                    onValueChange={handleDarkModeChange}
+                                    trackColor={{
+                                        false: theme.textSecondary,
+                                        true: theme.primary
+                                    }}
+                                    thumbColor={darkMode ? '#0066CD' : '#BDBBBB'}
+                                    style={{
+                                        height: Platform.OS === 'android' ? 20 : 30
+                                    }}
+                                />
+                            </View>
+                        </View>
+                    </View>
+
+                    <View style={settingsStyles.logoutSection}>
+                        <SettingsScreenButton
+                            onPress={onLogout}
+                            icon="logout"
+                            text={getTranslatedText('logoutButton')}
+                        />
+                    </View>
+                </View>
+            </ScrollView>
+
+            <Modal
+                visible={passwordModalVisible}
+                transparent
+                animationType="fade"
+                onRequestClose={closePasswordModal}
+            >
+                <View style={settingsStyles.modalOverlay}>
+                    <View style={settingsStyles.modalContainer}>
+                        <Text style={settingsStyles.modalTitle}>
+                            {getTranslatedText('changePassword')}
+                        </Text>
+
+                        {errorCode ? (
+                            <Error
+                                message={errorCode}
+                                getTranslatedText={getTranslatedText}
+                            />
+                        ) : null}
+
+                        <TextInput
+                            value={currentPassword}
+                            onChangeText={setCurrentPassword}
+                            placeholder={getTranslatedText('currentPassword')}
+                            placeholderTextColor={theme.textSecondary}
+                            secureTextEntry
+                            style={settingsStyles.input}
+                        />
+
+                        <TextInput
+                            value={newPassword}
+                            onChangeText={setNewPassword}
+                            placeholder={getTranslatedText('newPassword')}
+                            placeholderTextColor={theme.textSecondary}
+                            secureTextEntry
+                            style={settingsStyles.input}
+                        />
+
+                        <TextInput
+                            value={repeatNewPassword}
+                            onChangeText={setRepeatNewPassword}
+                            placeholder={getTranslatedText('repeatNewPassword')}
+                            placeholderTextColor={theme.textSecondary}
+                            secureTextEntry
+                            style={settingsStyles.input}
+                        />
+
+                        <View style={settingsStyles.modalButtons}>
+                            <TouchableOpacity
+                                activeOpacity={0.8}
+                                onPress={closePasswordModal}
+                                style={settingsStyles.secondaryButton}
+                            >
+                                <Text style={settingsStyles.secondaryButtonText}>
+                                    {getTranslatedText('cancel')}
+                                </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                activeOpacity={0.8}
+                                onPress={handleChangePassword}
+                                disabled={savingPassword}
+                                style={settingsStyles.primaryButton}
+                            >
+                                {savingPassword ? (
+                                    <ActivityIndicator size="small" color="#fff" />
+                                ) : (
+                                    <Text style={settingsStyles.primaryButtonText}>
+                                        {getTranslatedText('save')}
+                                    </Text>
+                                )}
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+            <View style={{ width: '100%', height: 40 }} />
+        </Safearea>
+    )
+}
+
+const createSettingsStyles = (theme) => {
+    return StyleSheet.create({
+        userCard: {
+            width: '100%',
+            backgroundColor: theme.secondary,
+            borderColor: theme.textSecondary,
+            borderWidth: 1,
+            borderRadius: 8,
+            padding: 16,
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 28
+        },
+        avatar: {
+            width: 58,
+            height: 58,
+            borderRadius: 8,
+            backgroundColor: theme.primary,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 14
+        },
+        usernameText: {
+            color: theme.textPrimary,
+            fontSize: 22,
+            marginBottom: 4
+        },
+        userSubtitle: {
+            color: theme.textSecondary,
+            fontSize: 14
+        },
+        section: {
+            width: '100%',
+            marginBottom: 28,
+            zIndex: 3000
+        },
+        smallInfo: {
+            color: theme.textSecondary,
+            fontSize: 13,
+            marginTop: 10
+        },
+        settingRow: {
+            width: '100%',
+            backgroundColor: theme.secondary,
+            borderColor: theme.textSecondary,
+            borderWidth: 1,
+            borderRadius: 8,
+            paddingVertical: 12,
+            paddingHorizontal: 14,
+            flexDirection: 'row',
+            alignItems: 'center'
+        },
+        settingText: {
+            color: theme.textPrimary,
+            fontSize: 18
+        },
+        dropdown: {
+            backgroundColor: theme.secondary,
+            borderColor: theme.textSecondary,
+            borderWidth: 1,
+            borderRadius: 8
+        },
+        dropdownContainer: {
+            backgroundColor: theme.secondary,
+            borderColor: theme.textSecondary,
+            borderWidth: 1,
+            borderRadius: 8
+        },
+        dropdownText: {
+            color: theme.textPrimary,
+            fontSize: 18
+        },
+        dropdownPlaceholder: {
+            color: theme.textSecondary
+        },
+        arrowIconContainer: {
+            backgroundColor: theme.primary,
+            borderRadius: 5,
+            marginEnd: 5
+        },
+        logoutSection: {
+            width: '100%',
+            marginTop: 20,
+            marginBottom: 40
+        },
+        modalOverlay: {
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.55)',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20
+        },
+        modalContainer: {
+            width: '100%',
+            backgroundColor: theme.background,
+            borderColor: theme.textSecondary,
+            borderWidth: 1,
+            borderRadius: 8,
+            padding: 18
+        },
+        modalTitle: {
+            color: theme.textPrimary,
+            fontSize: 22,
+            marginBottom: 18
+        },
+        input: {
+            backgroundColor: theme.secondary,
+            borderColor: theme.textSecondary,
+            borderWidth: 1,
+            borderRadius: 8,
+            padding: 12,
+            color: theme.textPrimary,
+            marginBottom: 12
+        },
+        modalButtons: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 8
+        },
+        primaryButton: {
+            flex: 1,
+            backgroundColor: theme.primary,
+            borderRadius: 8,
+            padding: 12,
+            alignItems: 'center',
+            marginLeft: 8
+        },
+        primaryButtonText: {
+            color: '#fff',
+            fontSize: 16
+        },
+        secondaryButton: {
+            flex: 1,
+            borderColor: theme.primary,
+            borderWidth: 1,
+            borderRadius: 8,
+            padding: 12,
+            alignItems: 'center',
+            marginRight: 8
+        },
+        secondaryButtonText: {
+            color: theme.primary,
+            fontSize: 16
+        }
+    })
 }

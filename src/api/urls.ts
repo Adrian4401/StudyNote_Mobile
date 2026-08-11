@@ -4,6 +4,7 @@ export const API_URLS = {
     AUTH: {
         LOGIN: `${CONFIG.API_URL}/auth/login`,
         REGISTER: `${CONFIG.API_URL}/auth/register`,
+        CHANGE_PASSWORD: `${CONFIG.API_URL}/auth/change-password`
     },
     SUBJECT: `${CONFIG.API_URL}/subjects`,
     CLASS: `${CONFIG.API_URL}/classes`,
