@@ -113,7 +113,7 @@ export default function AddSubjectScreen() {
             <ScrollView>
                 <View style={styles.viewContainer}>
 
-                    <View style={{alignItems: 'flex-start', width: '100%'}}>
+                    <View style={{alignItems: 'flex-start', width: '100%', marginBottom: 20}}>
                         <GoBackButton />
                     </View>
                     
@@ -125,6 +125,8 @@ export default function AddSubjectScreen() {
                     />
                     
                     <MakeButton onPress={handleAddSubject}/>
+
+                    <View style={{height: 10}} />
 
                     {showBottomSubjectsInfo()}
 

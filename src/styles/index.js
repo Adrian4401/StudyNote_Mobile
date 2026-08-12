@@ -59,10 +59,10 @@ export const createStyles = (theme) => {
             color: theme.textPrimary
         },
         sectionText: {
-            fontSize: fontSizes.medium,
+            fontSize: (fontSizes.medium - 2),
             textTransform: 'uppercase',
-            color: theme.textPrimary,
-            marginBottom: 5,
+            color: theme.textSecondary,
+            marginBottom: 15,
             marginTop: 10
         },
         littleText: {

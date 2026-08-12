@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Text, View, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { updateSubject, deleteSubject } from '../../api/subjects';
@@ -91,7 +91,7 @@ export default function EditSubjectScreen() {
             <ScrollView>
                 <View style={styles.viewContainer}>
 
-                    <View style={{alignItems: 'center', width: '100%', flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <View style={{alignItems: 'center', width: '100%', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20}}>
                         <GoBackButton />
                         <TouchableOpacity onPress={handleDeleteSubject}>
                             <MaterialIcons name="delete" size={30} color={theme.textPrimary}/>
@@ -103,6 +103,8 @@ export default function EditSubjectScreen() {
                         onChangeText={handleChangeSubject}
                         secureTextEntry={false}
                     />
+
+                    <View style={{height: 10}} />
                     
                     <EditButton onPress={handleEditSubject}/>
 

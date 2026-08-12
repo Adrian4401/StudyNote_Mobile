@@ -93,7 +93,7 @@ export default function EditClassScreen() {
             <ScrollView>
                 <View style={styles.viewContainer}>
 
-                    <View style={{alignItems: 'center', width: '100%', flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <View style={{alignItems: 'center', width: '100%', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20}}>
                         <GoBackButton />
                         <TouchableOpacity onPress={handleDeleteClass}>
                             <MaterialIcons name="delete" size={30} color={theme.textPrimary}/>
@@ -105,6 +105,8 @@ export default function EditClassScreen() {
                         onChangeText={handleChangeClass}
                         secureTextEntry={false}
                     />
+
+                    <View style={{height: 10}} />
                     
                     <EditButton onPress={handleEditClass}/>
 

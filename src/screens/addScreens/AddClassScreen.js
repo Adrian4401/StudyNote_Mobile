@@ -114,7 +114,7 @@ export default function AddClassScreen() {
             <ScrollView>
                 <View style={styles.viewContainer}>
 
-                    <View style={{alignItems: 'flex-start', width: '100%'}}>
+                    <View style={{alignItems: 'flex-start', width: '100%', marginBottom: 20}}>
                         <GoBackButton />
                     </View>
                     
@@ -124,6 +124,8 @@ export default function AddClassScreen() {
                         secureTextEntry={false}
                         value={currentClass}
                     />
+
+                    <View style={{height: 10}} />
                     
                     <MakeButton onPress={handleAddClass}/>
 
