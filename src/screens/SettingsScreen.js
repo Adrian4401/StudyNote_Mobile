@@ -364,7 +364,6 @@ const createSettingsStyles = (theme) => {
         section: {
             width: '100%',
             marginBottom: 28,
-            zIndex: 3000
         },
         smallInfo: {
             color: theme.textSecondary,
@@ -390,7 +389,8 @@ const createSettingsStyles = (theme) => {
             backgroundColor: theme.secondary,
             borderColor: theme.textSecondary,
             borderWidth: 1,
-            borderRadius: 8
+            borderRadius: 8,
+            zIndex: 3000
         },
         dropdownContainer: {
             backgroundColor: theme.secondary,

@@ -34,7 +34,7 @@ export function MainTabNavigator() {
             width: 60,
             height: 60,
             top: Platform.OS === 'ios' ? 15 : 0,
-            borderRadius: 30,
+            borderRadius: 20,
             backgroundColor: theme.primary
           }}
         >
