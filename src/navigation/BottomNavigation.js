@@ -8,7 +8,8 @@ import {
     NotesScreen, 
     ManageScreen, 
     SettingsScreen, 
-    SubjectTestScreen
+    SubjectTestScreen,
+    TestsScreen
 } from '../screens';
 
 
@@ -87,8 +88,8 @@ export function MainTabNavigator() {
           }}
         />
         <Tab.Screen 
-          name='SubjectTestScreen' 
-          component={SubjectTestScreen}
+          name='Tests' 
+          component={TestsScreen}
           options={{
             tabBarIcon: () => {
               return(
@@ -96,7 +97,7 @@ export function MainTabNavigator() {
               )
             },
             tabBarButton: (props) => (
-              <CustomTabBarButton {...props} navigation={navigation} onPress={() => navigation.navigate('SubjectTestScreen')}/>
+              <CustomTabBarButton {...props} navigation={navigation} onPress={() => navigation.navigate('Tests')}/>
             )
           }}
         />

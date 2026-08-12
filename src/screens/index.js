@@ -21,6 +21,8 @@ import AiNoteReviewScreen from "./aiScreens/NoteReviewScreen";
 import SubjectTestScreen from "./testsScreens/SubjectTestScreen";
 import GeneratedTestScreen from "./testsScreens/GeneratedTestScreen";
 import TestSummaryScreen from "./testsScreens/TestSummaryScreen";
+import TestsScreen from "./testsScreens/TestsScreen";
+import SavedTestSummaryScreen from "./testsScreens/SavedTestSummaryScreen";
 
 
 export {
@@ -46,5 +48,7 @@ export {
 
     SubjectTestScreen,
     GeneratedTestScreen,
-    TestSummaryScreen
+    TestSummaryScreen,
+    TestsScreen,
+    SavedTestSummaryScreen,
 }

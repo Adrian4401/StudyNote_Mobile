@@ -124,7 +124,11 @@ export default function SubjectTestScreen() {
                 token: userToken
             })
 
-            navigation.navigate('GeneratedTestScreen', { test: data })
+            navigation.navigate('GeneratedTestScreen', {
+                test: data,
+                subjectId: selectedSubjectId,
+                noteIds: selectedNoteIds
+            })
         } catch (error) {
             setErrorCode(error.message)
             console.log('Generating test failed:', error.message)

@@ -14,7 +14,7 @@ import { checkOpenAnswers } from '../../api/tests'
 export default function GeneratedTestScreen() {
     const navigation = useNavigation()
     const route = useRoute()
-    const { test } = route.params
+    const { test, subjectId, noteIds } = route.params
 
     const { userToken } = useAuth()
     const { theme } = useDarkMode()
@@ -93,7 +93,9 @@ export default function GeneratedTestScreen() {
             navigation.navigate('TestSummaryScreen', {
                 questions,
                 userAnswers,
-                openAnswersResults: []
+                openAnswersResults: [],
+                subjectId,
+                noteIds
             })
 
             return
@@ -117,7 +119,9 @@ export default function GeneratedTestScreen() {
             navigation.navigate('TestSummaryScreen', {
                 questions,
                 userAnswers,
-                openAnswersResults: data.results || []
+                openAnswersResults: data.results || [],
+                subjectId,
+                noteIds
             })
         } catch (error) {
             console.log('Checking open answers failed:', error.message)
@@ -125,7 +129,9 @@ export default function GeneratedTestScreen() {
             navigation.navigate('TestSummaryScreen', {
                 questions,
                 userAnswers,
-                openAnswersResults: []
+                openAnswersResults: [],
+                subjectId,
+                noteIds
             })
         } finally {
             setChecking(false)

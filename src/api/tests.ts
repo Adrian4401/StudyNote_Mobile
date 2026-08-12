@@ -18,6 +18,19 @@ interface CheckOpenAnswersParams {
     token: string
 }
 
+interface SaveTestResultParams {
+    title?: string
+    subjectId: number | string
+    noteIds: Array<number | string>
+    score: number
+    maxScore: number
+    percentage: number
+    questions: any[]
+    userAnswers: Record<string, any>
+    openAnswersResults: any[]
+    token: string
+}
+
 export async function generateSubjectTest({
     subjectId,
     noteIds,
@@ -31,12 +44,7 @@ export async function generateSubjectTest({
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({
-            subjectId,
-            noteIds,
-            questionsCount,
-            questionTypes
-        })
+        body: JSON.stringify({ subjectId, noteIds, questionsCount, questionTypes })
     })
 
     const text = await response.text()
@@ -52,19 +60,14 @@ export async function generateSubjectTest({
     return data
 }
 
-export async function checkOpenAnswers({
-    openAnswers,
-    token
-}: CheckOpenAnswersParams) {
+export async function checkOpenAnswers({ openAnswers, token }: CheckOpenAnswersParams) {
     const response = await fetch(`${API_URLS.TEST}/check-open-answers`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({
-            openAnswers
-        })
+        body: JSON.stringify({ openAnswers })
     })
 
     const text = await response.text()
@@ -75,6 +78,101 @@ export async function checkOpenAnswers({
 
     if (!response.ok) {
         throw new Error(data?.errorCode || data?.message || 'Cannot check open answers')
+    }
+
+    return data
+}
+
+export async function getTestHistory(token: string) {
+    const response = await fetch(`${API_URLS.TEST}/history`, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+
+    const text = await response.text()
+    const data = text ? JSON.parse(text) : null
+
+    if (!response.ok) {
+        throw new Error(data?.errorCode || data?.message || 'Cannot get test history')
+    }
+
+    return data || []
+}
+
+export async function getTestResult(id: number | string, token: string) {
+    const response = await fetch(`${API_URLS.TEST}/history/${id}`, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+
+    const text = await response.text()
+    const data = text ? JSON.parse(text) : null
+
+    if (!response.ok) {
+        throw new Error(data?.errorCode || data?.message || 'Cannot get test result')
+    }
+
+    return data
+}
+
+export async function saveTestResult({
+    title,
+    subjectId,
+    noteIds,
+    score,
+    maxScore,
+    percentage,
+    questions,
+    userAnswers,
+    openAnswersResults,
+    token
+}: SaveTestResultParams) {
+    const response = await fetch(`${API_URLS.TEST}/history`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            title,
+            subjectId,
+            noteIds,
+            score,
+            maxScore,
+            percentage,
+            questions,
+            userAnswers,
+            openAnswersResults
+        })
+    })
+
+    const text = await response.text()
+    const data = text ? JSON.parse(text) : null
+
+    if (!response.ok) {
+        throw new Error(data?.errorCode || data?.message || 'Cannot save test result')
+    }
+
+    return data
+}
+
+export async function deleteTestResult(id: number | string, token: string) {
+    const response = await fetch(`${API_URLS.TEST}/history/${id}`, {
+        method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+
+    const text = await response.text()
+    const data = text ? JSON.parse(text) : null
+
+    if (!response.ok) {
+        throw new Error(data?.errorCode || data?.message || 'Cannot delete test result')
     }
 
     return data
