@@ -134,22 +134,33 @@ export async function deleteNote (id: number, token: string) {
 // AI functions
 // ==========================
 
-export async function analyzeNote(id: number, token: string) {
+export async function analyzeNote(
+    id: number,
+    token: string,
+    aiModel?: string
+) {
     const response = await fetch(`${API_URLS.NOTE}/${id}/analyze`, {
         method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify({ aiModel })
     })
 
     const text = await response.text()
+
     console.log('ANALYZE NOTE STATUS:', response.status)
     console.log('ANALYZE NOTE RESPONSE:', text)
 
     const data = text ? JSON.parse(text) : null
 
     if (!response.ok) {
-        throw new Error(data?.errorCode || data?.message || 'Cannot analyze note')
+        throw new Error(
+            data?.errorCode ||
+            data?.message ||
+            'Cannot analyze note'
+        )
     }
 
     return data

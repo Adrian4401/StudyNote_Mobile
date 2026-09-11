@@ -6,6 +6,7 @@ interface GenerateSubjectTestParams {
     questionsCount: number
     questionTypes: string[]
     token: string
+    aiModel?: string
 }
 
 interface CheckOpenAnswersParams {
@@ -16,6 +17,7 @@ interface CheckOpenAnswersParams {
         userAnswer: string
     }[]
     token: string
+    aiModel?: string
 }
 
 interface SaveTestResultParams {
@@ -36,7 +38,8 @@ export async function generateSubjectTest({
     noteIds,
     questionsCount,
     questionTypes,
-    token
+    token,
+    aiModel
 }: GenerateSubjectTestParams) {
     const response = await fetch(`${API_URLS.TEST}/subject`, {
         method: 'POST',
@@ -44,7 +47,7 @@ export async function generateSubjectTest({
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ subjectId, noteIds, questionsCount, questionTypes })
+        body: JSON.stringify({ subjectId, noteIds, questionsCount, questionTypes, aiModel })
     })
 
     const text = await response.text()
@@ -60,14 +63,14 @@ export async function generateSubjectTest({
     return data
 }
 
-export async function checkOpenAnswers({ openAnswers, token }: CheckOpenAnswersParams) {
+export async function checkOpenAnswers({ openAnswers, token, aiModel }: CheckOpenAnswersParams) {
     const response = await fetch(`${API_URLS.TEST}/check-open-answers`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ openAnswers })
+        body: JSON.stringify({ openAnswers, aiModel })
     })
 
     const text = await response.text()
